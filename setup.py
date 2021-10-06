@@ -7,7 +7,7 @@ setup(
     long_description_content_type="text/markdown",
     version="1.0.2",
     author="Equinor ASA",
-    author_email="arnts@equinor.com, euel@equinor.com, chjo@equinor.com, tsundv@equinor.com",
+    author_email="fg_robots@equinor.com",
     url="https://github.com/equinor/isar_robot",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
