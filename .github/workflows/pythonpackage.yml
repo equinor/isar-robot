@@ -28,12 +28,15 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install tox
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        pip install git+https://github.com/equinor/isar.git@main
+        pip install .
 
     - name: Lint
       run: |
         black --check .
 
-    - name: Test with tox
+    - name: Test with pytest
       run: |
-        tox
+        pytest .
