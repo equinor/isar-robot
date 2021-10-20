@@ -1,5 +1,9 @@
 import logging
+import os
+import random
+from datetime import datetime
 from logging import Logger
+from pathlib import Path
 from typing import Any, Optional, Sequence, Tuple
 
 from robot_interface.models.geometry.frame import Frame
@@ -7,7 +11,14 @@ from robot_interface.models.geometry.joints import Joints
 from robot_interface.models.geometry.orientation import Orientation
 from robot_interface.models.geometry.pose import Pose
 from robot_interface.models.geometry.position import Position
-from robot_interface.models.inspection.inspection import Inspection, InspectionResult
+from robot_interface.models.inspection.formats import Image
+from robot_interface.models.inspection.inspection import (
+    Inspection,
+    InspectionResult,
+    TimeIndexedPose,
+)
+from robot_interface.models.inspection.metadata import ImageMetadata
+from robot_interface.models.inspection.references import ImageReference
 from robot_interface.models.mission import MissionStatus, Step
 from robot_interface.robot_interface import RobotInterface
 
@@ -15,6 +26,19 @@ from robot_interface.robot_interface import RobotInterface
 class Robot(RobotInterface):
     def __init__(self):
         self.logger: Logger = logging.getLogger("robot")
+        self.inspection_id: int = 1
+
+        self.position: Position = Position(x=1, y=1, z=1, frame=Frame.Robot)
+        self.orientation: Orientation = Orientation(
+            x=0, y=0, z=0, w=1, frame=Frame.Robot
+        )
+        self.pose: Pose = Pose(
+            position=self.position, orientation=self.orientation, frame=Frame.Robot
+        )
+
+        self.example_images: Path = Path(
+            os.path.dirname(os.path.realpath(__file__)), "example_images"
+        )
 
     def schedule_step(self, step: Step) -> Tuple[bool, Optional[Any], Optional[Joints]]:
         mission_id: int = 1
@@ -40,14 +64,31 @@ class Robot(RobotInterface):
     def get_inspection_references(
         self, vendor_mission_id: Any, current_step: Step
     ) -> Sequence[Inspection]:
-        return []
+        now: datetime = datetime.utcnow()
+        image_metadata: ImageMetadata = ImageMetadata(
+            start_time=now,
+            time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
+            file_type="jpg",
+            tag_id="123-AB-4567",
+        )
+        image_ref: ImageReference = ImageReference(
+            id=self.inspection_id, metadata=image_metadata
+        )
+
+        return [image_ref]
 
     def download_inspection_result(
         self, inspection: Inspection
     ) -> Optional[InspectionResult]:
-        return None
+        file: Path = random.choice(list(self.example_images.iterdir()))
+
+        with open(file, "rb") as f:
+            data: bytes = f.read()
+
+        image: Image = Image(
+            id=self.inspection_id, metadata=inspection.metadata, data=data
+        )
+        return image
 
     def robot_pose(self) -> Pose:
-        position: Position = Position(x=1, y=1, z=1, frame=Frame.Robot)
-        orientation: Orientation = Orientation(x=0, y=0, z=0, w=1, frame=Frame.Robot)
-        return Pose(position=position, orientation=orientation, frame=Frame.Robot)
+        return self.pose
