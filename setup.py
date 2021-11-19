@@ -22,6 +22,6 @@ setup(
     ],
     include_package_data=True,
     setup_requires=["wheel"],
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     tests_require=["pytest"],
 )
