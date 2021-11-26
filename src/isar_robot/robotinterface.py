@@ -5,6 +5,7 @@ from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from typing import Any, Optional, Sequence, Tuple
+from uuid import UUID
 
 from robot_interface.models.geometry.frame import Frame
 from robot_interface.models.geometry.joints import Joints
@@ -40,30 +41,24 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
-    def schedule_task(self, task: Task) -> Tuple[bool, Optional[Any], Optional[Joints]]:
-        mission_id: int = 1
+    def schedule_task(self, task: Task) -> Tuple[bool, Optional[Joints]]:
         scheduled: bool = True
-        return scheduled, mission_id, None
+        return scheduled, None
 
     def mission_scheduled(self) -> bool:
         return False
 
-    def mission_status(self, mission_id: Any) -> MissionStatus:
+    def mission_status(self, mission_id: UUID) -> MissionStatus:
         return MissionStatus.Completed
 
     def abort_mission(self) -> bool:
         return True
 
-    def log_status(
-        self, mission_id: Any, mission_status: MissionStatus, current_task: Task
-    ):
-        self.logger.info(f"Mission ID: {mission_id}")
+    def log_status(self, mission_status: MissionStatus, current_task: Task):
         self.logger.info(f"Mission Status: {mission_status}")
         self.logger.info(f"Current task: {current_task}")
 
-    def get_inspection_references(
-        self, vendor_mission_id: Any, current_task: Task
-    ) -> Sequence[Inspection]:
+    def get_inspection_references(self, current_task: Task) -> Sequence[Inspection]:
         now: datetime = datetime.utcnow()
         image_metadata: ImageMetadata = ImageMetadata(
             start_time=now,
@@ -72,7 +67,7 @@ class Robot(RobotInterface):
             tag_id="123-AB-4567",
         )
         image_ref: ImageReference = ImageReference(
-            id=self.inspection_id, metadata=image_metadata
+            id=current_task.id, metadata=image_metadata
         )
 
         return [image_ref]
