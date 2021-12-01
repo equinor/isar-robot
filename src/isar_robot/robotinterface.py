@@ -19,7 +19,7 @@ from robot_interface.models.inspection.inspection import (
 )
 from robot_interface.models.inspection.metadata import ImageMetadata
 from robot_interface.models.inspection.references import ImageReference
-from robot_interface.models.mission import MissionStatus, Step
+from robot_interface.models.mission import MissionStatus, Task
 from robot_interface.robot_interface import RobotInterface
 
 
@@ -40,7 +40,7 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
-    def schedule_step(self, step: Step) -> Tuple[bool, Optional[Any], Optional[Joints]]:
+    def schedule_task(self, task: Task) -> Tuple[bool, Optional[Any], Optional[Joints]]:
         mission_id: int = 1
         scheduled: bool = True
         return scheduled, mission_id, None
@@ -55,14 +55,14 @@ class Robot(RobotInterface):
         return True
 
     def log_status(
-        self, mission_id: Any, mission_status: MissionStatus, current_step: Step
+        self, mission_id: Any, mission_status: MissionStatus, current_task: Task
     ):
         self.logger.info(f"Mission ID: {mission_id}")
         self.logger.info(f"Mission Status: {mission_status}")
-        self.logger.info(f"Current Step: {current_step}")
+        self.logger.info(f"Current task: {current_task}")
 
     def get_inspection_references(
-        self, vendor_mission_id: Any, current_step: Step
+        self, vendor_mission_id: Any, current_task: Task
     ) -> Sequence[Inspection]:
         now: datetime = datetime.utcnow()
         image_metadata: ImageMetadata = ImageMetadata(
