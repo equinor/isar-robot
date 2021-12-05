@@ -20,7 +20,7 @@ from robot_interface.models.inspection.inspection import (
 )
 from robot_interface.models.inspection.metadata import ImageMetadata
 from robot_interface.models.inspection.references import ImageReference
-from robot_interface.models.mission import MissionStatus, Task
+from robot_interface.models.mission import Task, TaskStatus
 from robot_interface.robot_interface import RobotInterface
 
 
@@ -48,14 +48,14 @@ class Robot(RobotInterface):
     def mission_scheduled(self) -> bool:
         return False
 
-    def mission_status(self, mission_id: UUID) -> MissionStatus:
-        return MissionStatus.Completed
+    def task_status(self, task_id: Optional[UUID]) -> TaskStatus:
+        return TaskStatus.Completed
 
     def abort_mission(self) -> bool:
         return True
 
-    def log_status(self, mission_status: MissionStatus, current_task: Task):
-        self.logger.info(f"Mission Status: {mission_status}")
+    def log_status(self, task_status: TaskStatus, current_task: Task):
+        self.logger.info(f"Task Status: {task_status}")
         self.logger.info(f"Current task: {current_task}")
 
     def get_inspection_references(self, current_task: Task) -> Sequence[Inspection]:
