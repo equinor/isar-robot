@@ -4,11 +4,10 @@ import random
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from typing import Any, Optional, Sequence, Tuple
+from typing import Optional, Sequence
 from uuid import UUID
 
 from robot_interface.models.geometry.frame import Frame
-from robot_interface.models.geometry.joints import Joints
 from robot_interface.models.geometry.orientation import Orientation
 from robot_interface.models.geometry.pose import Pose
 from robot_interface.models.geometry.position import Position
@@ -41,9 +40,9 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
-    def schedule_task(self, task: Task) -> Tuple[bool, Optional[Joints]]:
+    def schedule_task(self, task: Task) -> bool:
         scheduled: bool = True
-        return scheduled, None
+        return scheduled
 
     def mission_scheduled(self) -> bool:
         return False
