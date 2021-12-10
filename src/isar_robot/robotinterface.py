@@ -11,14 +11,12 @@ from robot_interface.models.geometry.frame import Frame
 from robot_interface.models.geometry.orientation import Orientation
 from robot_interface.models.geometry.pose import Pose
 from robot_interface.models.geometry.position import Position
-from robot_interface.models.inspection.formats import Image
 from robot_interface.models.inspection.inspection import (
+    Image,
+    ImageMetadata,
     Inspection,
-    InspectionResult,
     TimeIndexedPose,
 )
-from robot_interface.models.inspection.metadata import ImageMetadata
-from robot_interface.models.inspection.references import ImageReference
 from robot_interface.models.mission import Task, TaskStatus
 from robot_interface.robot_interface import RobotInterface
 
@@ -26,7 +24,6 @@ from robot_interface.robot_interface import RobotInterface
 class Robot(RobotInterface):
     def __init__(self):
         self.logger: Logger = logging.getLogger("robot")
-        self.inspection_id: int = 1
 
         self.position: Position = Position(x=1, y=1, z=1, frame=Frame.Robot)
         self.orientation: Orientation = Orientation(
@@ -57,32 +54,27 @@ class Robot(RobotInterface):
         self.logger.info(f"Task Status: {task_status}")
         self.logger.info(f"Current task: {current_task}")
 
-    def get_inspection_references(self, current_task: Task) -> Sequence[Inspection]:
+    def get_inspection_references(self, inspection_task: Task) -> Sequence[Inspection]:
         now: datetime = datetime.utcnow()
         image_metadata: ImageMetadata = ImageMetadata(
             start_time=now,
             time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
             file_type="jpg",
-            tag_id="123-AB-4567",
         )
-        image_ref: ImageReference = ImageReference(
-            id=current_task.id, metadata=image_metadata
-        )
+        image_metadata.tag_id = "123-AB-4567"
 
-        return [image_ref]
+        image: Image = Image(metadata=image_metadata)
 
-    def download_inspection_result(
-        self, inspection: Inspection
-    ) -> Optional[InspectionResult]:
+        return [image]
+
+    def download_inspection_result(self, inspection: Inspection) -> Inspection:
         file: Path = random.choice(list(self.example_images.iterdir()))
 
         with open(file, "rb") as f:
             data: bytes = f.read()
 
-        image: Image = Image(
-            id=self.inspection_id, metadata=inspection.metadata, data=data
-        )
-        return image
+        inspection.data = data
+        return inspection
 
     def robot_pose(self) -> Pose:
         return self.pose
