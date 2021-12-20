@@ -18,6 +18,7 @@ from robot_interface.models.inspection.inspection import (
     TimeIndexedPose,
 )
 from robot_interface.models.mission import Task, TaskStatus
+from robot_interface.models.mission.task import InspectionTask
 from robot_interface.robot_interface import RobotInterface
 
 
@@ -37,44 +38,31 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
-    def schedule_task(self, task: Task) -> bool:
-        scheduled: bool = True
-        return scheduled
-
-    def mission_scheduled(self) -> bool:
-        return False
-
-    def task_status(self, task_id: Optional[UUID]) -> TaskStatus:
-        return TaskStatus.Completed
-
-    def abort_mission(self) -> bool:
+    def initiate_task(self, task: Task) -> bool:
         return True
 
-    def log_status(self, task_status: TaskStatus, current_task: Task):
-        self.logger.info(f"Task Status: {task_status}")
-        self.logger.info(f"Current task: {current_task}")
+    def task_status(self) -> TaskStatus:
+        return TaskStatus.Completed
 
-    def get_inspection_references(self, inspection_task: Task) -> Sequence[Inspection]:
+    def stop(self) -> bool:
+        return True
+
+    def get_inspections(self, task: InspectionTask) -> Sequence[Inspection]:
         now: datetime = datetime.utcnow()
         image_metadata: ImageMetadata = ImageMetadata(
             start_time=now,
             time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
             file_type="jpg",
         )
-        image_metadata.tag_id = "123-AB-4567"
+        image_metadata.tag_id = task.tag_id
 
         image: Image = Image(metadata=image_metadata)
 
-        return [image]
-
-    def download_inspection_result(self, inspection: Inspection) -> Inspection:
         file: Path = random.choice(list(self.example_images.iterdir()))
 
         with open(file, "rb") as f:
             data: bytes = f.read()
 
-        inspection.data = data
-        return inspection
+        image.data = data
 
-    def robot_pose(self) -> Pose:
-        return self.pose
+        return [image]
