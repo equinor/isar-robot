@@ -13,10 +13,10 @@ After installing isar-robot, it can be used through [ISAR](https://github.com/eq
 For local development, please fork the repository. Then, clone and install in the repository root folder:
 
 ```bash
-$ git clone https://github.com/equinor/isar-robot
-$ cd isar-robot
-$ pip install -r requirements-dev.txt
-$ pip install -e .
+git clone https://github.com/equinor/isar-robot
+cd isar-robot
+pip install -r requirements-dev.txt
+pip install -e .
 ```
 
 # Contributing
