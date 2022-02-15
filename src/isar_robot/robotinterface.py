@@ -4,8 +4,7 @@ import random
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
-from typing import Optional, Sequence
-from uuid import UUID
+from typing import Sequence
 
 from robot_interface.models.geometry.frame import Frame
 from robot_interface.models.geometry.orientation import Orientation
@@ -26,12 +25,12 @@ class Robot(RobotInterface):
     def __init__(self):
         self.logger: Logger = logging.getLogger("robot")
 
-        self.position: Position = Position(x=1, y=1, z=1, frame=Frame.Robot)
+        self.position: Position = Position(x=1, y=1, z=1, frame=Frame.Asset)
         self.orientation: Orientation = Orientation(
-            x=0, y=0, z=0, w=1, frame=Frame.Robot
+            x=0, y=0, z=0, w=1, frame=Frame.Asset
         )
         self.pose: Pose = Pose(
-            position=self.position, orientation=self.orientation, frame=Frame.Robot
+            position=self.position, orientation=self.orientation, frame=Frame.Asset
         )
 
         self.example_images: Path = Path(
