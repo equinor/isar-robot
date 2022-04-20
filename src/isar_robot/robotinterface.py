@@ -6,10 +6,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Sequence
 
-from robot_interface.models.geometry.frame import Frame
-from robot_interface.models.geometry.orientation import Orientation
-from robot_interface.models.geometry.pose import Pose
-from robot_interface.models.geometry.position import Position
+from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.inspection.inspection import (
     Image,
     ImageMetadata,
@@ -25,12 +22,12 @@ class Robot(RobotInterface):
     def __init__(self):
         self.logger: Logger = logging.getLogger("robot")
 
-        self.position: Position = Position(x=1, y=1, z=1, frame=Frame.Asset)
+        self.position: Position = Position(x=1, y=1, z=1, frame=Frame("asset"))
         self.orientation: Orientation = Orientation(
-            x=0, y=0, z=0, w=1, frame=Frame.Asset
+            x=0, y=0, z=0, w=1, frame=Frame("asset")
         )
         self.pose: Pose = Pose(
-            position=self.position, orientation=self.orientation, frame=Frame.Asset
+            position=self.position, orientation=self.orientation, frame=Frame("asset")
         )
 
         self.example_images: Path = Path(

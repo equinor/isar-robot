@@ -27,7 +27,17 @@ setup(
         "Topic :: Software Development :: Libraries",
     ],
     include_package_data=True,
-    setup_requires=["wheel"],
+    install_requires=[
+        "alitra",
+    ],
+    setup_requires=[
+        "wheel",
+    ],
+    extras_require={
+        "dev": [
+            "black",
+            "pytest",
+        ]
+    },
     python_requires=">=3.10",
-    tests_require=["pytest"],
 )
