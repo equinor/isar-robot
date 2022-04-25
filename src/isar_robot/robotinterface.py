@@ -13,8 +13,7 @@ from robot_interface.models.inspection.inspection import (
     Inspection,
     TimeIndexedPose,
 )
-from robot_interface.models.mission import Task, TaskStatus
-from robot_interface.models.mission.task import InspectionTask
+from robot_interface.models.mission import InspectionStep, Step, StepStatus
 from robot_interface.robot_interface import RobotInterface
 
 
@@ -34,23 +33,23 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
-    def initiate_task(self, task: Task) -> bool:
+    def initiate_step(self, step: Step) -> bool:
         return True
 
-    def task_status(self) -> TaskStatus:
-        return TaskStatus.Completed
+    def step_status(self) -> StepStatus:
+        return StepStatus.Completed
 
     def stop(self) -> bool:
         return True
 
-    def get_inspections(self, task: InspectionTask) -> Sequence[Inspection]:
+    def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
         now: datetime = datetime.utcnow()
         image_metadata: ImageMetadata = ImageMetadata(
             start_time=now,
             time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
             file_type="jpg",
         )
-        image_metadata.tag_id = task.tag_id
+        image_metadata.tag_id = step.tag_id
 
         image: Image = Image(metadata=image_metadata)
 
