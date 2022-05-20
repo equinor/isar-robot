@@ -37,7 +37,7 @@ class Robot(RobotInterface):
         return True
 
     def step_status(self) -> StepStatus:
-        return StepStatus.Completed
+        return StepStatus.Successful
 
     def stop(self) -> bool:
         return True
