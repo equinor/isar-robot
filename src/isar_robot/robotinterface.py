@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 from alitra import Frame, Orientation, Pose, Position
+from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import (
     Image,
     ImageMetadata,
@@ -61,3 +62,6 @@ class Robot(RobotInterface):
         image.data = data
 
         return [image]
+
+    def initialize(self, params: InitializeParams) -> None:
+        return
