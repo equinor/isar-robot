@@ -25,6 +25,7 @@ from robot_interface.telemetry.payloads import (
     TelemetryPosePayload,
 )
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
+from random import randrange
 
 
 class Robot(RobotInterface):
@@ -97,7 +98,7 @@ class Robot(RobotInterface):
             mqtt_queue=queue,
             telemetry_method=self._get_battery_telemetry,
             topic=f"isar/{robot_id}/battery",
-            interval=1,
+            interval=5,
             retain=True,
         )
         battery_thread: Thread = Thread(
@@ -118,6 +119,8 @@ class Robot(RobotInterface):
 
     def _get_battery_telemetry(self, robot_id: str) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
-            battery_level=95.2, robot_id=robot_id, timestamp=datetime.utcnow()
+            battery_level=randrange(0, 1000) * 0.1,
+            robot_id=robot_id,
+            timestamp=datetime.utcnow(),
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
