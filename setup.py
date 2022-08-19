@@ -35,6 +35,7 @@ setup(
         "dev": [
             "black",
             "pytest",
+            "pre-commit",
         ]
     },
     python_requires=">=3.9",
