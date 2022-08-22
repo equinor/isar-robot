@@ -34,9 +34,11 @@ setup(
     extras_require={
         "dev": [
             "black",
+            "mypy",
             "pytest",
             "pre-commit",
         ]
     },
     python_requires=">=3.9",
+    tests_require=["pytest"],
 )
