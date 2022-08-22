@@ -30,6 +30,7 @@ jobs:
       - name: Lint
         run: |
           black --check .
+          mypy .
 
       - name: Test with pytest
         run: |
