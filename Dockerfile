@@ -1,4 +1,4 @@
-FROM isar-base:latest
+FROM ghcr.io/equinor/isar:latest
 
 ARG ROBOT_REPOSITORY_CLONE_URL=https://github.com/equinor/isar-robot.git
 
