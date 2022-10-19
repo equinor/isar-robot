@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import random
+import time
 from datetime import datetime
 from logging import Logger
 from pathlib import Path
@@ -27,6 +28,8 @@ from robot_interface.telemetry.payloads import (
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 from random import randrange
 
+STEP_DURATION_IN_SECONDS = 5
+
 
 class Robot(RobotInterface):
     def __init__(self):
@@ -45,6 +48,7 @@ class Robot(RobotInterface):
         )
 
     def initiate_step(self, step: Step) -> bool:
+        time.sleep(STEP_DURATION_IN_SECONDS)
         return True
 
     def step_status(self) -> StepStatus:
