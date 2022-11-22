@@ -7,6 +7,7 @@ from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from queue import Queue
+from random import randrange
 from threading import Thread
 from typing import List, Sequence
 
@@ -26,7 +27,6 @@ from robot_interface.telemetry.payloads import (
     TelemetryPosePayload,
 )
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
-from random import randrange
 
 STEP_DURATION_IN_SECONDS = 5
 
