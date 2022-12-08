@@ -116,8 +116,19 @@ class Robot(RobotInterface):
         return publisher_threads
 
     def _get_pose_telemetry(self, robot_id: str) -> str:
+        random_position: Position = Position(
+            x=random.uniform(0.1, 10),
+            y=random.uniform(0.1, 10),
+            z=random.uniform(0.1, 10),
+            frame=Frame("asset"),
+        )
+        random_pose: Pose = Pose(
+            position=random_position,
+            orientation=self.pose.orientation,
+            frame=Frame("asset"),
+        )
         pose_payload: TelemetryPosePayload = TelemetryPosePayload(
-            pose=self.pose, robot_id=robot_id, timestamp=datetime.utcnow()
+            pose=random_pose, robot_id=robot_id, timestamp=datetime.utcnow()
         )
         return json.dumps(pose_payload, cls=EnhancedJSONEncoder)
 
