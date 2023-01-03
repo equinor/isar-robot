@@ -20,6 +20,7 @@ from robot_interface.models.inspection.inspection import (
     TimeIndexedPose,
 )
 from robot_interface.models.mission import InspectionStep, Step, StepStatus
+from robot_interface.models.mission.status import RobotStatus
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 from robot_interface.telemetry.payloads import (
@@ -88,7 +89,7 @@ class Robot(RobotInterface):
             telemetry_method=self._get_pose_telemetry,
             topic=f"isar/{robot_id}/pose",
             interval=1,
-            retain=True,
+            retain=False,
         )
         pose_thread: Thread = Thread(
             target=pose_publisher.run,
@@ -103,7 +104,7 @@ class Robot(RobotInterface):
             telemetry_method=self._get_battery_telemetry,
             topic=f"isar/{robot_id}/battery",
             interval=5,
-            retain=True,
+            retain=False,
         )
         battery_thread: Thread = Thread(
             target=battery_publisher.run,
@@ -140,5 +141,5 @@ class Robot(RobotInterface):
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
 
-    def is_robot_online(self) -> bool:
-        return True
+    def robot_status(self) -> RobotStatus:
+        return RobotStatus.Available
