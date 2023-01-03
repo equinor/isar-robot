@@ -139,3 +139,6 @@ class Robot(RobotInterface):
             timestamp=datetime.utcnow(),
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
+
+    def is_robot_online(self) -> bool:
+        return True
