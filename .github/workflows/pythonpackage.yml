@@ -24,7 +24,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install git+https://github.com/equinor/isar.git@main
           pip install -e .[dev]
 
       - name: Lint
