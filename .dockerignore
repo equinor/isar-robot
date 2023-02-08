@@ -1,1 +1,7 @@
-venv
+*
+!src/isar_robot
+!setup.py
+!setup.cfg
+!pyproject.toml
+!README.md
+!LICENSE
