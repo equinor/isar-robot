@@ -9,7 +9,7 @@ from pathlib import Path
 from queue import Queue
 from random import randrange
 from threading import Thread
-from typing import List, Sequence
+from typing import List, Sequence, Union
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.initialize import InitializeParams
@@ -18,8 +18,18 @@ from robot_interface.models.inspection.inspection import (
     ImageMetadata,
     Inspection,
     TimeIndexedPose,
+    Video,
+    VideoMetadata,
 )
-from robot_interface.models.mission import InspectionStep, Step, StepStatus
+from robot_interface.models.mission import (
+    InspectionStep,
+    Step,
+    StepStatus,
+    TakeImage,
+    TakeThermalImage,
+    TakeThermalVideo,
+    TakeVideo,
+)
 from robot_interface.models.mission.status import RobotStatus
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
@@ -59,24 +69,13 @@ class Robot(RobotInterface):
         return True
 
     def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
-        now: datetime = datetime.utcnow()
-        image_metadata: ImageMetadata = ImageMetadata(
-            start_time=now,
-            time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
-            file_type="jpg",
-        )
-        image_metadata.tag_id = step.tag_id
 
-        image: Image = Image(metadata=image_metadata)
-
-        file: Path = random.choice(list(self.example_images.iterdir()))
-
-        with open(file, "rb") as f:
-            data: bytes = f.read()
-
-        image.data = data
-
-        return [image]
+        if type(step) in [TakeImage, TakeThermalImage]:
+            return self._create_image(step)
+        elif type(step) in [TakeVideo, TakeThermalVideo]:
+            return self._create_video(step)
+        else:
+            return None
 
     def initialize(self, params: InitializeParams) -> None:
         return
@@ -143,3 +142,48 @@ class Robot(RobotInterface):
 
     def robot_status(self) -> RobotStatus:
         return RobotStatus.Available
+
+    def _create_image(self, step: Union[TakeImage, TakeThermalImage]):
+        now: datetime = datetime.utcnow()
+        image_metadata: ImageMetadata = ImageMetadata(
+            start_time=now,
+            time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
+            file_type="jpg",
+        )
+        image_metadata.tag_id = step.tag_id
+        image_metadata.analysis = ["test1", "test2"]
+        image_metadata.additional = step.metadata
+
+        image: Image = Image(metadata=image_metadata)
+
+        file: Path = random.choice(list(self.example_images.iterdir()))
+
+        with open(file, "rb") as f:
+            data: bytes = f.read()
+
+        image.data = data
+
+        return [image]
+
+    def _create_video(self, step: Union[TakeVideo, TakeThermalVideo]):
+        now: datetime = datetime.utcnow()
+        video_metadata: VideoMetadata = VideoMetadata(
+            start_time=now,
+            time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
+            file_type="mp4",
+            duration=11,
+        )
+        video_metadata.tag_id = step.tag_id
+        video_metadata.analysis = ["test1", "test2"]
+        video_metadata.additional = step.metadata
+
+        video: Video = Video(metadata=video_metadata)
+
+        file: Path = random.choice(list(self.example_images.iterdir()))
+
+        with open(file, "rb") as f:
+            data: bytes = f.read()
+
+        video.data = data
+
+        return [video]
