@@ -69,7 +69,6 @@ class Robot(RobotInterface):
         return True
 
     def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
-
         if type(step) in [TakeImage, TakeThermalImage]:
             return self._create_image(step)
         elif type(step) in [TakeVideo, TakeThermalVideo]:
