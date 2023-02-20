@@ -19,6 +19,7 @@ from robot_interface.models.inspection.inspection import (
     Inspection,
     TimeIndexedPose,
 )
+from robot_interface.models.exceptions import robot_exceptions
 from robot_interface.models.mission import InspectionStep, Step, StepStatus
 from robot_interface.models.mission.status import RobotStatus
 from robot_interface.robot_interface import RobotInterface
@@ -30,7 +31,7 @@ from robot_interface.telemetry.payloads import (
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 STEP_DURATION_IN_SECONDS = 5
-
+ROBOT_BATTERY_THRESHOLD = 40
 
 class Robot(RobotInterface):
     def __init__(self):
@@ -48,9 +49,19 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
+        self.battery_level = 100
+
     def initiate_step(self, step: Step) -> bool:
         time.sleep(STEP_DURATION_IN_SECONDS)
-        return True
+        self._update_battery_level()
+       
+        print(f"Current Battery level is: {self.battery_level}")
+        #Check if robot is able to perform planned step
+        if (self.battery_level < ROBOT_BATTERY_THRESHOLD):
+            print(f"Stopping Battery level is: {self.battery_level}")
+            raise robot_exceptions.RobotLowBatteryException(self.battery_level)
+        else:
+            return True
 
     def step_status(self) -> StepStatus:
         return StepStatus.Successful
@@ -135,7 +146,7 @@ class Robot(RobotInterface):
 
     def _get_battery_telemetry(self, robot_id: str) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
-            battery_level=randrange(0, 1000) * 0.1,
+            battery_level= self._update_battery_level(),
             robot_id=robot_id,
             timestamp=datetime.utcnow(),
         )
@@ -143,3 +154,7 @@ class Robot(RobotInterface):
 
     def robot_status(self) -> RobotStatus:
         return RobotStatus.Available
+
+    def _update_battery_level(self) -> float:
+        self.battery_level = self.battery_level-randrange(0, 100) * 0.5
+        return self.battery_level
