@@ -12,6 +12,7 @@ from threading import Thread
 from typing import List, Sequence, Union
 
 from alitra import Frame, Orientation, Pose, Position
+from robot_interface.models.exceptions import RobotLowBatteryException
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import (
     Image,
@@ -20,16 +21,16 @@ from robot_interface.models.inspection.inspection import (
     Video,
     VideoMetadata,
 )
-from robot_interface.models.mission import (
+from robot_interface.models.mission.mission import Mission
+from robot_interface.models.mission.status import RobotStatus, StepStatus
+from robot_interface.models.mission.step import (
     InspectionStep,
     Step,
-    StepStatus,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
 )
-from robot_interface.models.mission.status import RobotStatus
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 from robot_interface.telemetry.payloads import (
@@ -39,10 +40,11 @@ from robot_interface.telemetry.payloads import (
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 STEP_DURATION_IN_SECONDS = 5
+ROBOT_BATTERY_THRESHOLD = 40
 
 
 class Robot(RobotInterface):
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger: Logger = logging.getLogger("robot")
 
         self.position: Position = Position(x=1, y=1, z=1, frame=Frame("asset"))
@@ -57,15 +59,29 @@ class Robot(RobotInterface):
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
 
-    def initiate_step(self, step: Step) -> bool:
+        self.battery_level: float = 100.0
+
+    def initiate_mission(self, mission: Mission) -> None:
         time.sleep(STEP_DURATION_IN_SECONDS)
-        return True
+
+    def initiate_step(self, step: Step) -> None:
+        time.sleep(STEP_DURATION_IN_SECONDS)
+        self._update_battery_level()
+
+        self.logger.info(f"Current battery level is: {self.battery_level}")
+        # Check if robot is able to perform planned step
+        if self.battery_level < ROBOT_BATTERY_THRESHOLD:
+            self.logger.warning(
+                f"Mission will not be scheduled as the battery level is too low: "
+                f"{self.battery_level}"
+            )
+            raise RobotLowBatteryException(self.battery_level)
 
     def step_status(self) -> StepStatus:
         return StepStatus.Successful
 
-    def stop(self) -> bool:
-        return True
+    def stop(self) -> None:
+        return
 
     def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
         if type(step) in [TakeImage, TakeThermalImage]:
@@ -137,7 +153,7 @@ class Robot(RobotInterface):
 
     def _get_battery_telemetry(self, isar_id: str, robot_name: str) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
-            battery_level=randrange(0, 1000) * 0.1,
+            battery_level=self._update_battery_level(),
             isar_id=isar_id,
             robot_name=robot_name,
             timestamp=datetime.utcnow(),
@@ -191,3 +207,7 @@ class Robot(RobotInterface):
         video.data = data
 
         return [video]
+
+    def _update_battery_level(self) -> float:
+        self.battery_level = 100 - randrange(0, 100) * 0.5
+        return self.battery_level
