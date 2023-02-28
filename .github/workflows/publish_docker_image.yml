@@ -15,11 +15,15 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  GITHUB_REGISTRY: ghcr.io
+  GITHUB_IMAGE_NAME: ${{ github.repository }}
+  AURORA_DEV_REGISTRY: auroradevacr.azurecr.io
+  AURORA_DEV_IMAGE_NAME: robotics/isar-robot
+  AURORA_PROD_REGISTRY: auroraprodacr.azurecr.io
+  AURORA_PROD_IMAGE_NAME: robotics/isar-robot
 
 jobs:
-  build-and-push-image-with-isar-robot:
+  build-and-push-isar-robot-image-to-ghcr:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -32,7 +36,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ env.GITHUB_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -40,7 +44,71 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.GITHUB_REGISTRY }}/${{ env.GITHUB_IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-and-push-isar-robot-image-to-auroradevacr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Aurora Dev Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.AURORA_DEV_REGISTRY }}
+          username: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
+          password: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.AURORA_DEV_REGISTRY }}/${{ env.AURORA_DEV_IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-and-push-isar-robot-image-to-auroraprodacr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Aurora Prod Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.AURORA_PROD_REGISTRY }}
+          username: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
+          password: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.AURORA_PROD_REGISTRY }}/${{ env.AURORA_PROD_IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
