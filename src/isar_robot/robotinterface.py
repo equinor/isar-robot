@@ -17,7 +17,6 @@ from robot_interface.models.inspection.inspection import (
     Image,
     ImageMetadata,
     Inspection,
-    TimeIndexedPose,
     Video,
     VideoMetadata,
 )
@@ -146,7 +145,7 @@ class Robot(RobotInterface):
         now: datetime = datetime.utcnow()
         image_metadata: ImageMetadata = ImageMetadata(
             start_time=now,
-            time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
+            pose=self.pose,
             file_type="jpg",
         )
         image_metadata.tag_id = step.tag_id
@@ -168,7 +167,7 @@ class Robot(RobotInterface):
         now: datetime = datetime.utcnow()
         video_metadata: VideoMetadata = VideoMetadata(
             start_time=now,
-            time_indexed_pose=TimeIndexedPose(pose=self.pose, time=now),
+            pose=self.pose,
             file_type="mp4",
             duration=11,
         )
