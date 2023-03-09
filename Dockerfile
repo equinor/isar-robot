@@ -6,6 +6,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY . .
 RUN pip install .
 
-FROM ghcr.io/equinor/isar:latest
+FROM ghcr.io/equinor/isar:v1.12.5
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
