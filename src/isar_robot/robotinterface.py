@@ -78,19 +78,21 @@ class Robot(RobotInterface):
     def initialize(self, params: InitializeParams) -> None:
         return
 
-    def get_telemetry_publishers(self, queue: Queue, robot_id: str) -> List[Thread]:
+    def get_telemetry_publishers(
+        self, queue: Queue, isar_id: str, robot_name: str
+    ) -> List[Thread]:
         publisher_threads: List[Thread] = []
 
         pose_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
             telemetry_method=self._get_pose_telemetry,
-            topic=f"isar/{robot_id}/pose",
+            topic=f"isar/{isar_id}/pose",
             interval=1,
             retain=False,
         )
         pose_thread: Thread = Thread(
             target=pose_publisher.run,
-            args=[robot_id],
+            args=[isar_id, robot_name],
             name="ISAR Robot Pose Publisher",
             daemon=True,
         )
@@ -99,13 +101,13 @@ class Robot(RobotInterface):
         battery_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
             telemetry_method=self._get_battery_telemetry,
-            topic=f"isar/{robot_id}/battery",
+            topic=f"isar/{isar_id}/battery",
             interval=5,
             retain=False,
         )
         battery_thread: Thread = Thread(
             target=battery_publisher.run,
-            args=[robot_id],
+            args=[isar_id, robot_name],
             name="ISAR Robot Battery Publisher",
             daemon=True,
         )
@@ -113,7 +115,7 @@ class Robot(RobotInterface):
 
         return publisher_threads
 
-    def _get_pose_telemetry(self, robot_id: str) -> str:
+    def _get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
         random_position: Position = Position(
             x=random.uniform(0.1, 10),
             y=random.uniform(0.1, 10),
@@ -126,14 +128,18 @@ class Robot(RobotInterface):
             frame=Frame("asset"),
         )
         pose_payload: TelemetryPosePayload = TelemetryPosePayload(
-            pose=random_pose, robot_id=robot_id, timestamp=datetime.utcnow()
+            pose=random_pose,
+            isar_id=isar_id,
+            robot_name=robot_name,
+            timestamp=datetime.utcnow(),
         )
         return json.dumps(pose_payload, cls=EnhancedJSONEncoder)
 
-    def _get_battery_telemetry(self, robot_id: str) -> str:
+    def _get_battery_telemetry(self, isar_id: str, robot_name: str) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
             battery_level=randrange(0, 1000) * 0.1,
-            robot_id=robot_id,
+            isar_id=isar_id,
+            robot_name=robot_name,
             timestamp=datetime.utcnow(),
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
