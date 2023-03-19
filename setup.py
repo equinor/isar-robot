@@ -24,6 +24,7 @@ setup(
         "isar_robot": [
             "example_images/for-science-you-monster.jpg",
             "example_images/wheatley-remain-calm.jpg",
+            "config/settings.env",
         ]
     },
     include_package_data=True,
