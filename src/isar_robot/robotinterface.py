@@ -13,6 +13,7 @@ from typing import List, Sequence, Union
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.exceptions import RobotLowBatteryException
+from robot_interface.models.exceptions import RobotLowPressureException
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import (
     Image,
@@ -36,11 +37,13 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 from robot_interface.telemetry.payloads import (
     TelemetryBatteryPayload,
     TelemetryPosePayload,
+    TelemetryPressurePayload,
 )
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 STEP_DURATION_IN_SECONDS = 5
 ROBOT_BATTERY_THRESHOLD = 40
+ROBOT_PRESSURE_THRESHOLD = 80
 
 
 class Robot(RobotInterface):
@@ -60,6 +63,7 @@ class Robot(RobotInterface):
         )
 
         self.battery_level: float = 100.0
+        self.pressure_level: float = 100.0
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(STEP_DURATION_IN_SECONDS)
@@ -67,8 +71,11 @@ class Robot(RobotInterface):
     def initiate_step(self, step: Step) -> None:
         time.sleep(STEP_DURATION_IN_SECONDS)
         self._update_battery_level()
+        self._update_pressure_level()
 
-        self.logger.info(f"Current battery level is: {self.battery_level}")
+        self.logger.info(
+            f"Current battery level is: {self.battery_level} and current pressure level is: {self.pressure_level}"
+        )
         # Check if robot is able to perform planned step
         if self.battery_level < ROBOT_BATTERY_THRESHOLD:
             self.logger.warning(
@@ -76,6 +83,13 @@ class Robot(RobotInterface):
                 f"{self.battery_level}"
             )
             raise RobotLowBatteryException(self.battery_level)
+
+        if self.pressure_level < ROBOT_PRESSURE_THRESHOLD:
+            self.logger.warning(
+                f"Mission will not be scheduled as the pressure level is too low: "
+                f"{self.pressure_level}"
+            )
+            raise RobotLowPressureException(self.pressure_level)
 
     def step_status(self) -> StepStatus:
         return StepStatus.Successful
@@ -129,6 +143,21 @@ class Robot(RobotInterface):
         )
         publisher_threads.append(battery_thread)
 
+        pressure_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
+            mqtt_queue=queue,
+            telemetry_method=self._get_pressure_telemetry,
+            topic=f"isar/{isar_id}/pressure",
+            interval=5,
+            retain=False,
+        )
+        pressure_thread: Thread = Thread(
+            target=pressure_publisher.run,
+            args=[isar_id, robot_name],
+            name="ISAR Robot Pressure Publisher",
+            daemon=True,
+        )
+        publisher_threads.append(pressure_thread)
+
         return publisher_threads
 
     def _get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
@@ -159,6 +188,15 @@ class Robot(RobotInterface):
             timestamp=datetime.utcnow(),
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
+
+    def _get_pressure_telemetry(self, isar_id: str, robot_name: str) -> str:
+        pressure_payload: TelemetryPressurePayload = TelemetryPressurePayload(
+            pressure_level=self._update_pressure_level(),
+            isar_id=isar_id,
+            robot_name=robot_name,
+            timestamp=datetime.utcnow(),
+        )
+        return json.dumps(pressure_payload, cls=EnhancedJSONEncoder)
 
     def robot_status(self) -> RobotStatus:
         return RobotStatus.Available
@@ -211,3 +249,7 @@ class Robot(RobotInterface):
     def _update_battery_level(self) -> float:
         self.battery_level = 100 - randrange(0, 100) * 0.5
         return self.battery_level
+
+    def _update_pressure_level(self) -> float:
+        self.pressure_level = 100 - randrange(0, 100) * 0.5
+        return self.pressure_level
