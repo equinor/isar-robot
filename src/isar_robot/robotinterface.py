@@ -43,7 +43,7 @@ from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 STEP_DURATION_IN_SECONDS = 5
 ROBOT_BATTERY_THRESHOLD = 40
-ROBOT_PRESSURE_THRESHOLD = 80
+ROBOT_PRESSURE_THRESHOLD = 0
 
 
 class Robot(RobotInterface):
@@ -254,5 +254,6 @@ class Robot(RobotInterface):
         return self.battery_level
 
     def _update_pressure_level(self) -> float:
-        self.pressure_level = 100 - randrange(0, 100) * 0.5
+        millibar_to_bar: float = 1 / 1000
+        self.pressure_level = (100 - randrange(0, 100) * 0.5) * millibar_to_bar
         return self.pressure_level
