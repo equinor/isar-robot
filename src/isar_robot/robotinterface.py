@@ -12,8 +12,6 @@ from threading import Thread
 from typing import List, Sequence, Union
 
 from alitra import Frame, Orientation, Pose, Position
-from robot_interface.models.exceptions import RobotLowBatteryException
-from robot_interface.models.exceptions import RobotLowPressureException
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import (
     Image,
@@ -42,8 +40,6 @@ from robot_interface.telemetry.payloads import (
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 STEP_DURATION_IN_SECONDS = 5
-ROBOT_BATTERY_THRESHOLD = 40
-ROBOT_PRESSURE_THRESHOLD = 0
 
 
 class Robot(RobotInterface):
@@ -75,24 +71,6 @@ class Robot(RobotInterface):
         time.sleep(STEP_DURATION_IN_SECONDS)
         self._update_battery_level()
         self._update_pressure_level()
-
-        self.logger.info(
-            f"Current battery level is: {self.battery_level} and current pressure level is: {self.pressure_level}"
-        )
-        # Check if robot is able to perform planned step
-        if self.battery_level < ROBOT_BATTERY_THRESHOLD:
-            self.logger.warning(
-                f"Mission will not be scheduled as the battery level is too low: "
-                f"{self.battery_level}"
-            )
-            raise RobotLowBatteryException(self.battery_level)
-
-        if self.pressure_level < ROBOT_PRESSURE_THRESHOLD:
-            self.logger.warning(
-                f"Mission will not be scheduled as the pressure level is too low: "
-                f"{self.pressure_level}"
-            )
-            raise RobotLowPressureException(self.pressure_level)
 
     def step_status(self) -> StepStatus:
         return StepStatus.Successful
