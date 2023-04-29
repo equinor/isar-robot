@@ -57,6 +57,9 @@ class Robot(RobotInterface):
         self.example_images: Path = Path(
             os.path.dirname(os.path.realpath(__file__)), "example_images"
         )
+        self.example_videos: Path = Path(
+            os.path.dirname(os.path.realpath(__file__)), "example_videos"
+        )
 
         self.battery_level: float = 100.0
         self.pressure_level: float = 100.0
@@ -218,7 +221,7 @@ class Robot(RobotInterface):
 
         video: Video = Video(metadata=video_metadata)
 
-        file: Path = random.choice(list(self.example_images.iterdir()))
+        file: Path = random.choice(list(self.example_videos.iterdir()))
 
         with open(file, "rb") as f:
             data: bytes = f.read()
