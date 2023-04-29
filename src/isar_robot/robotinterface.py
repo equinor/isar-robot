@@ -13,8 +13,9 @@ from typing import List, Sequence, Union
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.initialize import InitializeParams
-from robot_interface.models.inspection import ThermalVideo, ThermalVideoMetadata
+from robot_interface.models.inspection import Audio, ThermalVideo, ThermalVideoMetadata
 from robot_interface.models.inspection.inspection import (
+    AudioMetadata,
     Image,
     ImageMetadata,
     Inspection,
@@ -25,6 +26,7 @@ from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, RobotStatus, StepStatus
 from robot_interface.models.mission.step import (
     InspectionStep,
+    RecordAudio,
     Step,
     TakeImage,
     TakeThermalImage,
@@ -64,6 +66,9 @@ class Robot(RobotInterface):
         self.example_thermal_videos: Path = Path(
             os.path.dirname(os.path.realpath(__file__)), "example_thermal_videos"
         )
+        self.example_audio: Path = Path(
+            os.path.dirname(os.path.realpath(__file__)), "example_audio"
+        )
 
         self.battery_level: float = 100.0
         self.pressure_level: float = 100.0
@@ -92,6 +97,8 @@ class Robot(RobotInterface):
             return self._create_video(step)
         elif type(step) is TakeThermalVideo:
             return self._create_thermal_video(step)
+        elif type(step) is RecordAudio:
+            return self._create_audio(step)
         else:
             return None
 
@@ -258,6 +265,29 @@ class Robot(RobotInterface):
         thermal_video.data = data
 
         return [thermal_video]
+
+    def _create_audio(self, step: RecordAudio):
+        now: datetime = datetime.utcnow()
+        audio_metadata: AudioMetadata = AudioMetadata(
+            start_time=now,
+            pose=self.pose,
+            file_type="wav",
+            duration=11,
+        )
+        audio_metadata.tag_id = step.tag_id
+        audio_metadata.analysis = ["test1", "test2"]
+        audio_metadata.additional = step.metadata
+
+        audio: Audio = Audio(metadata=audio_metadata)
+
+        file: Path = random.choice(list(self.example_thermal_videos.iterdir()))
+
+        with open(file, "rb") as f:
+            data: bytes = f.read()
+
+        audio.data = data
+
+        return [audio]
 
     def _update_battery_level(self) -> float:
         self.battery_level = 100 - randrange(0, 100) * 0.5
