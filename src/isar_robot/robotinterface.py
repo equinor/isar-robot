@@ -13,6 +13,7 @@ from typing import List, Sequence, Union
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.initialize import InitializeParams
+from robot_interface.models.inspection import ThermalVideo, ThermalVideoMetadata
 from robot_interface.models.inspection.inspection import (
     Image,
     ImageMetadata,
@@ -60,6 +61,9 @@ class Robot(RobotInterface):
         self.example_videos: Path = Path(
             os.path.dirname(os.path.realpath(__file__)), "example_videos"
         )
+        self.example_thermal_videos: Path = Path(
+            os.path.dirname(os.path.realpath(__file__)), "example_thermal_videos"
+        )
 
         self.battery_level: float = 100.0
         self.pressure_level: float = 100.0
@@ -84,8 +88,10 @@ class Robot(RobotInterface):
     def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
         if type(step) in [TakeImage, TakeThermalImage]:
             return self._create_image(step)
-        elif type(step) in [TakeVideo, TakeThermalVideo]:
+        elif type(step) is TakeVideo:
             return self._create_video(step)
+        elif type(step) is TakeThermalVideo:
+            return self._create_thermal_video(step)
         else:
             return None
 
@@ -207,7 +213,7 @@ class Robot(RobotInterface):
 
         return [image]
 
-    def _create_video(self, step: Union[TakeVideo, TakeThermalVideo]):
+    def _create_video(self, step: TakeVideo):
         now: datetime = datetime.utcnow()
         video_metadata: VideoMetadata = VideoMetadata(
             start_time=now,
@@ -229,6 +235,29 @@ class Robot(RobotInterface):
         video.data = data
 
         return [video]
+
+    def _create_thermal_video(self, step: TakeThermalVideo):
+        now: datetime = datetime.utcnow()
+        thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
+            start_time=now,
+            pose=self.pose,
+            file_type="mp4",
+            duration=11,
+        )
+        thermal_video_metadata.tag_id = step.tag_id
+        thermal_video_metadata.analysis = ["test1", "test2"]
+        thermal_video_metadata.additional = step.metadata
+
+        thermal_video: ThermalVideo = ThermalVideo(metadata=thermal_video_metadata)
+
+        file: Path = random.choice(list(self.example_thermal_videos.iterdir()))
+
+        with open(file, "rb") as f:
+            data: bytes = f.read()
+
+        thermal_video.data = data
+
+        return [thermal_video]
 
     def _update_battery_level(self) -> float:
         self.battery_level = 100 - randrange(0, 100) * 0.5
