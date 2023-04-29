@@ -58,16 +58,17 @@ class Robot(RobotInterface):
         )
 
         self.example_images: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_images"
+            os.path.dirname(os.path.realpath(__file__)), "example_data/example_images"
         )
         self.example_videos: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_videos"
+            os.path.dirname(os.path.realpath(__file__)), "example_data/example_videos"
         )
         self.example_thermal_videos: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_thermal_videos"
+            os.path.dirname(os.path.realpath(__file__)),
+            "example_data/example_thermal_videos",
         )
         self.example_audio: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_audio"
+            os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio"
         )
 
         self.battery_level: float = 100.0
