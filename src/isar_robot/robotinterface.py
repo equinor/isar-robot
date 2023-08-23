@@ -39,6 +39,7 @@ from robot_interface.telemetry.payloads import (
     TelemetryBatteryPayload,
     TelemetryPosePayload,
     TelemetryPressurePayload,
+    TelemetryObstacleStatusPayload,
 )
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
@@ -73,6 +74,7 @@ class Robot(RobotInterface):
 
         self.battery_level: float = 100.0
         self.pressure_level: float = 100.0
+        self.obstacle_status: bool = False
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(STEP_DURATION_IN_SECONDS)
@@ -84,6 +86,7 @@ class Robot(RobotInterface):
         time.sleep(STEP_DURATION_IN_SECONDS)
         self._update_battery_level()
         self._update_pressure_level()
+        self._update_obstacle_status()
 
     def step_status(self) -> StepStatus:
         return StepStatus.Successful
@@ -141,6 +144,21 @@ class Robot(RobotInterface):
         )
         publisher_threads.append(battery_thread)
 
+        obstacle_status_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
+            mqtt_queue=queue,
+            telemetry_method=self._get_obstacle_status_telemetry,
+            topic=f"isar/{isar_id}/obstacle_status",
+            interval=1,
+            retain=False,
+        )
+        obstacle_status_thread: Thread = Thread(
+            target=obstacle_status_publisher.run,
+            args=[isar_id, robot_name],
+            name="ISAR Robot Obstacle Status Publisher",
+            daemon=True,
+        )
+        publisher_threads.append(obstacle_status_thread)
+
         pressure_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
             telemetry_method=self._get_pressure_telemetry,
@@ -186,6 +204,17 @@ class Robot(RobotInterface):
             timestamp=datetime.utcnow(),
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
+
+    def _get_obstacle_status_telemetry(self, isar_id: str, robot_name: str) -> str:
+        obstacle_status_payload: TelemetryObstacleStatusPayload = (
+            TelemetryObstacleStatusPayload(
+                obstacle_status=self._update_obstacle_status(),
+                isar_id=isar_id,
+                robot_name=robot_name,
+                timestamp=datetime.utcnow(),
+            )
+        )
+        return json.dumps(obstacle_status_payload, cls=EnhancedJSONEncoder)
 
     def _get_pressure_telemetry(self, isar_id: str, robot_name: str) -> str:
         pressure_payload: TelemetryPressurePayload = TelemetryPressurePayload(
@@ -298,3 +327,7 @@ class Robot(RobotInterface):
         millibar_to_bar: float = 1 / 1000
         self.pressure_level = (100 - randrange(0, 100) * 0.5) * millibar_to_bar
         return self.pressure_level
+
+    def _update_obstacle_status(self) -> bool:
+        self.obstacle_status = False
+        return self.obstacle_status
