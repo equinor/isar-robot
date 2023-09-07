@@ -1,0 +1,52 @@
+name: Build and publish component
+
+on:
+  workflow_call:
+    inputs:
+      Registry:
+        required: true
+        type: string
+      Tag:
+        required: true
+        type: string
+      ImageName:
+        required: true
+        type: string
+    secrets:
+      RegistryUsername:
+        required: true
+      RegistryPassword:
+        required: true
+
+jobs:
+  build-and-push-container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Github Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.Registry }}
+          username: ${{ secrets.RegistryUsername }}
+          password: ${{ secrets.RegistryPassword }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ inputs.Registry }}/${{ inputs.ImageName }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: |
+            ${{ inputs.Registry }}/${{ inputs.ImageName }}:${{ inputs.Tag }}
+            ${{ inputs.Registry }}/${{ inputs.ImageName }}:latest
+          labels: ${{ steps.meta.outputs.labels }}

@@ -1,0 +1,58 @@
+name: Update deployment in aurora
+
+on:
+  workflow_call:
+    inputs:
+      Environment:
+        required: true
+        type: string
+      Tag:
+        required: true
+        type: string
+      Registry:
+        required: true
+        type: string
+      ImageName:
+        required: true
+        type: string
+      AuthorEmail:
+        required: false
+        type: string
+      AuthorName:
+        required: true
+        type: string
+    secrets:
+      DeployKey:
+        required: true
+
+jobs:
+  deploy:
+    name: Update deployment
+    runs-on: ubuntu-latest
+    env:
+      EMAIL: ${{ inputs.AuthorEmail }}
+      NAME: ${{ inputs.AuthorName }}
+    steps:
+      - name: Checkout infrastructure
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          repository: equinor/robotics-infrastructure
+          ssh-key: ${{ secrets.DeployKey }}
+
+      - name: Update image in file
+        run: |
+          LINE_NUMBERS=($(grep -n "${{ inputs.Registry }}/${{ inputs.ImageName }}" k8s_kustomize/overlays/${{ inputs.Environment }}/kustomization.yaml | cut -d ':' -f 1))
+          for line_number in "${LINE_NUMBERS[@]}"
+          do
+              TAG_LINE_NUMBER=$((line_number+1))
+              sed -i "${TAG_LINE_NUMBER} s/newTag:.*/newTag: ${{ inputs.Tag }}/" "k8s_kustomize/overlays/${{ inputs.Environment }}/kustomization.yaml"
+          done
+
+      - name: Update infrastructure in GitHub
+        run: |
+          git config --global user.email "${EMAIL}"
+          git config --global user.name  "GitHub Actions (${NAME})"
+          git add k8s_kustomize/overlays/${{ inputs.Environment }}/kustomization.yaml
+          git commit --message "GHA: Update Isar-Robot in ${{ inputs.Environment }} (${{ inputs.Tag }})" || true
+          git push
