@@ -1,0 +1,56 @@
+name: Deploy to Staging
+
+# Only one workflow in a concurrency group may run at a time
+concurrency:
+  group: staging-concurrency
+  cancel-in-progress: true
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  trigger-github-deployment:
+    name: Trigger GitHub Deployment
+    environment: Staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Empty Step
+        run: echo "Hello World"
+
+  build-and-push-release-to-dev:
+    name: Update container in dev with version tag
+    needs: trigger-github-deployment
+    uses: ./.github/workflows/publish_component.yml
+    with:
+      Registry: auroradevacr.azurecr.io
+      ImageName: robotics/isar-robot
+      Tag: ${{ github.event.release.tag_name }}
+    secrets:
+      RegistryUsername: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
+      RegistryPassword: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+
+  build-and-push-components:
+    name: Build and push container to auroraprodcr for Staging/Production
+    needs: [trigger-github-deployment]
+    uses: ./.github/workflows/publish_component.yml
+    with:
+      Registry: auroraprodacr.azurecr.io
+      ImageName: robotics/isar-robot
+      Tag: ${{ github.event.release.tag_name }}
+    secrets:
+      RegistryUsername: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
+      RegistryPassword: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+
+  deploy:
+    name: Update deployment in Staging
+    needs: [trigger-github-deployment, build-and-push-components]
+    uses: ./.github/workflows/update_aurora_deployment.yml
+    with:
+      Environment: staging
+      Registry: auroraprodacr.azurecr.io
+      ImageName: robotics/isar-robot
+      Tag: ${{ github.event.release.tag_name }}
+      AuthorName: ${{ github.event.release.author.login }}
+    secrets:
+      DeployKey: ${{ secrets.ROBOTICS_INFRASTRUCTURE_DEPLOY_KEY }}
