@@ -226,7 +226,10 @@ class Robot(RobotInterface):
         return json.dumps(pressure_payload, cls=EnhancedJSONEncoder)
 
     def robot_status(self) -> RobotStatus:
-        return RobotStatus.Available
+        if self._update_obstacle_status():
+            return RobotStatus.Stuck
+        else:
+            return RobotStatus.Available
 
     def _create_image(self, step: Union[TakeImage, TakeThermalImage]):
         now: datetime = datetime.utcnow()
@@ -329,5 +332,5 @@ class Robot(RobotInterface):
         return self.pressure_level
 
     def _update_obstacle_status(self) -> bool:
-        self.obstacle_status = False
+        self.obstacle_status = True
         return self.obstacle_status
