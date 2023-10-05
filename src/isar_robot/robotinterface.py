@@ -226,7 +226,9 @@ class Robot(RobotInterface):
         return json.dumps(pressure_payload, cls=EnhancedJSONEncoder)
 
     def robot_status(self) -> RobotStatus:
-        if self._update_obstacle_status():
+        obstacle_status = self._update_obstacle_status()
+        if obstacle_status:
+            print(self.obstacle_status)
             return RobotStatus.Stuck
         else:
             return RobotStatus.Available
