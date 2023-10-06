@@ -226,10 +226,9 @@ class Robot(RobotInterface):
         return json.dumps(pressure_payload, cls=EnhancedJSONEncoder)
 
     def robot_status(self) -> RobotStatus:
-        obstacle_status = self._update_obstacle_status()
-        if obstacle_status:
-            print(self.obstacle_status)
-            return RobotStatus.Stuck
+        obstacle_detected = self._update_obstacle_status()
+        if obstacle_detected:
+            return RobotStatus.Blocked
         else:
             return RobotStatus.Available
 
@@ -333,6 +332,6 @@ class Robot(RobotInterface):
         self.pressure_level = (100 - randrange(0, 100) * 0.5) * millibar_to_bar
         return self.pressure_level
 
-    def _update_obstacle_status(self) -> bool:
+    def _check_obstacle_status(self) -> bool:
         self.obstacle_status = True
         return self.obstacle_status
