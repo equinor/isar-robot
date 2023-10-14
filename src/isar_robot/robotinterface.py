@@ -28,7 +28,7 @@ STEP_DURATION_IN_SECONDS = 5
 
 class Robot(RobotInterface):
     def __init__(self) -> None:
-        self.logger: Logger = logging.getLogger("robot")
+        self.logger: Logger = logging.getLogger("isar_robot")
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(STEP_DURATION_IN_SECONDS)
@@ -37,6 +37,7 @@ class Robot(RobotInterface):
         return MissionStatus.Successful
 
     def initiate_step(self, step: Step) -> None:
+        self.logger.info(f"Initiated step of type {step.__class__.__name__}")
         time.sleep(STEP_DURATION_IN_SECONDS)
 
     def step_status(self) -> StepStatus:
