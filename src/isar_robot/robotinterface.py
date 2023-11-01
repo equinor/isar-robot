@@ -332,6 +332,6 @@ class Robot(RobotInterface):
         self.pressure_level = (100 - randrange(0, 100) * 0.5) * millibar_to_bar
         return self.pressure_level
 
-    def _check_obstacle_status(self) -> bool:
+    def _update_obstacle_status(self) -> bool:
         self.obstacle_status = True
         return self.obstacle_status
