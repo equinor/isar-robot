@@ -333,5 +333,4 @@ class Robot(RobotInterface):
         return self.pressure_level
 
     def _update_obstacle_status(self) -> bool:
-        self.obstacle_status = True
         return self.obstacle_status
