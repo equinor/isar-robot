@@ -1,3 +1,31 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool]
+
+[tool.mypy]
+follow_imports = "normal"
+no_strict_optional = true
+no_site_packages = true
+ignore_missing_imports = true
+exclude = "build"
+
+[tool.poetry]
+name = "isar-robot"
+version = "1.3.12"
+description = "Integration and Supervisory control of Autonomous Robots - Open source robot implementation"
+authors = ["Equinor ASA <fg_robots_dev@equinor.com>"]
+
+[tool.pytest.ini_options]
+python_files = "test_*.py"
+python_classes = "Test"
+python_functions = "test* test_*"
+testpaths = "tests"
+log_cli = true
+norecursedirs = ["integration"]
+
+[tool.poetry.dependencies]
+python = "^3.9, <3.13"
+alitra = ">=1.1.0"
+isar = "^1.16.8"
