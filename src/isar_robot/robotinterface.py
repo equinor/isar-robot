@@ -37,9 +37,9 @@ from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 from robot_interface.telemetry.payloads import (
     TelemetryBatteryPayload,
+    TelemetryObstacleStatusPayload,
     TelemetryPosePayload,
     TelemetryPressurePayload,
-    TelemetryObstacleStatusPayload,
 )
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
@@ -263,7 +263,7 @@ class Robot(RobotInterface):
             duration=11,
         )
         video_metadata.tag_id = step.tag_id
-        video_metadata.analysis = ["test1", "test2"]
+        video_metadata.analysis_type = ["test1", "test2"]
         video_metadata.additional = step.metadata
 
         video: Video = Video(metadata=video_metadata)
@@ -286,7 +286,7 @@ class Robot(RobotInterface):
             duration=11,
         )
         thermal_video_metadata.tag_id = step.tag_id
-        thermal_video_metadata.analysis = ["test1", "test2"]
+        thermal_video_metadata.analysis_type = ["test1", "test2"]
         thermal_video_metadata.additional = step.metadata
 
         thermal_video: ThermalVideo = ThermalVideo(metadata=thermal_video_metadata)
@@ -309,7 +309,7 @@ class Robot(RobotInterface):
             duration=11,
         )
         audio_metadata.tag_id = step.tag_id
-        audio_metadata.analysis = ["test1", "test2"]
+        audio_metadata.analysis_type = ["test1", "test2"]
         audio_metadata.additional = step.metadata
 
         audio: Audio = Audio(metadata=audio_metadata)
