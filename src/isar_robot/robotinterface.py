@@ -1,24 +1,12 @@
 import logging
-import os
-import random
 import time
-from datetime import datetime
 from logging import Logger
-from pathlib import Path
 from queue import Queue
 from threading import Thread
-from typing import List, Sequence, Union
+from typing import List, Sequence
 
 from robot_interface.models.initialize import InitializeParams
-from robot_interface.models.inspection import Audio, ThermalVideo, ThermalVideoMetadata
-from robot_interface.models.inspection.inspection import (
-    AudioMetadata,
-    Image,
-    ImageMetadata,
-    Inspection,
-    Video,
-    VideoMetadata,
-)
+from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, RobotStatus, StepStatus
 from robot_interface.models.mission.step import (
@@ -33,7 +21,7 @@ from robot_interface.models.mission.step import (
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
-from isar_robot import telemetry
+from isar_robot import inspections, telemetry
 
 STEP_DURATION_IN_SECONDS = 5
 
@@ -41,20 +29,6 @@ STEP_DURATION_IN_SECONDS = 5
 class Robot(RobotInterface):
     def __init__(self) -> None:
         self.logger: Logger = logging.getLogger("robot")
-
-        self.example_images: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_data/example_images"
-        )
-        self.example_videos: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_data/example_videos"
-        )
-        self.example_thermal_videos: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)),
-            "example_data/example_thermal_videos",
-        )
-        self.example_audio: Path = Path(
-            os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio"
-        )
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(STEP_DURATION_IN_SECONDS)
@@ -73,13 +47,13 @@ class Robot(RobotInterface):
 
     def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
         if type(step) in [TakeImage, TakeThermalImage]:
-            return self._create_image(step)
+            return inspections.create_image(step)
         elif type(step) is TakeVideo:
-            return self._create_video(step)
+            return inspections.create_video(step)
         elif type(step) is TakeThermalVideo:
-            return self._create_thermal_video(step)
+            return inspections.create_thermal_video(step)
         elif type(step) is RecordAudio:
-            return self._create_audio(step)
+            return inspections.create_audio(step)
         else:
             return None
 
@@ -155,94 +129,3 @@ class Robot(RobotInterface):
 
     def robot_status(self) -> RobotStatus:
         return RobotStatus.Available
-
-    def _create_image(self, step: Union[TakeImage, TakeThermalImage]):
-        now: datetime = datetime.utcnow()
-        image_metadata: ImageMetadata = ImageMetadata(
-            start_time=now,
-            pose=telemetry.get_pose(),
-            file_type="jpg",
-        )
-        image_metadata.tag_id = step.tag_id
-        image_metadata.analysis = ["test1", "test2"]
-        image_metadata.additional = step.metadata
-
-        image: Image = Image(metadata=image_metadata)
-
-        file: Path = random.choice(list(self.example_images.iterdir()))
-
-        with open(file, "rb") as f:
-            data: bytes = f.read()
-
-        image.data = data
-
-        return [image]
-
-    def _create_video(self, step: TakeVideo):
-        now: datetime = datetime.utcnow()
-        video_metadata: VideoMetadata = VideoMetadata(
-            start_time=now,
-            pose=telemetry.get_pose(),
-            file_type="mp4",
-            duration=11,
-        )
-        video_metadata.tag_id = step.tag_id
-        video_metadata.analysis_type = ["test1", "test2"]
-        video_metadata.additional = step.metadata
-
-        video: Video = Video(metadata=video_metadata)
-
-        file: Path = random.choice(list(self.example_videos.iterdir()))
-
-        with open(file, "rb") as f:
-            data: bytes = f.read()
-
-        video.data = data
-
-        return [video]
-
-    def _create_thermal_video(self, step: TakeThermalVideo):
-        now: datetime = datetime.utcnow()
-        thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
-            start_time=now,
-            pose=telemetry.get_pose(),
-            file_type="mp4",
-            duration=11,
-        )
-        thermal_video_metadata.tag_id = step.tag_id
-        thermal_video_metadata.analysis_type = ["test1", "test2"]
-        thermal_video_metadata.additional = step.metadata
-
-        thermal_video: ThermalVideo = ThermalVideo(metadata=thermal_video_metadata)
-
-        file: Path = random.choice(list(self.example_thermal_videos.iterdir()))
-
-        with open(file, "rb") as f:
-            data: bytes = f.read()
-
-        thermal_video.data = data
-
-        return [thermal_video]
-
-    def _create_audio(self, step: RecordAudio):
-        now: datetime = datetime.utcnow()
-        audio_metadata: AudioMetadata = AudioMetadata(
-            start_time=now,
-            pose=telemetry.get_pose(),
-            file_type="wav",
-            duration=11,
-        )
-        audio_metadata.tag_id = step.tag_id
-        audio_metadata.analysis_type = ["test1", "test2"]
-        audio_metadata.additional = step.metadata
-
-        audio: Audio = Audio(metadata=audio_metadata)
-
-        file: Path = random.choice(list(self.example_thermal_videos.iterdir()))
-
-        with open(file, "rb") as f:
-            data: bytes = f.read()
-
-        audio.data = data
-
-        return [audio]
