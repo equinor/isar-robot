@@ -93,7 +93,7 @@ def create_thermal_video(step: TakeThermalVideo):
         start_time=now,
         pose=telemetry.get_pose(),
         file_type="mp4",
-        duration=11,
+        duration=step.duration,
     )
     thermal_video_metadata.tag_id = step.tag_id
     thermal_video_metadata.analysis_type = ["test1", "test2"]
@@ -117,7 +117,7 @@ def create_audio(step: RecordAudio):
         start_time=now,
         pose=telemetry.get_pose(),
         file_type="wav",
-        duration=11,
+        duration=step.duration,
     )
     audio_metadata.tag_id = step.tag_id
     audio_metadata.analysis_type = ["test1", "test2"]
