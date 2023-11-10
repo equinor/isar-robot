@@ -53,12 +53,8 @@ def create_image(step: Union[TakeImage, TakeThermalImage]):
 
     image: Image = Image(metadata=image_metadata)
 
-    file: Path = random.choice(list(example_images.iterdir()))
-
-    with open(file, "rb") as f:
-        data: bytes = f.read()
-
-    image.data = data
+    filepath: Path = random.choice(list(example_images.iterdir()))
+    image.data = _read_data_from_file(filepath)
 
     return [image]
 
@@ -77,12 +73,8 @@ def create_video(step: TakeVideo):
 
     video: Video = Video(metadata=video_metadata)
 
-    file: Path = random.choice(list(example_videos.iterdir()))
-
-    with open(file, "rb") as f:
-        data: bytes = f.read()
-
-    video.data = data
+    filepath: Path = random.choice(list(example_videos.iterdir()))
+    video.data = _read_data_from_file(filepath)
 
     return [video]
 
@@ -101,12 +93,8 @@ def create_thermal_video(step: TakeThermalVideo):
 
     thermal_video: ThermalVideo = ThermalVideo(metadata=thermal_video_metadata)
 
-    file: Path = random.choice(list(example_thermal_videos.iterdir()))
-
-    with open(file, "rb") as f:
-        data: bytes = f.read()
-
-    thermal_video.data = data
+    filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
+    thermal_video.data = _read_data_from_file(filepath)
 
     return [thermal_video]
 
@@ -125,11 +113,18 @@ def create_audio(step: RecordAudio):
 
     audio: Audio = Audio(metadata=audio_metadata)
 
-    file: Path = random.choice(list(example_thermal_videos.iterdir()))
-
-    with open(file, "rb") as f:
-        data: bytes = f.read()
-
-    audio.data = data
+    filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
+    audio.data = _read_data_from_file(filepath)
 
     return [audio]
+
+
+def _read_data_from_file(filename: Path) -> bytes:
+    try:
+        with open(filename, "rb") as f:
+            data: bytes = f.read()
+    except FileNotFoundError as e:
+        raise RobotRetrieveInspectionException(
+            "An error occurred while retrieving the inspection data"
+        )
+    return data
