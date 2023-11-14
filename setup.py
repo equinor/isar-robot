@@ -29,9 +29,6 @@ setup(
     },
     include_package_data=True,
     install_requires=["alitra", "isar"],
-    setup_requires=[
-        "wheel",
-    ],
     extras_require={
         "dev": [
             "black",
