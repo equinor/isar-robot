@@ -14,13 +14,27 @@ After installing isar-robot, it can be used through [ISAR](https://github.com/eq
 
 # Development
 
-For local development, please fork the repository. Then, clone and install in the repository root folder:
+For local development, create a fork of the repository and clone the fork to your machine:
 
 ```bash
-git clone https://github.com/equinor/isar-robot
+git clone https://github.com/<your-username>/isar-robot
 cd isar-robot
-pip install -e .[dev]
 ```
+
+It is recommended to create a virtual environment, see a guide for this here: https://docs.python.org/3/library/venv.html.
+
+Then install the requirements and the package:
+
+```bash
+pip install -r requirements.txt -e .[dev]
+```
+
+# Dependencies
+
+The dependencies used for this package are listed in `pyproject.toml` and pinned in `requirements.txt`,
+using `pip-compile` (from [`pip-tools`](https://github.com/jazzband/pip-tools)).
+This ensures our builds are predictable and deterministic.
+To update the requirements to the newest versions, delete the `requirements.txt` file and run `pip-compile` again.
 
 # Contributing
 
