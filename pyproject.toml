@@ -29,7 +29,7 @@ dynamic = ["version"]
 repository = "https://github.com/equinor/isar-robot.git"
 
 [project.optional-dependencies]
-dev = ["black", "mypy", "pytest", "pre-commit"]
+dev = ["black", "mypy", "pip-tools", "pre-commit", "pytest"]
 
 [tool.setuptools_scm]
 version_file = "src/isar_robot/version.py"
