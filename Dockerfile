@@ -5,6 +5,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . .
 RUN apt-get update && apt-get install -y git
+RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt .
 
 FROM ghcr.io/equinor/isar:v1.16.10
