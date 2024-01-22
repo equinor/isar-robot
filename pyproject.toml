@@ -3,7 +3,7 @@ requires = ["setuptools>=64.0", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "isar_robot"
+name = "isar-robot"
 authors = [{ name = "Equinor ASA", email = "fg_robots_dev@equinor.com" }]
 description = "Integration and Supervisory control of Autonomous Robots - Open source robot implementation"
 readme = "README.md"

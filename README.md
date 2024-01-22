@@ -31,10 +31,17 @@ pip install -r requirements.txt -e .[dev]
 
 # Dependencies
 
-The dependencies used for this package are listed in `pyproject.toml` and pinned in `requirements.txt`,
-using `pip-compile` (from [`pip-tools`](https://github.com/jazzband/pip-tools)).
-This ensures our builds are predictable and deterministic.
-To update the requirements to the newest versions, delete the `requirements.txt` file and run `pip-compile` again.
+The dependencies used for this package are listed in `pyproject.toml` and pinned in `requirements.txt`. This ensures our builds are predictable and deterministic. This project uses `pip-compile` (from [`pip-tools`](https://github.com/jazzband/pip-tools)) for this:
+
+```
+pip-compile --output-file=requirements.txt pyproject.toml
+```
+
+To update the requirements to the latest versions, run the same command with the `--upgrade` flag:
+
+```
+pip-compile --output-file=requirements.txt pyproject.toml --upgrade
+```
 
 # Contributing
 
