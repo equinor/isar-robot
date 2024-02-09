@@ -13,12 +13,16 @@ from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 
 def _get_battery_level() -> float:
-    return 100 - random.randrange(0, 100) * 0.5
+    # Return random float in the range [50, 100]
+    return random.randint(500, 1000) / 10.0
 
 
 def _get_pressure_level() -> float:
+    # Return random float in the range [0.011, 0.079]
+    min_pressure = 11  # millibar
+    max_pressure = 79  # millibar
     millibar_to_bar: float = 1 / 1000
-    return (80 - random.randrange(10, 80) * 0.5) * millibar_to_bar
+    return random.randint(min_pressure, max_pressure) * millibar_to_bar
 
 
 def _get_obstacle_status() -> bool:
