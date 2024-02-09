@@ -18,7 +18,7 @@ def _get_battery_level() -> float:
 
 def _get_pressure_level() -> float:
     millibar_to_bar: float = 1 / 1000
-    return (100 - random.randrange(0, 100) * 0.5) * millibar_to_bar
+    return (80 - random.randrange(10, 80) * 0.5) * millibar_to_bar
 
 
 def _get_obstacle_status() -> bool:
