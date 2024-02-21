@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt pyproject.toml
 #
-alitra==1.1.0
+alitra==1.1.3
     # via
     #   isar
     #   isar-robot (pyproject.toml)
