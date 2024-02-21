@@ -1,4 +1,4 @@
-from isar_robot.telemetry import _get_pressure_level, _get_battery_level
+from isar_robot.telemetry import _get_battery_level, _get_pressure_level
 
 
 def test_get_battery_level():
