@@ -208,3 +208,4 @@ uvicorn==0.28.0
     # via isar
 wrapt==1.16.0
     # via opencensus-ext-requests
+pillow==9.5.0
