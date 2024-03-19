@@ -4,6 +4,7 @@ from logging import Logger
 from queue import Queue
 from threading import Thread
 from typing import List, Sequence
+from isar_robot.config.settings import settings
 
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
@@ -23,24 +24,26 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
 
-STEP_DURATION_IN_SECONDS = 5
-
 
 class Robot(RobotInterface):
     def __init__(self) -> None:
         self.logger: Logger = logging.getLogger("isar_robot")
 
     def initiate_mission(self, mission: Mission) -> None:
-        time.sleep(STEP_DURATION_IN_SECONDS)
+        time.sleep(settings.MISSION_DURATION_IN_SECONDS)
 
     def mission_status(self) -> MissionStatus:
+        if settings.SHOULD_FAIL_MISSION:
+            return MissionStatus.Failed
         return MissionStatus.Successful
 
     def initiate_step(self, step: Step) -> None:
         self.logger.info(f"Initiated step of type {step.__class__.__name__}")
-        time.sleep(STEP_DURATION_IN_SECONDS)
+        time.sleep(settings.STEP_DURATION_IN_SECONDS)
 
     def step_status(self) -> StepStatus:
+        if settings.SHOULD_FAIL_STEP:
+            return StepStatus.Failed
         return StepStatus.Successful
 
     def stop(self) -> None:
