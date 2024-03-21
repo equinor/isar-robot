@@ -127,4 +127,5 @@ def _read_data_from_file(filename: Path) -> bytes:
         raise RobotRetrieveInspectionException(
             "An error occurred while retrieving the inspection data"
         )
+
     return data
