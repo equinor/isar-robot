@@ -6,9 +6,13 @@ on:
 jobs:
   upgrade-dependencies:
     runs-on: ubuntu-latest
+    env:
+      AuthorEmail: ${{ github.event.head_commit.author.email }}
+      AuthorName: ${{ github.event.head_commit.author.name }}
     steps:
       - name: Checkout infrastructure
         uses: actions/checkout@v4
+          
       
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
@@ -26,8 +30,8 @@ jobs:
       
       - name: Checkout and commit
         run: |
-          git config --global user.name "GitHub Actions (${{ github.event.head_commit.author.name }})"
-          git config --global user.email ${{ github.event.head_commit.author.email }}
+          git config --global user.name "GitHub Actions (${AuthorName})"
+          git config --global user.email ${AuthonEmail}
           git add requirements.txt
           git commit --message "GHA: Upgrade dependencies in requirements.txt"
           git push
