@@ -3,8 +3,7 @@ import time
 from logging import Logger
 from queue import Queue
 from threading import Thread
-from typing import List, Sequence
-from isar_robot.config.settings import settings
+from typing import List, Optional, Sequence
 
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
@@ -23,27 +22,51 @@ from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
+from isar_robot.config.settings import settings
+from isar_robot.utilities import is_localization_mission, is_localization_step
 
 
 class Robot(RobotInterface):
     def __init__(self) -> None:
         self.logger: Logger = logging.getLogger("isar_robot")
+        self.current_mission: Optional[Mission] = None
+        self.current_step: Optional[Step] = None
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(settings.MISSION_DURATION_IN_SECONDS)
+        self.current_mission = mission
 
     def mission_status(self) -> MissionStatus:
-        if settings.SHOULD_FAIL_MISSION:
+        if is_localization_mission(self.current_mission):
+            self.current_mission = None
+            if settings.SHOULD_FAIL_LOCALIZATION_MISSION:
+                return MissionStatus.Failed
+
+            return MissionStatus.Successful
+
+        self.current_mission = None
+        if settings.SHOULD_FAIL_NORMAL_MISSION:
             return MissionStatus.Failed
+
         return MissionStatus.Successful
 
     def initiate_step(self, step: Step) -> None:
         self.logger.info(f"Initiated step of type {step.__class__.__name__}")
+        self.current_step = step
         time.sleep(settings.STEP_DURATION_IN_SECONDS)
 
     def step_status(self) -> StepStatus:
-        if settings.SHOULD_FAIL_STEP:
+        if is_localization_step(self.current_step):
+            self.current_step = None
+            if settings.SHOULD_FAIL_LOCALIZATION_STEP:
+                return StepStatus.Failed
+
+            return StepStatus.Successful
+
+        self.current_step = None
+        if settings.SHOULD_FAIL_NORMAL_STEP:
             return StepStatus.Failed
+
         return StepStatus.Successful
 
     def stop(self) -> None:
