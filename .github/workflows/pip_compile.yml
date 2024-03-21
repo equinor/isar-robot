@@ -3,9 +3,6 @@ on:
   pull_request:
     branches:
       - main
-    secrets:
-      DeployKey:
-        required: true
 jobs:
   upgrade-dependencies:
     runs-on: ubuntu-latest
@@ -15,7 +12,7 @@ jobs:
         with:
           ref: main
           repository: equinor/isar-robot
-          ssh-key: ${{ secrets.DeployKey }}
+          ssh-key: ${{ secrets.deploy_key }}
       
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
