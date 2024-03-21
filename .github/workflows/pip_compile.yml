@@ -1,6 +1,8 @@
 name: Pip compile and upgrade
 on: 
   pull-request:
+    branches:
+      - main
 jobs:
   upgrade-dependencies:
     runs-on: ubuntu-latest
