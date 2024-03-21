@@ -1,6 +1,6 @@
 name: Pip compile and upgrade
 on: 
-  pull-request:
+  pull_request:
     branches:
       - main
 jobs:
