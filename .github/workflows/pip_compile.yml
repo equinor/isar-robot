@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          repository: equinor/isar-robot
+          repository: ${{github.event.repository}}
           ssh-key: ${{ secrets.deploy_key }}
       
       - name: Set up Python 3.12
