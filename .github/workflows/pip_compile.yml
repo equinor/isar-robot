@@ -30,8 +30,7 @@ jobs:
       
       - name: Checkout and commit
         run: |
-          git config --global user.email "${EMAIL}"
-          git config --global user.name  "GitHub Actions (${NAME})"
+          git config --global user.name "GitHub Actions (${{ github.event.release.author.login }})"
           git add requirements.txt
           git commit --message "GHA: Upgrade dependencies in requirements.txt"
           git push
