@@ -9,6 +9,8 @@ jobs:
     env:
       AuthorEmail: ${{ github.event.head_commit.author.email }}
       AuthorName: ${{ github.event.head_commit.author.name }}
+      DummyVariable: ${{ github.head_ref }}
+      DummyVariable2: ${{ github.workspace}}
     steps:
       - name: Checkout infrastructure
         uses: actions/checkout@v4
@@ -30,6 +32,8 @@ jobs:
       
       - name: Checkout and commit
         run: |
+          echo ${DummyVariable}
+          echo ${DummyVariable2}
           git config --global user.name "GitHub Actions (${AuthorName})"
           git config --global user.email ${AuthorEmail}
           git add requirements.txt
