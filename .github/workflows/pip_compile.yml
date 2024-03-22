@@ -30,6 +30,8 @@ jobs:
       
       - name: Checkout and commit
         run: |
+          echo ${{ github.event.sender.email }}
+          echo ${{ github.event.sender.name }} 
           git config --global user.name "GitHub Actions (${AuthorName})"
           git config --global user.email ${AuthorEmail}
           git add requirements.txt
