@@ -6,9 +6,6 @@ on:
 jobs:
   upgrade-dependencies:
     runs-on: ubuntu-latest
-    env:
-      AuthorEmail: ${{ github.event.sender.email }}
-      AuthorName: ${{ github.event.sender.name }}
     steps:
       - name: Checkout infrastructure
         uses: actions/checkout@v4
@@ -30,10 +27,6 @@ jobs:
       
       - name: Checkout and commit
         run: |
-          echo ${{ github.event.sender.email }}
-          echo ${{ github.event.sender.name }} 
-          git config --global user.name "GitHub Actions (${AuthorName})"
-          git config --global user.email ${AuthorEmail}
           git add requirements.txt
           git commit --message "GHA: Upgrade dependencies in requirements.txt"
           git push
