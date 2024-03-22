@@ -1,19 +1,23 @@
 name: Pip compile and upgrade
 on: 
-  pull-request:
+  pull_request:
     branches:
       - main
 jobs:
   upgrade-dependencies:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/tags/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
       - name: Checkout infrastructure
         uses: actions/checkout@v4
         with:
-          ref: main
-          repository: equinor/isar-robot
-          ssh-key: ${{ secrets.DeployKey }}
-      
+          ssh-key: ${{ secrets.deploy_key }}
+          ref: ${{ steps.extract_branch.outputs.branch }}
+            
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
         with:
@@ -30,8 +34,8 @@ jobs:
       
       - name: Checkout and commit
         run: |
-          git config --global user.email "${EMAIL}"
-          git config --global user.name  "GitHub Actions (${NAME})"
+          git config --global user.name "${{github.actor}}"
+          git config --global user.email ""
           git add requirements.txt
           git commit --message "GHA: Upgrade dependencies in requirements.txt"
-          git push
+          git push 
