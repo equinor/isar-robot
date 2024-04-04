@@ -23,7 +23,12 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
-from isar_robot.utilities import is_localization_mission, is_localization_step
+from isar_robot.utilities import (
+    is_localization_mission,
+    is_localization_step,
+    is_return_to_home_mission,
+    is_return_to_home_step,
+)
 
 
 class Robot(RobotInterface):
@@ -42,7 +47,10 @@ class Robot(RobotInterface):
             if settings.SHOULD_FAIL_LOCALIZATION_MISSION:
                 return MissionStatus.Failed
 
-            return MissionStatus.Successful
+        if is_return_to_home_mission(self.current_mission):
+            self.current_step = None
+            if settings.SHOULD_FAIL_RETURN_TO_HOME_MISSION:
+                return StepStatus.Failed
 
         self.current_mission = None
         if settings.SHOULD_FAIL_NORMAL_MISSION:
@@ -61,7 +69,10 @@ class Robot(RobotInterface):
             if settings.SHOULD_FAIL_LOCALIZATION_STEP:
                 return StepStatus.Failed
 
-            return StepStatus.Successful
+        if is_return_to_home_step(self.current_step):
+            self.current_step = None
+            if settings.SHOULD_FAIL_RETURN_TO_HOME_STEP:
+                return StepStatus.Failed
 
         self.current_step = None
         if settings.SHOULD_FAIL_NORMAL_STEP:
