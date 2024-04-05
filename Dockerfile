@@ -17,7 +17,7 @@ COPY . .
 RUN --mount=source=.git,target=.git,type=bind
 RUN pip install .
 
-FROM ghcr.io/equinor/isar:v1.16.14
+FROM ghcr.io/equinor/isar:v1.16.17
 WORKDIR /app
 COPY --from=build /app/venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
