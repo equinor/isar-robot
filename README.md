@@ -29,6 +29,22 @@ Then install the requirements and the package:
 pip install -r requirements.txt -e .[dev]
 ```
 
+## Configurable variables
+
+Specific mission and step behaviours can be configured as enviorment variables. These are optional and do not have to be set. These allow for always failing normal missions, always failing normal steps, always failing localization missions, always failing localization steps, setting custom step durations, and setting custom mission durations. In this case "normal" means non-localization tasks.
+
+The variable names and types are as follows: 
+```env
+STEP_DURATION_IN_SECONDS: float
+MISSION_DURATION_IN_SECONDS: float
+SHOULD_FAIL_NORMAL_MISSION: bool
+SHOULD_FAIL_LOCALIZATION_MISSION: bool
+SHOULD_FAIL_NORMAL_STEP: bool
+SHOULD_FAIL_LOCALIZATION_STEP: bool
+```
+
+Every configuration variable is defined in [settings.py](https://github.com/equinor/isar-robot/blob/main/src/isar_robot/config/settings.py), and they may all be overwritten by specifying the variables in a custom envoronment file in [ISAR](https://github.com/equinor/isar). This is done by creating a new ".env" file and adding the desired configuration variables. Note that the configuration variable must be prefixed with ROBOT_ when specified in the environment.
+
 # Dependencies
 
 The dependencies used for this package are listed in `pyproject.toml` and pinned in `requirements.txt`. This ensures our builds are predictable and deterministic. This project uses `pip-compile` (from [`pip-tools`](https://github.com/jazzband/pip-tools)) for this:
