@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+  schedule:
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+    # In a public repository, scheduled workflows are automatically disabled when no
+    # repository activity has occurred in 60 days
+    - cron: "5 6 * * 1-5" # At 06:05 on every day-of-week from Monday through Friday
+
 jobs:
   compile-requirements:
     runs-on: ubuntu-latest
@@ -15,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-            ssh-key: ${{ secrets.deploy_key }}
+          ssh-key: ${{ secrets.deploy_key }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
