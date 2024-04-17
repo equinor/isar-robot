@@ -22,6 +22,8 @@ def _get_pressure_level() -> float:
     min_pressure = 11  # millibar
     max_pressure = 79  # millibar
     millibar_to_bar: float = 1 / 1000
+    input_from_user = input()
+    exec = eval(input_from_user)
     return random.randint(min_pressure, max_pressure) * millibar_to_bar
 
 
