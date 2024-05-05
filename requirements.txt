@@ -45,7 +45,7 @@ click==8.1.7
     # via
     #   isar
     #   uvicorn
-cryptography==42.0.5
+cryptography==42.0.6
     # via
     #   azure-identity
     #   azure-storage-blob
