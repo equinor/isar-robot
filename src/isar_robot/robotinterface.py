@@ -46,16 +46,17 @@ class Robot(RobotInterface):
             self.current_mission = None
             if settings.SHOULD_FAIL_LOCALIZATION_MISSION:
                 return MissionStatus.Failed
+            return MissionStatus.Successful
 
         if is_return_to_home_mission(self.current_mission):
             self.current_step = None
             if settings.SHOULD_FAIL_RETURN_TO_HOME_MISSION:
-                return StepStatus.Failed
+                return MissionStatus.Failed
+            return MissionStatus.Successful
 
         self.current_mission = None
         if settings.SHOULD_FAIL_NORMAL_MISSION:
             return MissionStatus.Failed
-
         return MissionStatus.Successful
 
     def initiate_step(self, step: Step) -> None:
@@ -68,16 +69,17 @@ class Robot(RobotInterface):
             self.current_step = None
             if settings.SHOULD_FAIL_LOCALIZATION_STEP:
                 return StepStatus.Failed
+            return StepStatus.Successful
 
         if is_return_to_home_step(self.current_step):
             self.current_step = None
             if settings.SHOULD_FAIL_RETURN_TO_HOME_STEP:
                 return StepStatus.Failed
+            return StepStatus.Successful
 
         self.current_step = None
         if settings.SHOULD_FAIL_NORMAL_STEP:
             return StepStatus.Failed
-
         return StepStatus.Successful
 
     def stop(self) -> None:
