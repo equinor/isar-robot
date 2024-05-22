@@ -161,7 +161,7 @@ python-jose[cryptography]==3.3.0
     # via fastapi-azure-auth
 pyyaml==6.0.1
     # via isar
-requests==2.31.0
+requests==2.32.0
     # via
     #   azure-core
     #   google-api-core
