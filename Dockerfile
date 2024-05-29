@@ -1,6 +1,6 @@
 # Based on recommendations from
 # https://snyk.io/blog/best-practices-containerizing-python-docker/
-FROM python:3.10-slim as build
+FROM python:3.12-slim as build
 
 WORKDIR /app
 
