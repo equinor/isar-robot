@@ -191,7 +191,7 @@ pyyaml==6.0.1
     # via
     #   isar
     #   uvicorn
-requests==2.32.2
+requests==2.32.3
     # via
     #   azure-core
     #   google-api-core
