@@ -74,7 +74,7 @@ google-api-core==2.19.0
     # via opencensus
 google-auth==2.29.0
     # via google-api-core
-googleapis-common-protos==1.63.0
+googleapis-common-protos==1.63.1
     # via google-api-core
 h11==0.14.0
     # via
@@ -159,14 +159,14 @@ pyasn1-modules==0.4.0
     # via google-auth
 pycparser==2.22
     # via cffi
-pydantic==2.7.2
+pydantic==2.7.3
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.18.3
+pydantic-core==2.18.4
     # via pydantic
-pydantic-settings==2.2.1
+pydantic-settings==2.3.0
     # via isar
 pygments==2.18.0
     # via rich
