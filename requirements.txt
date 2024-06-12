@@ -21,7 +21,7 @@ azure-core==1.30.2
     #   azure-keyvault-secrets
     #   azure-storage-blob
     #   opencensus-ext-azure
-azure-identity==1.16.0
+azure-identity==1.16.1
     # via
     #   isar
     #   opencensus-ext-azure
