@@ -21,7 +21,7 @@ azure-core==1.30.2
     #   azure-keyvault-secrets
     #   azure-storage-blob
     #   opencensus-ext-azure
-azure-identity==1.16.0
+azure-identity==1.16.1
     # via
     #   isar
     #   opencensus-ext-azure
@@ -60,7 +60,7 @@ dacite==1.8.1
     #   isar
 dnspython==2.6.1
     # via email-validator
-email-validator==2.1.1
+email-validator==2.1.2
     # via fastapi
 fastapi==0.111.0
     # via
@@ -110,13 +110,13 @@ markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-msal==1.28.0
+msal==1.28.1
     # via
     #   azure-identity
     #   msal-extensions
 msal-extensions==1.1.0
     # via azure-identity
-numpy==1.26.4
+numpy==2.0.0
     # via
     #   alitra
     #   isar
@@ -134,7 +134,7 @@ opencensus-ext-logging==0.1.1
     # via isar
 opencensus-ext-requests==0.8.0
     # via isar
-orjson==3.10.3
+orjson==3.10.5
     # via fastapi
 packaging==24.1
     # via msal-extensions
@@ -159,14 +159,14 @@ pyasn1-modules==0.4.0
     # via google-auth
 pycparser==2.22
     # via cffi
-pydantic==2.7.3
+pydantic==2.7.4
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
 pydantic-core==2.18.4
     # via pydantic
-pydantic-settings==2.3.1
+pydantic-settings==2.3.3
     # via isar
 pygments==2.18.0
     # via rich
