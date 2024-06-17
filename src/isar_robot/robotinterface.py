@@ -169,3 +169,9 @@ class Robot(RobotInterface):
 
     def robot_status(self) -> RobotStatus:
         return RobotStatus.Available
+
+    def pause(self) -> None:
+        return
+
+    def resume(self) -> None:
+        return
