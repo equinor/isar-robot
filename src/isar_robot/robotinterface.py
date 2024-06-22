@@ -65,6 +65,11 @@ class Robot(RobotInterface):
         time.sleep(settings.STEP_DURATION_IN_SECONDS)
 
     def step_status(self) -> StepStatus:
+        if self.current_mission:
+            if is_localization_mission(self.current_mission):
+                if settings.SHOULD_FAIL_LOCALIZATION_MISSION:
+                    return StepStatus.Failed
+
         if is_localization_step(self.current_step):
             self.current_step = None
             if settings.SHOULD_FAIL_LOCALIZATION_STEP:
