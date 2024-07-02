@@ -21,7 +21,7 @@ azure-core==1.30.2
     #   azure-keyvault-secrets
     #   azure-storage-blob
     #   opencensus-ext-azure
-azure-identity==1.17.0
+azure-identity==1.17.1
     # via
     #   isar
     #   opencensus-ext-azure
@@ -70,11 +70,11 @@ fastapi-azure-auth==4.4.0
     # via isar
 fastapi-cli==0.0.4
     # via fastapi
-google-api-core==2.19.0
+google-api-core==2.19.1
     # via opencensus
-google-auth==2.30.0
+google-auth==2.31.0
     # via google-api-core
-googleapis-common-protos==1.63.1
+googleapis-common-protos==1.63.2
     # via google-api-core
 h11==0.14.0
     # via
@@ -110,11 +110,11 @@ markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-msal==1.28.1
+msal==1.29.0
     # via
     #   azure-identity
     #   msal-extensions
-msal-extensions==1.1.0
+msal-extensions==1.2.0
     # via azure-identity
 numpy==2.0.0
     # via
@@ -136,15 +136,13 @@ opencensus-ext-requests==0.8.0
     # via isar
 orjson==3.10.5
     # via fastapi
-packaging==24.1
-    # via msal-extensions
 paho-mqtt==2.1.0
     # via isar
-portalocker==2.8.2
+portalocker==2.10.0
     # via msal-extensions
 proto-plus==1.24.0
     # via google-api-core
-protobuf==4.25.3
+protobuf==5.27.2
     # via
     #   google-api-core
     #   googleapis-common-protos
@@ -159,14 +157,14 @@ pyasn1-modules==0.4.0
     # via google-auth
 pycparser==2.22
     # via cffi
-pydantic==2.7.4
+pydantic==2.8.0
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.18.4
+pydantic-core==2.20.0
     # via pydantic
-pydantic-settings==2.3.3
+pydantic-settings==2.3.4
     # via isar
 pygments==2.18.0
     # via rich
@@ -201,7 +199,7 @@ rich==13.7.1
     # via typer
 rsa==4.9
     # via google-auth
-scipy==1.13.1
+scipy==1.14.0
     # via alitra
 shellingham==1.5.4
     # via typer
