@@ -31,19 +31,21 @@ pip install -r requirements.txt -e .[dev]
 
 ## Configurable variables
 
-Specific mission and step behaviours can be configured as enviorment variables. These are optional and do not have to be set. These allow for always failing normal missions, always failing normal steps, always failing localization missions, always failing localization steps, setting custom step durations, and setting custom mission durations. In this case "normal" means non-localization tasks.
+Specific mission and step behaviours can be configured as enviorment variables. These are optional and do not have to be set. These allow for always failing specific mission types, failing specific step types, setting custom step durations, and setting custom mission durations. The following list shows all configurable environment variables. In this case "normal" means non-localization or return to home tasks.
 
 The variable names and types are as follows: 
 ```env
 STEP_DURATION_IN_SECONDS: float
 MISSION_DURATION_IN_SECONDS: float
-SHOULD_FAIL_NORMAL_MISSION: bool
-SHOULD_FAIL_LOCALIZATION_MISSION: bool
 SHOULD_FAIL_NORMAL_STEP: bool
+SHOULD_FAIL_NORMAL_MISSION: bool
 SHOULD_FAIL_LOCALIZATION_STEP: bool
+SHOULD_FAIL_LOCALIZATION_MISSION: bool
+SHOULD_FAIL_RETURN_TO_HOME_STEP: bool 
+SHOULD_FAIL_RETURN_TO_HOME_MISSION: bool
 ```
 
-Every configuration variable is defined in [settings.py](https://github.com/equinor/isar-robot/blob/main/src/isar_robot/config/settings.py), and they may all be overwritten by specifying the variables in a custom envoronment file in [ISAR](https://github.com/equinor/isar). This is done by creating a new ".env" file and adding the desired configuration variables. Note that the configuration variable must be prefixed with ROBOT_ when specified in the environment.
+Every configuration variable is defined in [settings.py](https://github.com/equinor/isar-robot/blob/main/src/isar_robot/config/settings.py), and they may all be overwritten by specifying the variables in your ".env" file in [ISAR](https://github.com/equinor/isar). Note that the configuration variable must be prefixed with ROBOT_ when specified in the ISAR environment file.
 
 # Dependencies
 
