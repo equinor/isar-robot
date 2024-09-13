@@ -29,11 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt -e .[dev]
 
+      - name: Test with pytest
+        run: |
+          pytest
+
       - name: Lint
         run: |
           black --check .
           mypy .
-
-      - name: Test with pytest
-        run: |
-          pytest
