@@ -1,5 +1,9 @@
 from alitra import Frame, Position
-from robot_interface.models.mission.step import RecordAudio, TakeImage, TakeThermalVideo
+from robot_interface.models.mission.task import (
+    RecordAudio,
+    TakeImage,
+    TakeThermalVideo,
+)
 
 from isar_robot import inspections
 
@@ -7,9 +11,9 @@ target = Position(x=0, y=0, z=0, frame=Frame("robot"))
 
 
 def test_create_image():
-    step = TakeImage(target=target)
+    task_actions = TakeImage(target=target)
 
-    list_of_images = inspections.create_image(step)
+    list_of_images = inspections.create_image(task_actions)
 
     assert len(list_of_images) == 1
 
@@ -18,9 +22,9 @@ def test_create_image():
 
 
 def test_create_video():
-    step = TakeImage(target=target)
+    task_actions = TakeImage(target=target)
 
-    list_of_videos = inspections.create_video(step)
+    list_of_videos = inspections.create_video(task_actions)
 
     assert len(list_of_videos) == 1
 
@@ -29,9 +33,9 @@ def test_create_video():
 
 
 def test_create_thermal_video():
-    step = TakeThermalVideo(target=target, duration=10)
+    task_actions = TakeThermalVideo(target=target, duration=10)
 
-    list_of_thermal_videos = inspections.create_thermal_video(step)
+    list_of_thermal_videos = inspections.create_thermal_video(task_actions)
 
     assert len(list_of_thermal_videos) == 1
 
@@ -41,9 +45,9 @@ def test_create_thermal_video():
 
 
 def test_create_audio():
-    step = RecordAudio(target=target, duration=10)
+    task_actions = RecordAudio(target=target, duration=10)
 
-    list_of_audio_recordings = inspections.create_audio(step)
+    list_of_audio_recordings = inspections.create_audio(task_actions)
 
     assert len(list_of_audio_recordings) == 1
 
