@@ -15,7 +15,7 @@ from robot_interface.models.inspection.inspection import (
     Video,
     VideoMetadata,
 )
-from robot_interface.models.mission.step import (
+from robot_interface.models.mission.task import (
     RecordAudio,
     TakeImage,
     TakeThermalImage,
@@ -40,16 +40,16 @@ example_audio: Path = Path(
 )
 
 
-def create_image(step: Union[TakeImage, TakeThermalImage]):
+def create_image(task_actions: Union[TakeImage, TakeThermalImage]):
     now: datetime = datetime.utcnow()
     image_metadata: ImageMetadata = ImageMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
         file_type="jpg",
     )
-    image_metadata.tag_id = step.tag_id
+    image_metadata.tag_id = task_actions.tag_id
     image_metadata.analysis_type = ["test1", "test2"]
-    image_metadata.additional = step.metadata
+    image_metadata.additional = task_actions.metadata
 
     image: Image = Image(metadata=image_metadata)
 
@@ -59,7 +59,7 @@ def create_image(step: Union[TakeImage, TakeThermalImage]):
     return [image]
 
 
-def create_video(step: TakeVideo):
+def create_video(task_actions: TakeVideo):
     now: datetime = datetime.utcnow()
     video_metadata: VideoMetadata = VideoMetadata(
         start_time=now,
@@ -67,9 +67,9 @@ def create_video(step: TakeVideo):
         file_type="mp4",
         duration=11,
     )
-    video_metadata.tag_id = step.tag_id
+    video_metadata.tag_id = task_actions.tag_id
     video_metadata.analysis_type = ["test1", "test2"]
-    video_metadata.additional = step.metadata
+    video_metadata.additional = task_actions.metadata
 
     video: Video = Video(metadata=video_metadata)
 
@@ -79,17 +79,17 @@ def create_video(step: TakeVideo):
     return [video]
 
 
-def create_thermal_video(step: TakeThermalVideo):
+def create_thermal_video(task_actions: TakeThermalVideo):
     now: datetime = datetime.utcnow()
     thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
         file_type="mp4",
-        duration=step.duration,
+        duration=task_actions.duration,
     )
-    thermal_video_metadata.tag_id = step.tag_id
+    thermal_video_metadata.tag_id = task_actions.tag_id
     thermal_video_metadata.analysis_type = ["test1", "test2"]
-    thermal_video_metadata.additional = step.metadata
+    thermal_video_metadata.additional = task_actions.metadata
 
     thermal_video: ThermalVideo = ThermalVideo(metadata=thermal_video_metadata)
 
@@ -99,17 +99,17 @@ def create_thermal_video(step: TakeThermalVideo):
     return [thermal_video]
 
 
-def create_audio(step: RecordAudio):
+def create_audio(task_actions: RecordAudio):
     now: datetime = datetime.utcnow()
     audio_metadata: AudioMetadata = AudioMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
         file_type="wav",
-        duration=step.duration,
+        duration=task_actions.duration,
     )
-    audio_metadata.tag_id = step.tag_id
+    audio_metadata.tag_id = task_actions.tag_id
     audio_metadata.analysis_type = ["test1", "test2"]
-    audio_metadata.additional = step.metadata
+    audio_metadata.additional = task_actions.metadata
 
     audio: Audio = Audio(metadata=audio_metadata)
 

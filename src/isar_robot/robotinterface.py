@@ -8,11 +8,11 @@ from typing import List, Optional, Sequence
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
-from robot_interface.models.mission.status import MissionStatus, RobotStatus, StepStatus
-from robot_interface.models.mission.step import (
-    InspectionStep,
+from robot_interface.models.mission.task import Task
+from robot_interface.models.mission.status import MissionStatus, RobotStatus, TaskStatus
+from robot_interface.models.mission.task import (
+    InspectionTask,
     RecordAudio,
-    Step,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
@@ -25,9 +25,9 @@ from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
 from isar_robot.utilities import (
     is_localization_mission,
-    is_localization_step,
+    is_localization_task,
     is_return_to_home_mission,
-    is_return_to_home_step,
+    is_return_to_home_task,
 )
 
 
@@ -35,70 +35,62 @@ class Robot(RobotInterface):
     def __init__(self) -> None:
         self.logger: Logger = logging.getLogger("isar_robot")
         self.current_mission: Optional[Mission] = None
-        self.current_step: Optional[Step] = None
+        self.current_task: Optional[Task] = None
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(settings.MISSION_DURATION_IN_SECONDS)
         self.current_mission = mission
+        self.current_task_ix = 0
+        self.current_task = mission.tasks[self.current_task_ix]
+        self.task_len = len(mission.tasks)
 
-    def mission_status(self) -> MissionStatus:
-        if is_localization_mission(self.current_mission):
-            self.current_mission = None
-            if settings.SHOULD_FAIL_LOCALIZATION_MISSION:
-                return MissionStatus.Failed
-            return MissionStatus.Successful
-
-        if is_return_to_home_mission(self.current_mission):
-            self.current_step = None
-            if settings.SHOULD_FAIL_RETURN_TO_HOME_MISSION:
-                return MissionStatus.Failed
-            return MissionStatus.Successful
-
-        self.current_mission = None
-        if settings.SHOULD_FAIL_NORMAL_MISSION:
-            return MissionStatus.Failed
-        return MissionStatus.Successful
-
-    def initiate_step(self, step: Step) -> None:
-        self.logger.info(f"Initiated step of type {step.__class__.__name__}")
-        self.current_step = step
+    def initiate_task(self, task: Task) -> None:
+        self.logger.info(f"Initiated task of type {task.__class__.__name__}")
+        self.current_task = task
         time.sleep(settings.STEP_DURATION_IN_SECONDS)
 
-    def step_status(self) -> StepStatus:
+    def task_status(self, task_id: str) -> TaskStatus:
+
+        next_task: Task = None
         if self.current_mission:
-            if is_localization_mission(self.current_mission):
-                if settings.SHOULD_FAIL_LOCALIZATION_MISSION:
-                    return StepStatus.Failed
+            if self.current_task_ix < self.task_len - 1:
+                self.current_task_ix = self.current_task_ix + 1
+                next_task = self.current_mission.tasks[self.current_task_ix]
 
-        if is_localization_step(self.current_step):
-            self.current_step = None
+        # This only happens for spetwise
+        if is_localization_task(self.current_task):
+            self.current_task = None
             if settings.SHOULD_FAIL_LOCALIZATION_STEP:
-                return StepStatus.Failed
-            return StepStatus.Successful
+                return TaskStatus.Failed
+            return TaskStatus.Successful
 
-        if is_return_to_home_step(self.current_step):
-            self.current_step = None
+        # This only happens for last task in mission
+        if is_return_to_home_task(self.current_task):
+            self.current_task = None
             if settings.SHOULD_FAIL_RETURN_TO_HOME_STEP:
-                return StepStatus.Failed
-            return StepStatus.Successful
+                return TaskStatus.Failed
+            return TaskStatus.Successful
 
-        self.current_step = None
+        if next_task:
+            self.current_task = next_task
+        else:
+            self.current_task = None
         if settings.SHOULD_FAIL_NORMAL_STEP:
-            return StepStatus.Failed
-        return StepStatus.Successful
+            return TaskStatus.Failed
+        return TaskStatus.Successful
 
     def stop(self) -> None:
         return
 
-    def get_inspections(self, step: InspectionStep) -> Sequence[Inspection]:
-        if type(step) in [TakeImage, TakeThermalImage]:
-            return inspections.create_image(step)
-        elif type(step) is TakeVideo:
-            return inspections.create_video(step)
-        elif type(step) is TakeThermalVideo:
-            return inspections.create_thermal_video(step)
-        elif type(step) is RecordAudio:
-            return inspections.create_audio(step)
+    def get_inspection(self, task: InspectionTask) -> Inspection:
+        if type(task) in [TakeImage, TakeThermalImage]:
+            return inspections.create_image(task)
+        elif type(task) is TakeVideo:
+            return inspections.create_video(task)
+        elif type(task) is TakeThermalVideo:
+            return inspections.create_thermal_video(task)
+        elif type(task) is RecordAudio:
+            return inspections.create_audio(task)
         else:
             return None
 
