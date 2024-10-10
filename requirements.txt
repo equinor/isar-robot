@@ -39,7 +39,7 @@ certifi==2024.8.30
     #   requests
 cffi==1.17.1
     # via cryptography
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via requests
 click==8.1.7
     # via
@@ -62,7 +62,7 @@ fastapi==0.115.0
     #   isar
 fastapi-azure-auth==5.0.1
     # via isar
-google-api-core==2.20.0
+google-api-core==2.21.0
     # via opencensus
 google-auth==2.35.0
     # via google-api-core
@@ -193,7 +193,7 @@ typing-extensions==4.12.2
     #   pydantic-core
 urllib3==2.2.3
     # via requests
-uvicorn==0.31.0
+uvicorn==0.31.1
     # via isar
 wrapt==1.16.0
     # via opencensus-ext-requests
