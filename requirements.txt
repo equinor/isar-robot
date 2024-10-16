@@ -83,7 +83,7 @@ idna==3.10
     #   requests
 injector==0.22.0
     # via isar
-isar==1.22.4
+isar==1.23.2
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
