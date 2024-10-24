@@ -56,7 +56,7 @@ def create_image(task_actions: Union[TakeImage, TakeThermalImage]):
     filepath: Path = random.choice(list(example_images.iterdir()))
     image.data = _read_data_from_file(filepath)
 
-    return [image]
+    return image
 
 
 def create_video(task_actions: TakeVideo):
@@ -76,7 +76,7 @@ def create_video(task_actions: TakeVideo):
     filepath: Path = random.choice(list(example_videos.iterdir()))
     video.data = _read_data_from_file(filepath)
 
-    return [video]
+    return video
 
 
 def create_thermal_video(task_actions: TakeThermalVideo):
@@ -96,7 +96,7 @@ def create_thermal_video(task_actions: TakeThermalVideo):
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
     thermal_video.data = _read_data_from_file(filepath)
 
-    return [thermal_video]
+    return thermal_video
 
 
 def create_audio(task_actions: RecordAudio):
@@ -116,7 +116,7 @@ def create_audio(task_actions: RecordAudio):
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
     audio.data = _read_data_from_file(filepath)
 
-    return [audio]
+    return audio
 
 
 def _read_data_from_file(filename: Path) -> bytes:
