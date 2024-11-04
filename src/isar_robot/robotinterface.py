@@ -3,13 +3,13 @@ import time
 from logging import Logger
 from queue import Queue
 from threading import Thread
-from typing import List, Optional, Sequence
+from typing import List, Optional
 
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.task import Task
-from robot_interface.models.mission.status import MissionStatus, RobotStatus, TaskStatus
+from robot_interface.models.mission.status import RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
     RecordAudio,
@@ -24,9 +24,7 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
 from isar_robot.utilities import (
-    is_localization_mission,
     is_localization_task,
-    is_return_to_home_mission,
     is_return_to_home_task,
 )
 
