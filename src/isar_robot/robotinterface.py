@@ -3,7 +3,7 @@ import time
 from logging import Logger
 from queue import Queue
 from threading import Thread
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
@@ -91,6 +91,11 @@ class Robot(RobotInterface):
             return inspections.create_audio(task)
         else:
             return None
+
+    def register_inspection_callback(
+        self, callback_function: Callable[[Inspection], None]
+    ) -> None:
+        raise NotImplementedError
 
     def initialize(self, params: InitializeParams) -> None:
         return
