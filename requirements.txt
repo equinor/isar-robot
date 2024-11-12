@@ -62,9 +62,9 @@ fastapi==0.115.4
     #   isar
 fastapi-azure-auth==5.0.1
     # via isar
-google-api-core==2.22.0
+google-api-core==2.23.0
     # via opencensus
-google-auth==2.35.0
+google-auth==2.36.0
     # via google-api-core
 googleapis-common-protos==1.65.0
     # via google-api-core
