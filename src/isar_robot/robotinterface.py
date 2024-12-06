@@ -18,6 +18,7 @@ from robot_interface.models.mission.task import (
     TakeThermalVideo,
     TakeVideo,
 )
+from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
@@ -174,4 +175,7 @@ class Robot(RobotInterface):
         return
 
     def resume(self) -> None:
+        return
+
+    def generate_media_config(self) -> MediaConfig:
         return
