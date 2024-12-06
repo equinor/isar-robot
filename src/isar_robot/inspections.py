@@ -40,7 +40,7 @@ example_audio: Path = Path(
 )
 
 
-def create_image(task_actions: Union[TakeImage, TakeThermalImage]):
+def create_image(task_actions: Union[TakeImage, TakeThermalImage]) -> Image:
     now: datetime = datetime.utcnow()
     image_metadata: ImageMetadata = ImageMetadata(
         start_time=now,
@@ -51,15 +51,13 @@ def create_image(task_actions: Union[TakeImage, TakeThermalImage]):
     image_metadata.analysis_type = ["test1", "test2"]
     image_metadata.additional = task_actions.metadata
 
-    image: Image = Image(metadata=image_metadata)
-
     filepath: Path = random.choice(list(example_images.iterdir()))
-    image.data = _read_data_from_file(filepath)
+    data = _read_data_from_file(filepath)
 
-    return image
+    return Image(metadata=image_metadata, id=task_actions.inspection_id, data=data)
 
 
-def create_video(task_actions: TakeVideo):
+def create_video(task_actions: TakeVideo) -> Video:
     now: datetime = datetime.utcnow()
     video_metadata: VideoMetadata = VideoMetadata(
         start_time=now,
@@ -71,12 +69,10 @@ def create_video(task_actions: TakeVideo):
     video_metadata.analysis_type = ["test1", "test2"]
     video_metadata.additional = task_actions.metadata
 
-    video: Video = Video(metadata=video_metadata)
-
     filepath: Path = random.choice(list(example_videos.iterdir()))
-    video.data = _read_data_from_file(filepath)
+    data = _read_data_from_file(filepath)
 
-    return video
+    return Video(metadata=video_metadata, id=task_actions.inspection_id, data=data)
 
 
 def create_thermal_video(task_actions: TakeThermalVideo):
@@ -91,12 +87,12 @@ def create_thermal_video(task_actions: TakeThermalVideo):
     thermal_video_metadata.analysis_type = ["test1", "test2"]
     thermal_video_metadata.additional = task_actions.metadata
 
-    thermal_video: ThermalVideo = ThermalVideo(metadata=thermal_video_metadata)
-
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
-    thermal_video.data = _read_data_from_file(filepath)
+    data = _read_data_from_file(filepath)
 
-    return thermal_video
+    return ThermalVideo(
+        metadata=thermal_video_metadata, id=task_actions.inspection_id, data=data
+    )
 
 
 def create_audio(task_actions: RecordAudio):
@@ -111,12 +107,10 @@ def create_audio(task_actions: RecordAudio):
     audio_metadata.analysis_type = ["test1", "test2"]
     audio_metadata.additional = task_actions.metadata
 
-    audio: Audio = Audio(metadata=audio_metadata)
-
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
-    audio.data = _read_data_from_file(filepath)
+    data = _read_data_from_file(filepath)
 
-    return audio
+    return Audio(metadata=audio_metadata, id=task_actions.inspection_id, data=data)
 
 
 def _read_data_from_file(filename: Path) -> bytes:

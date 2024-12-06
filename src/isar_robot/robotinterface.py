@@ -8,7 +8,6 @@ from typing import Callable, List, Optional
 from robot_interface.models.initialize import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
-from robot_interface.models.mission.task import Task
 from robot_interface.models.mission.status import RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
@@ -17,6 +16,7 @@ from robot_interface.models.mission.task import (
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
+    Task,
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
@@ -24,10 +24,7 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
-from isar_robot.utilities import (
-    is_localization_task,
-    is_return_to_home_task,
-)
+from isar_robot.utilities import is_localization_task, is_return_to_home_task
 
 
 class Robot(RobotInterface):
