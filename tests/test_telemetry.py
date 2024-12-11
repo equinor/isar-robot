@@ -1,14 +1,14 @@
 from isar_robot.telemetry import _get_battery_level, _get_pressure_level
 
 
-def test_get_battery_level():
+def test_get_battery_level() -> None:
     for _ in range(100):
         pressure_level: float = _get_battery_level()
         assert pressure_level >= 50
         assert pressure_level <= 100
 
 
-def test_get_pressure_level():
+def test_get_pressure_level() -> None:
     for _ in range(100):
         pressure_level: float = _get_pressure_level()
         assert pressure_level >= 0.011
