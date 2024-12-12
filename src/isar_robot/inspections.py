@@ -7,11 +7,13 @@ from typing import Union
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotRetrieveInspectionException,
 )
-from robot_interface.models.inspection import Audio, ThermalVideo, ThermalVideoMetadata
 from robot_interface.models.inspection.inspection import (
+    Audio,
     AudioMetadata,
     Image,
     ImageMetadata,
+    ThermalVideo,
+    ThermalVideoMetadata,
     Video,
     VideoMetadata,
 )
