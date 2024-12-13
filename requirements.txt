@@ -64,7 +64,7 @@ fastapi-azure-auth==5.0.1
     # via isar
 google-api-core==2.24.0
     # via opencensus
-google-auth==2.36.0
+google-auth==2.37.0
     # via google-api-core
 googleapis-common-protos==1.66.0
     # via google-api-core
@@ -83,7 +83,7 @@ idna==3.10
     #   requests
 injector==0.22.0
     # via isar
-isar==1.25.0
+isar==1.25.1
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
