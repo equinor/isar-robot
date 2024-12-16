@@ -119,7 +119,7 @@ def _read_data_from_file(filename: Path) -> bytes:
     try:
         with open(filename, "rb") as f:
             data: bytes = f.read()
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         raise RobotRetrieveInspectionException(
             "An error occurred while retrieving the inspection data"
         )
