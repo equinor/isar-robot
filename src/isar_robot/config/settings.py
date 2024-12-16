@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     def __init__(self) -> None:
         try:
-            with pkg_resources.path(f"isar_robot.config", "settings.env") as path:
+            with pkg_resources.path("isar_robot.config", "settings.env") as path:
                 env_file_path = path
         except ModuleNotFoundError:
             env_file_path = None
