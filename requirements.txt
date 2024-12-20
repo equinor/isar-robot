@@ -119,12 +119,12 @@ portalocker==2.10.1
     # via msal-extensions
 proto-plus==1.25.0
     # via google-api-core
-protobuf==5.29.1
+protobuf==5.29.2
     # via
     #   google-api-core
     #   googleapis-common-protos
     #   proto-plus
-psutil==6.1.0
+psutil==6.1.1
     # via opencensus-ext-azure
 pyasn1==0.6.1
     # via
@@ -134,12 +134,12 @@ pyasn1-modules==0.4.1
     # via google-auth
 pycparser==2.22
     # via cffi
-pydantic==2.10.3
+pydantic==2.10.4
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.27.1
+pydantic-core==2.27.2
     # via pydantic
 pydantic-settings==2.7.0
     # via isar
