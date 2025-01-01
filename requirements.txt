@@ -39,9 +39,9 @@ certifi==2024.12.14
     #   requests
 cffi==1.17.1
     # via cryptography
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
-click==8.1.7
+click==8.1.8
     # via
     #   isar
     #   uvicorn
@@ -95,7 +95,7 @@ msal==1.31.1
     #   msal-extensions
 msal-extensions==1.2.0
     # via azure-identity
-numpy==2.2.0
+numpy==2.2.1
     # via
     #   alitra
     #   isar
@@ -119,12 +119,12 @@ portalocker==2.10.1
     # via msal-extensions
 proto-plus==1.25.0
     # via google-api-core
-protobuf==5.29.1
+protobuf==5.29.2
     # via
     #   google-api-core
     #   googleapis-common-protos
     #   proto-plus
-psutil==6.1.0
+psutil==6.1.1
     # via opencensus-ext-azure
 pyasn1==0.6.1
     # via
@@ -134,14 +134,14 @@ pyasn1-modules==0.4.1
     # via google-auth
 pycparser==2.22
     # via cffi
-pydantic==2.10.3
+pydantic==2.10.4
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.27.1
+pydantic-core==2.27.2
     # via pydantic
-pydantic-settings==2.7.0
+pydantic-settings==2.7.1
     # via isar
 pyjwt[crypto]==2.10.1
     # via
@@ -190,7 +190,7 @@ typing-extensions==4.12.2
     #   fastapi
     #   pydantic
     #   pydantic-core
-urllib3==2.2.3
+urllib3==2.3.0
     # via requests
 uvicorn==0.34.0
     # via isar
