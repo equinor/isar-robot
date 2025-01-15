@@ -1,6 +1,6 @@
 import json
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.telemetry.payloads import (
@@ -50,7 +50,7 @@ def get_pose_telemetry(isar_id: str, robot_name: str) -> str:
         pose=get_pose(),
         isar_id=isar_id,
         robot_name=robot_name,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
     )
     return json.dumps(pose_payload, cls=EnhancedJSONEncoder)
 
@@ -60,7 +60,7 @@ def get_battery_telemetry(isar_id: str, robot_name: str) -> str:
         battery_level=_get_battery_level(),
         isar_id=isar_id,
         robot_name=robot_name,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
     )
     return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
 
@@ -71,7 +71,7 @@ def get_obstacle_status_telemetry(isar_id: str, robot_name: str) -> str:
             obstacle_status=_get_obstacle_status(),
             isar_id=isar_id,
             robot_name=robot_name,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
         )
     )
     return json.dumps(obstacle_status_payload, cls=EnhancedJSONEncoder)
@@ -82,6 +82,6 @@ def get_pressure_telemetry(isar_id: str, robot_name: str) -> str:
         pressure_level=_get_pressure_level(),
         isar_id=isar_id,
         robot_name=robot_name,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
     )
     return json.dumps(pressure_payload, cls=EnhancedJSONEncoder)

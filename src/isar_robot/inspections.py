@@ -1,6 +1,6 @@
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Union
 
@@ -43,7 +43,7 @@ example_audio: Path = Path(
 
 
 def create_image(task_actions: Union[TakeImage, TakeThermalImage]) -> Image:
-    now: datetime = datetime.utcnow()
+    now: datetime = datetime.now(timezone.utc)
     image_metadata: ImageMetadata = ImageMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
@@ -60,7 +60,7 @@ def create_image(task_actions: Union[TakeImage, TakeThermalImage]) -> Image:
 
 
 def create_video(task_actions: TakeVideo) -> Video:
-    now: datetime = datetime.utcnow()
+    now: datetime = datetime.now(timezone.utc)
     video_metadata: VideoMetadata = VideoMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
@@ -78,7 +78,7 @@ def create_video(task_actions: TakeVideo) -> Video:
 
 
 def create_thermal_video(task_actions: TakeThermalVideo):
-    now: datetime = datetime.utcnow()
+    now: datetime = datetime.now(timezone.utc)
     thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
@@ -98,7 +98,7 @@ def create_thermal_video(task_actions: TakeThermalVideo):
 
 
 def create_audio(task_actions: RecordAudio):
-    now: datetime = datetime.utcnow()
+    now: datetime = datetime.now(timezone.utc)
     audio_metadata: AudioMetadata = AudioMetadata(
         start_time=now,
         pose=telemetry.get_pose(),
