@@ -1,5 +1,4 @@
-import importlib.resources as pkg_resources
-
+from importlib.resources import as_file, files
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -7,11 +6,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     def __init__(self) -> None:
         try:
-            with pkg_resources.path("isar_robot.config", "settings.env") as path:
-                env_file_path = path
+            source = files("isar_robot").joinpath("config").joinpath("settings.env")
+            with as_file(source) as eml:
+                env_file = eml
         except ModuleNotFoundError:
-            env_file_path = None
-        super().__init__(_env_file=env_file_path)
+            env_file = None
+        super().__init__(_env_file=env_file)
 
     STEP_DURATION_IN_SECONDS: float = Field(default=5.0)
     MISSION_DURATION_IN_SECONDS: float = Field(default=5.0)
