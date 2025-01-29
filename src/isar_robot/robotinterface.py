@@ -17,6 +17,7 @@ from robot_interface.models.mission.task import (
     TakeThermalVideo,
     TakeVideo,
     Task,
+    TakeGasMeasurement,
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
@@ -85,6 +86,8 @@ class Robot(RobotInterface):
             return inspections.create_video(task)
         elif type(task) is TakeThermalVideo:
             return inspections.create_thermal_video(task)
+        elif type(task) is TakeGasMeasurement:
+            return inspections.create_gas_measurement(task)
         elif type(task) is RecordAudio:
             return inspections.create_audio(task)
         else:

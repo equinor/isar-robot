@@ -16,6 +16,8 @@ from robot_interface.models.inspection.inspection import (
     ThermalVideoMetadata,
     Video,
     VideoMetadata,
+    GasMeasurement,
+    GasMeasurementMetadata,
 )
 from robot_interface.models.mission.task import (
     RecordAudio,
@@ -23,6 +25,7 @@ from robot_interface.models.mission.task import (
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
+    TakeGasMeasurement,
 )
 
 from isar_robot import telemetry
@@ -113,6 +116,25 @@ def create_audio(task_actions: RecordAudio):
     data = _read_data_from_file(filepath)
 
     return Audio(metadata=audio_metadata, id=task_actions.inspection_id, data=data)
+
+
+def create_gas_measurement(task_actions: TakeGasMeasurement):
+    now: datetime = datetime.now(timezone.utc)
+    gas_measurement_metadata: GasMeasurementMetadata = GasMeasurementMetadata(
+        start_time=now,
+        pose=telemetry.get_pose(),
+        file_type="wav",
+    )
+    gas_measurement_metadata.tag_id = task_actions.tag_id
+    gas_measurement_metadata.analysis_type = ["test1", "test2"]
+    gas_measurement_metadata.additional = task_actions.metadata
+
+    filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
+    data = _read_data_from_file(filepath)
+
+    return GasMeasurement(
+        metadata=gas_measurement_metadata, id=task_actions.inspection_id, data=data
+    )
 
 
 def _read_data_from_file(filename: Path) -> bytes:
