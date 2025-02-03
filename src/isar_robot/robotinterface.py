@@ -4,6 +4,7 @@ from logging import Logger
 from queue import Queue
 from threading import Thread
 from typing import Callable, List, Optional
+from datetime import datetime, timezone
 
 from robot_interface.models.initialize.initialize_params import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
@@ -33,6 +34,7 @@ class Robot(RobotInterface):
         self.logger: Logger = logging.getLogger("isar_robot")
         self.current_mission: Optional[Mission] = None
         self.current_task: Optional[Task] = None
+        self.last_task_completion_time: datetime = datetime.now(timezone.utc)
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(settings.MISSION_DURATION_IN_SECONDS)
@@ -40,6 +42,7 @@ class Robot(RobotInterface):
         self.current_task_ix = 0
         self.current_task = mission.tasks[self.current_task_ix]
         self.task_len = len(mission.tasks)
+        self.last_task_completion_time = datetime.now(timezone.utc)
 
     def initiate_task(self, task: Task) -> None:
         self.logger.info(f"Initiated task of type {task.__class__.__name__}")
@@ -47,6 +50,13 @@ class Robot(RobotInterface):
         time.sleep(settings.STEP_DURATION_IN_SECONDS)
 
     def task_status(self, task_id: str) -> TaskStatus:
+
+        now: datetime = datetime.now(timezone.utc)
+        if (
+            now - self.last_task_completion_time
+        ).total_seconds() < settings.STEP_DURATION_IN_SECONDS:
+            return TaskStatus.InProgress
+        self.last_task_completion_time = now
 
         next_task: Task = None
         if self.current_mission:
