@@ -25,7 +25,7 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
-from isar_robot.utilities import is_localization_task, is_return_to_home_task
+from isar_robot.utilities import is_return_to_home_task
 
 
 class Robot(RobotInterface):
@@ -53,13 +53,6 @@ class Robot(RobotInterface):
             if self.current_task_ix < self.task_len - 1:
                 self.current_task_ix = self.current_task_ix + 1
                 next_task = self.current_mission.tasks[self.current_task_ix]
-
-        # This only happens for spetwise
-        if is_localization_task(self.current_task):
-            self.current_task = None
-            if settings.SHOULD_FAIL_LOCALIZATION_STEP:
-                return TaskStatus.Failed
-            return TaskStatus.Successful
 
         # This only happens for last task in mission
         if is_return_to_home_task(self.current_task):
