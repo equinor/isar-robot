@@ -47,14 +47,14 @@ class Robot(RobotInterface):
     def initiate_task(self, task: Task) -> None:
         self.logger.info(f"Initiated task of type {task.__class__.__name__}")
         self.current_task = task
-        time.sleep(settings.STEP_DURATION_IN_SECONDS)
+        time.sleep(settings.TASK_DURATION_IN_SECONDS)
 
     def task_status(self, task_id: str) -> TaskStatus:
 
         now: datetime = datetime.now(timezone.utc)
         if (
             now - self.last_task_completion_time
-        ).total_seconds() < settings.STEP_DURATION_IN_SECONDS:
+        ).total_seconds() < settings.TASK_DURATION_IN_SECONDS:
             return TaskStatus.InProgress
         self.last_task_completion_time = now
 
@@ -67,7 +67,7 @@ class Robot(RobotInterface):
         # This only happens for last task in mission
         if is_return_to_home_task(self.current_task):
             self.current_task = None
-            if settings.SHOULD_FAIL_RETURN_TO_HOME_STEP:
+            if settings.SHOULD_FAIL_RETURN_TO_HOME_TASK:
                 return TaskStatus.Failed
             return TaskStatus.Successful
 
@@ -75,7 +75,7 @@ class Robot(RobotInterface):
             self.current_task = next_task
         else:
             self.current_task = None
-        if settings.SHOULD_FAIL_NORMAL_STEP:
+        if settings.SHOULD_FAIL_NORMAL_TASK:
             return TaskStatus.Failed
         return TaskStatus.Successful
 
