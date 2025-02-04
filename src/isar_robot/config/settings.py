@@ -13,13 +13,11 @@ class Settings(BaseSettings):
             env_file = None
         super().__init__(_env_file=env_file)
 
-    STEP_DURATION_IN_SECONDS: float = Field(default=5.0)
+    TASK_DURATION_IN_SECONDS: float = Field(default=5.0)
     MISSION_DURATION_IN_SECONDS: float = Field(default=5.0)
     SHOULD_FAIL_NORMAL_MISSION: bool = Field(default=False)
-    SHOULD_FAIL_LOCALIZATION_MISSION: bool = Field(default=False)
-    SHOULD_FAIL_NORMAL_STEP: bool = Field(default=False)
-    SHOULD_FAIL_LOCALIZATION_STEP: bool = Field(default=False)
-    SHOULD_FAIL_RETURN_TO_HOME_STEP: bool = Field(default=False)
+    SHOULD_FAIL_NORMAL_TASK: bool = Field(default=False)
+    SHOULD_FAIL_RETURN_TO_HOME_TASK: bool = Field(default=False)
     SHOULD_FAIL_RETURN_TO_HOME_MISSION: bool = Field(default=False)
 
     model_config = SettingsConfigDict(

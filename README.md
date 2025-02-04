@@ -31,17 +31,15 @@ pip install -r requirements.txt -e .[dev]
 
 ## Configurable variables
 
-Specific mission and step behaviours can be configured as enviorment variables. These are optional and do not have to be set. These allow for always failing specific mission types, failing specific step types, setting custom step durations, and setting custom mission durations. The following list shows all configurable environment variables. In this case "normal" means non-localization or return to home tasks.
+Specific mission and task behaviours can be configured as enviorment variables. These are optional and do not have to be set. These allow for always failing specific mission types, failing specific task types, setting custom task durations, and setting custom mission durations. The following list shows all configurable environment variables. In this case "normal" means non-localization or return to home tasks.
 
 The variable names and types are as follows: 
 ```env
-STEP_DURATION_IN_SECONDS: float
+TASK_DURATION_IN_SECONDS: float
 MISSION_DURATION_IN_SECONDS: float
-SHOULD_FAIL_NORMAL_STEP: bool
+SHOULD_FAIL_NORMAL_TASK: bool
 SHOULD_FAIL_NORMAL_MISSION: bool
-SHOULD_FAIL_LOCALIZATION_STEP: bool
-SHOULD_FAIL_LOCALIZATION_MISSION: bool
-SHOULD_FAIL_RETURN_TO_HOME_STEP: bool 
+SHOULD_FAIL_RETURN_TO_HOME_TASK: bool 
 SHOULD_FAIL_RETURN_TO_HOME_MISSION: bool
 ```
 
