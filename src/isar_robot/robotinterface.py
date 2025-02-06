@@ -6,7 +6,6 @@ from threading import Thread
 from typing import Callable, List, Optional
 from datetime import datetime, timezone
 
-from robot_interface.models.initialize.initialize_params import InitializeParams
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import RobotStatus, TaskStatus
@@ -101,7 +100,7 @@ class Robot(RobotInterface):
     ) -> None:
         raise NotImplementedError
 
-    def initialize(self, params: InitializeParams) -> None:
+    def initialize(self) -> None:
         return
 
     def get_telemetry_publishers(
