@@ -52,7 +52,7 @@ cryptography==44.0.0
     #   fastapi-azure-auth
     #   msal
     #   pyjwt
-dacite==1.9.1
+dacite==1.9.2
     # via
     #   alitra
     #   isar
@@ -66,7 +66,7 @@ google-api-core==2.24.1
     # via opencensus
 google-auth==2.38.0
     # via google-api-core
-googleapis-common-protos==1.66.0
+googleapis-common-protos==1.67.0rc1
     # via google-api-core
 h11==0.14.0
     # via
