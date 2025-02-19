@@ -34,6 +34,7 @@ class Robot(RobotInterface):
         self.current_mission: Optional[Mission] = None
         self.current_task: Optional[Task] = None
         self.last_task_completion_time: datetime = datetime.now(timezone.utc)
+        self.robot_is_home: bool = False
 
     def initiate_mission(self, mission: Mission) -> None:
         time.sleep(settings.MISSION_DURATION_IN_SECONDS)
@@ -42,10 +43,12 @@ class Robot(RobotInterface):
         self.current_task = mission.tasks[self.current_task_ix]
         self.task_len = len(mission.tasks)
         self.last_task_completion_time = datetime.now(timezone.utc)
+        self.robot_is_home = False
 
     def initiate_task(self, task: Task) -> None:
         self.logger.info(f"Initiated task of type {task.__class__.__name__}")
         self.current_task = task
+        self.robot_is_home = False
         time.sleep(settings.TASK_DURATION_IN_SECONDS)
 
     def task_status(self, task_id: str) -> TaskStatus:
@@ -68,6 +71,7 @@ class Robot(RobotInterface):
             self.current_task = None
             if settings.SHOULD_FAIL_RETURN_TO_HOME_TASK:
                 return TaskStatus.Failed
+            self.robot_is_home = True
             return TaskStatus.Successful
 
         if next_task:
@@ -171,6 +175,8 @@ class Robot(RobotInterface):
         return publisher_threads
 
     def robot_status(self) -> RobotStatus:
+        if self.robot_is_home:
+            return RobotStatus.Docked
         return RobotStatus.Available
 
     def pause(self) -> None:
