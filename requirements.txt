@@ -56,7 +56,7 @@ dacite==1.9.2
     # via
     #   alitra
     #   isar
-fastapi==0.115.8
+fastapi==0.115.9
     # via
     #   fastapi-azure-auth
     #   isar
@@ -141,7 +141,7 @@ pydantic==2.10.6
     #   pydantic-settings
 pydantic-core==2.27.2
     # via pydantic
-pydantic-settings==2.8.0
+pydantic-settings==2.8.1
     # via isar
 pyjwt[crypto]==2.10.1
     # via
