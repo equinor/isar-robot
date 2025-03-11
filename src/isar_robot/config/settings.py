@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     SHOULD_FAIL_NORMAL_TASK: bool = Field(default=False)
     SHOULD_FAIL_RETURN_TO_HOME_TASK: bool = Field(default=False)
     SHOULD_FAIL_RETURN_TO_HOME_MISSION: bool = Field(default=False)
+    SHOULD_HAVE_RANDOM_BATTERY_LEVEL: bool = Field(default=False)
 
     model_config = SettingsConfigDict(
         env_prefix="ROBOT_",

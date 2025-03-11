@@ -30,6 +30,7 @@ from isar_robot.utilities import is_return_to_home_task
 
 class Robot(RobotInterface):
     def __init__(self) -> None:
+        self.telemetry = telemetry.Telemetry()
         self.logger: Logger = logging.getLogger("isar_robot")
         self.current_mission: Optional[Mission] = None
         self.current_task: Optional[Task] = None
@@ -107,6 +108,11 @@ class Robot(RobotInterface):
     def initialize(self) -> None:
         return
 
+    def _get_battery_telemetry(self, isar_id: str, robot_name: str) -> str:
+        return self.telemetry.get_battery_telemetry(
+            isar_id=isar_id, robot_name=robot_name, is_home=self.robot_is_home
+        )
+
     def get_telemetry_publishers(
         self, queue: Queue, isar_id: str, robot_name: str
     ) -> List[Thread]:
@@ -114,7 +120,7 @@ class Robot(RobotInterface):
 
         pose_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
-            telemetry_method=telemetry.get_pose_telemetry,
+            telemetry_method=self.telemetry.get_pose_telemetry,
             topic=f"isar/{isar_id}/pose",
             interval=5,
             retain=False,
@@ -129,9 +135,9 @@ class Robot(RobotInterface):
 
         battery_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
-            telemetry_method=telemetry.get_battery_telemetry,
+            telemetry_method=self._get_battery_telemetry,
             topic=f"isar/{isar_id}/battery",
-            interval=30,
+            interval=2,
             retain=False,
         )
         battery_thread: Thread = Thread(
@@ -144,7 +150,7 @@ class Robot(RobotInterface):
 
         obstacle_status_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
-            telemetry_method=telemetry.get_obstacle_status_telemetry,
+            telemetry_method=self.telemetry.get_obstacle_status_telemetry,
             topic=f"isar/{isar_id}/obstacle_status",
             interval=10,
             retain=False,
@@ -159,7 +165,7 @@ class Robot(RobotInterface):
 
         pressure_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
-            telemetry_method=telemetry.get_pressure_telemetry,
+            telemetry_method=self.telemetry.get_pressure_telemetry,
             topic=f"isar/{isar_id}/pressure",
             interval=20,
             retain=False,
