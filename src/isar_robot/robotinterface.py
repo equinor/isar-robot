@@ -37,7 +37,7 @@ class Robot(RobotInterface):
         self.robot_is_home: bool = False
 
     def initiate_mission(self, mission: Mission) -> None:
-        time.sleep(settings.MISSION_DURATION_IN_SECONDS)
+        time.sleep(settings.INITIATE_MISSION_DURATION_IN_SECONDS)
         self.current_mission = mission
         self.current_task_ix = 0
         self.current_task = mission.tasks[self.current_task_ix]
@@ -176,7 +176,7 @@ class Robot(RobotInterface):
 
     def robot_status(self) -> RobotStatus:
         if self.robot_is_home:
-            return RobotStatus.Docked
+            return RobotStatus.Home
         return RobotStatus.Available
 
     def pause(self) -> None:
