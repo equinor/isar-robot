@@ -14,7 +14,7 @@ class Settings(BaseSettings):
         super().__init__(_env_file=env_file)
 
     TASK_DURATION_IN_SECONDS: float = Field(default=5.0)
-    MISSION_DURATION_IN_SECONDS: float = Field(default=5.0)
+    INITIATE_MISSION_DURATION_IN_SECONDS: float = Field(default=0.1)
     SHOULD_FAIL_NORMAL_MISSION: bool = Field(default=False)
     SHOULD_FAIL_NORMAL_TASK: bool = Field(default=False)
     SHOULD_FAIL_RETURN_TO_HOME_TASK: bool = Field(default=False)
