@@ -56,7 +56,7 @@ dacite==1.9.2
     # via
     #   alitra
     #   isar
-fastapi==0.115.11
+fastapi==0.115.12
     # via
     #   fastapi-azure-auth
     #   isar
