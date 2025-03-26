@@ -33,4 +33,4 @@ RUN chown -R 1000 /app
 RUN chmod 755 /app
 USER 1000
 
-CMD isar-start
+CMD ["isar-start"]
