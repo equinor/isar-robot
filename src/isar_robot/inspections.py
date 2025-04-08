@@ -10,22 +10,22 @@ from robot_interface.models.exceptions.robot_exceptions import (
 from robot_interface.models.inspection.inspection import (
     Audio,
     AudioMetadata,
+    GasMeasurement,
+    GasMeasurementMetadata,
     Image,
     ImageMetadata,
     ThermalVideo,
     ThermalVideoMetadata,
     Video,
     VideoMetadata,
-    GasMeasurement,
-    GasMeasurementMetadata,
 )
 from robot_interface.models.mission.task import (
     RecordAudio,
+    TakeGasMeasurement,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
-    TakeGasMeasurement,
 )
 
 from isar_robot import telemetry
@@ -53,8 +53,7 @@ def create_image(task_actions: Union[TakeImage, TakeThermalImage]) -> Image:
         file_type="jpg",
     )
     image_metadata.tag_id = task_actions.tag_id
-    image_metadata.analysis_type = ["test1", "test2"]
-    image_metadata.additional = task_actions.metadata
+    image_metadata.inspection_description = task_actions.inspection_description
 
     filepath: Path = random.choice(list(example_images.iterdir()))
     data = _read_data_from_file(filepath)
@@ -71,8 +70,7 @@ def create_video(task_actions: TakeVideo) -> Video:
         duration=11,
     )
     video_metadata.tag_id = task_actions.tag_id
-    video_metadata.analysis_type = ["test1", "test2"]
-    video_metadata.additional = task_actions.metadata
+    video_metadata.inspection_description = task_actions.inspection_description
 
     filepath: Path = random.choice(list(example_videos.iterdir()))
     data = _read_data_from_file(filepath)
@@ -89,8 +87,7 @@ def create_thermal_video(task_actions: TakeThermalVideo):
         duration=task_actions.duration,
     )
     thermal_video_metadata.tag_id = task_actions.tag_id
-    thermal_video_metadata.analysis_type = ["test1", "test2"]
-    thermal_video_metadata.additional = task_actions.metadata
+    thermal_video_metadata.inspection_description = task_actions.inspection_description
 
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
     data = _read_data_from_file(filepath)
@@ -109,8 +106,7 @@ def create_audio(task_actions: RecordAudio):
         duration=task_actions.duration,
     )
     audio_metadata.tag_id = task_actions.tag_id
-    audio_metadata.analysis_type = ["test1", "test2"]
-    audio_metadata.additional = task_actions.metadata
+    audio_metadata.inspection_description = task_actions.inspection_description
 
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
     data = _read_data_from_file(filepath)
@@ -126,8 +122,9 @@ def create_gas_measurement(task_actions: TakeGasMeasurement):
         file_type="wav",
     )
     gas_measurement_metadata.tag_id = task_actions.tag_id
-    gas_measurement_metadata.analysis_type = ["test1", "test2"]
-    gas_measurement_metadata.additional = task_actions.metadata
+    gas_measurement_metadata.inspection_description = (
+        task_actions.inspection_description
+    )
 
     filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
     data = _read_data_from_file(filepath)
