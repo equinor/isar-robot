@@ -56,6 +56,8 @@ dacite==1.9.2
     # via
     #   alitra
     #   isar
+dependency-injector==4.46.0
+    # via isar
 fastapi==0.115.12
     # via
     #   fastapi-azure-auth
@@ -81,9 +83,7 @@ idna==3.10
     #   anyio
     #   httpx
     #   requests
-injector==0.22.0
-    # via isar
-isar==1.26.2
+isar==1.26.4
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
