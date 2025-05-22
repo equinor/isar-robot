@@ -24,7 +24,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Software Development :: Libraries",
 ]
-dependencies = ["alitra", "isar>=1.28.4"]
+dependencies = ["alitra", "isar>=1.29.0"]
 dynamic = ["version"]
 
 [project.urls]
