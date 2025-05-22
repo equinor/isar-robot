@@ -46,12 +46,6 @@ class Robot(RobotInterface):
         self.last_task_completion_time = datetime.now(timezone.utc)
         self.robot_is_home = False
 
-    def initiate_task(self, task: Task) -> None:
-        self.logger.info(f"Initiated task of type {task.__class__.__name__}")
-        self.current_task = task
-        self.robot_is_home = False
-        time.sleep(settings.TASK_DURATION_IN_SECONDS)
-
     def task_status(self, task_id: str) -> TaskStatus:
 
         now: datetime = datetime.now(timezone.utc)
