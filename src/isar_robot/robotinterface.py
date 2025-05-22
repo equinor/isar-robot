@@ -1,11 +1,9 @@
+from logging import Logger
+
 import logging
 import time
-from logging import Logger
-from queue import Queue
-from threading import Thread
-from typing import Callable, List, Optional
 from datetime import datetime, timezone
-
+from queue import Queue
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import RobotStatus, TaskStatus
@@ -17,11 +15,13 @@ from robot_interface.models.mission.task import (
     TakeThermalVideo,
     TakeVideo,
     Task,
-    TakeGasMeasurement,
+    TakeCO2Measurement,
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
+from threading import Thread
+from typing import Callable, List, Optional
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
@@ -53,7 +53,6 @@ class Robot(RobotInterface):
         time.sleep(settings.TASK_DURATION_IN_SECONDS)
 
     def task_status(self, task_id: str) -> TaskStatus:
-
         now: datetime = datetime.now(timezone.utc)
         if (
             now - self.last_task_completion_time
@@ -93,8 +92,8 @@ class Robot(RobotInterface):
             return inspections.create_video(task)
         elif type(task) is TakeThermalVideo:
             return inspections.create_thermal_video(task)
-        elif type(task) is TakeGasMeasurement:
-            return inspections.create_gas_measurement(task)
+        elif type(task) is TakeCO2Measurement:
+            return inspections.create_co2_measurement(task)
         elif type(task) is RecordAudio:
             return inspections.create_audio(task)
         else:
