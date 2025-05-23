@@ -1,27 +1,27 @@
-from logging import Logger
-
 import logging
 import time
 from datetime import datetime, timezone
+from logging import Logger
 from queue import Queue
+from threading import Thread
+from typing import Callable, List, Optional
+
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
     RecordAudio,
+    TakeCO2Measurement,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
     Task,
-    TakeCO2Measurement,
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
 from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
-from threading import Thread
-from typing import Callable, List, Optional
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
