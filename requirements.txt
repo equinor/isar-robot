@@ -85,7 +85,7 @@ idna==3.10
     #   anyio
     #   httpx
     #   requests
-isar==1.29.0
+isar==1.30.0
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via

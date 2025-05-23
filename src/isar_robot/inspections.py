@@ -1,13 +1,18 @@
+import logging
 import os
 import random
 from datetime import datetime, timezone
+from logging import Logger
 from pathlib import Path
+from typing import Union
+
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotRetrieveInspectionException,
 )
 from robot_interface.models.inspection.inspection import (
     Audio,
     AudioMetadata,
+    CO2Measurement,
     GasMeasurementMetadata,
     Image,
     ImageMetadata,
@@ -15,17 +20,15 @@ from robot_interface.models.inspection.inspection import (
     ThermalVideoMetadata,
     Video,
     VideoMetadata,
-    CO2Measurement,
 )
 from robot_interface.models.mission.task import (
     RecordAudio,
+    TakeCO2Measurement,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
-    TakeCO2Measurement,
 )
-from typing import Union
 
 from isar_robot import telemetry
 
@@ -43,12 +46,16 @@ example_audio: Path = Path(
     os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio"
 )
 
+logger: Logger = logging.getLogger("isar_robot")
+
 
 def create_image(task_actions: Union[TakeImage, TakeThermalImage]) -> Image:
     now: datetime = datetime.now(timezone.utc)
+
     image_metadata: ImageMetadata = ImageMetadata(
         start_time=now,
-        pose=telemetry.get_pose(),
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task_actions),
         file_type="jpg",
     )
     image_metadata.tag_id = task_actions.tag_id
@@ -64,7 +71,8 @@ def create_video(task_actions: TakeVideo) -> Video:
     now: datetime = datetime.now(timezone.utc)
     video_metadata: VideoMetadata = VideoMetadata(
         start_time=now,
-        pose=telemetry.get_pose(),
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task_actions),
         file_type="mp4",
         duration=11,
     )
@@ -81,7 +89,8 @@ def create_thermal_video(task_actions: TakeThermalVideo):
     now: datetime = datetime.now(timezone.utc)
     thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
         start_time=now,
-        pose=telemetry.get_pose(),
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task_actions),
         file_type="mp4",
         duration=task_actions.duration,
     )
@@ -100,7 +109,8 @@ def create_audio(task_actions: RecordAudio):
     now: datetime = datetime.now(timezone.utc)
     audio_metadata: AudioMetadata = AudioMetadata(
         start_time=now,
-        pose=telemetry.get_pose(),
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task_actions),
         file_type="wav",
         duration=task_actions.duration,
     )
@@ -117,7 +127,8 @@ def create_co2_measurement(task_actions: TakeCO2Measurement):
     now: datetime = datetime.now(timezone.utc)
     gas_measurement_metadata: GasMeasurementMetadata = GasMeasurementMetadata(
         start_time=now,
-        pose=telemetry.get_pose(),
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task_actions),
         file_type="not_a_file",
     )
     gas_measurement_metadata.tag_id = task_actions.tag_id
@@ -142,3 +153,13 @@ def _read_data_from_file(filename: Path) -> bytes:
             "An error occurred while retrieving the inspection data"
         )
     return data
+
+
+def _get_target_position(task_actions):
+    try:
+        target_position = task_actions.target
+    except AttributeError:
+        logger.debug("No inspection target specified, using robot position instead")
+        target_position = telemetry.get_pose().position
+
+    return target_position
