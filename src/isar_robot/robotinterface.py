@@ -12,6 +12,7 @@ from robot_interface.models.mission.status import RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
     RecordAudio,
+    ReturnToHome,
     TakeCO2Measurement,
     TakeImage,
     TakeThermalImage,
@@ -25,7 +26,6 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
-from isar_robot.utilities import is_return_to_home_task
 
 
 class Robot(RobotInterface):
@@ -61,7 +61,7 @@ class Robot(RobotInterface):
                 next_task = self.current_mission.tasks[self.current_task_ix]
 
         # This only happens for last task in mission
-        if is_return_to_home_task(self.current_task):
+        if isinstance(self.current_task, ReturnToHome):
             self.current_task = None
             if settings.SHOULD_FAIL_RETURN_TO_HOME_TASK:
                 return TaskStatus.Failed
