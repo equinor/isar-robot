@@ -115,7 +115,7 @@ class Robot(RobotInterface):
             mqtt_queue=queue,
             telemetry_method=self.telemetry.get_pose_telemetry,
             topic=f"isar/{isar_id}/pose",
-            interval=5,
+            interval=settings.ROBOT_POSE_PUBLISH_INTERVAL,
             retain=False,
         )
         pose_thread: Thread = Thread(
@@ -130,7 +130,7 @@ class Robot(RobotInterface):
             mqtt_queue=queue,
             telemetry_method=self._get_battery_telemetry,
             topic=f"isar/{isar_id}/battery",
-            interval=2,
+            interval=settings.ROBOT_BATTERY_PUBLISH_INTERVAL,
             retain=False,
         )
         battery_thread: Thread = Thread(
@@ -145,7 +145,7 @@ class Robot(RobotInterface):
             mqtt_queue=queue,
             telemetry_method=self.telemetry.get_obstacle_status_telemetry,
             topic=f"isar/{isar_id}/obstacle_status",
-            interval=10,
+            interval=settings.ROBOT_OBSTACLE_STATUS_PUBLISH_INTERVAL,
             retain=False,
         )
         obstacle_status_thread: Thread = Thread(
@@ -160,7 +160,7 @@ class Robot(RobotInterface):
             mqtt_queue=queue,
             telemetry_method=self.telemetry.get_pressure_telemetry,
             topic=f"isar/{isar_id}/pressure",
-            interval=20,
+            interval=settings.ROBOT_PRESSURE_PUBLISH_INTERVAL,
             retain=False,
         )
         pressure_thread: Thread = Thread(
