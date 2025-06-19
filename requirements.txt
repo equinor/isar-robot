@@ -24,7 +24,7 @@ azure-identity==1.23.0
     # via
     #   isar
     #   opencensus-ext-azure
-azure-keyvault-secrets==4.9.0
+azure-keyvault-secrets==4.10.0
     # via isar
 azure-storage-blob==12.25.1
     # via isar
@@ -56,9 +56,9 @@ dacite==1.9.2
     # via
     #   alitra
     #   isar
-dependency-injector==4.47.1
+dependency-injector==4.48.0
     # via isar
-fastapi==0.115.12
+fastapi==0.115.13
     # via
     #   fastapi-azure-auth
     #   isar
@@ -192,7 +192,7 @@ typing-inspection==0.4.1
     # via
     #   pydantic
     #   pydantic-settings
-urllib3==2.4.0
+urllib3==2.5.0
     # via requests
 uvicorn==0.34.3
     # via isar
