@@ -6,6 +6,7 @@ from queue import Queue
 from threading import Thread
 from typing import Callable, List, Optional
 
+from robot_interface.models.exceptions.robot_exceptions import RobotActionException
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import RobotStatus, TaskStatus
@@ -77,6 +78,17 @@ class Robot(RobotInterface):
         return TaskStatus.Successful
 
     def stop(self) -> None:
+        if (
+            isinstance(self.current_task, ReturnToHome)
+            and settings.SHOULD_FAIL_TO_STOP_RETURN_TO_HOME_MISSION
+        ):
+            raise RobotActionException("Failed to stop return home missios")
+        if (
+            not isinstance(self.current_task, ReturnToHome)
+            and self.current_task is not None
+            and settings.SHOULD_FAIL_TO_STOP_NORMAL_MISSION
+        ):
+            raise RobotActionException("Failed to stop missios")
         return
 
     def get_inspection(self, task: InspectionTask) -> Inspection:
