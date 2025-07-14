@@ -38,9 +38,7 @@ The variable names and types are as follows:
 TASK_DURATION_IN_SECONDS: float
 MISSION_DURATION_IN_SECONDS: float
 SHOULD_FAIL_NORMAL_TASK: bool
-SHOULD_FAIL_NORMAL_MISSION: bool
-SHOULD_FAIL_RETURN_TO_HOME_TASK: bool 
-SHOULD_FAIL_RETURN_TO_HOME_MISSION: bool
+SHOULD_FAIL_RETURN_TO_HOME_TASK: bool
 ```
 
 Every configuration variable is defined in [settings.py](https://github.com/equinor/isar-robot/blob/main/src/isar_robot/config/settings.py), and they may all be overwritten by specifying the variables in your ".env" file in [ISAR](https://github.com/equinor/isar). Note that the configuration variable must be prefixed with ROBOT_ when specified in the ISAR environment file.
