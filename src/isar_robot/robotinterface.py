@@ -6,6 +6,8 @@ from queue import Queue
 from threading import Thread
 from typing import Callable, List, Optional
 
+from robot_interface.models.exceptions.robot_exceptions import \
+    RobotAlreadyHomeException
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import RobotStatus, TaskStatus
@@ -38,6 +40,9 @@ class Robot(RobotInterface):
         self.robot_is_home: bool = False
 
     def initiate_mission(self, mission: Mission) -> None:
+        if mission._is_return_to_home_mission() and self.robot_is_home:
+            raise RobotAlreadyHomeException("Robot is already at home. Ignoring return to home mission")
+
         time.sleep(settings.INITIATE_MISSION_DURATION_IN_SECONDS)
         self.current_mission = mission
         self.current_task_ix = 0
