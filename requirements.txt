@@ -307,7 +307,7 @@ urllib3==2.5.0
     # via requests
 uvicorn==0.35.0
     # via isar
-wrapt==1.17.2
+wrapt==1.17.3
     # via
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-dbapi
