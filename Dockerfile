@@ -28,7 +28,7 @@ EXPOSE 3000
 ENV IS_DOCKER=true
 
 # Add non-root user
-RUN useradd --create-home --shell /bin/bash 1000
+RUN useradd --create-home --uid 1000 --shell /bin/bash app
 RUN chown -R 1000 /app
 RUN chmod 755 /app
 USER 1000
