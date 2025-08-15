@@ -99,7 +99,7 @@ idna==3.10
     #   requests
 importlib-metadata==8.7.0
     # via opentelemetry-api
-isar==1.32.1
+isar==1.32.2
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
@@ -231,7 +231,7 @@ packaging==25.0
     #   opentelemetry-instrumentation-flask
 paho-mqtt==2.1.0
     # via isar
-protobuf==6.31.1
+protobuf==6.32.0
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
