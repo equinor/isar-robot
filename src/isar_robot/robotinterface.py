@@ -186,3 +186,6 @@ class Robot(RobotInterface):
 
     def generate_media_config(self) -> Optional[MediaConfig]:
         return None
+
+    def get_battery_level(self):
+        return self.telemetry.get_battery_level()
