@@ -188,4 +188,4 @@ class Robot(RobotInterface):
         return None
 
     def get_battery_level(self):
-        return self.telemetry.get_battery_level()
+        return self.telemetry.current_battery_level

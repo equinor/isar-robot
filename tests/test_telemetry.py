@@ -5,7 +5,7 @@ def test_get_battery_level() -> None:
     telemetry = Telemetry()
     for is_home in [None, True, False]:
         for _ in range(100):
-            battery_level: float = telemetry.get_battery_level(is_home=is_home)
+            battery_level: float = telemetry._get_battery_level(is_home=is_home)
             assert battery_level >= 0
             assert battery_level <= 100
 
