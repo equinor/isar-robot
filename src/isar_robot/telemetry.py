@@ -54,7 +54,7 @@ class Telemetry:
         self.charging_rate: float = 2.0
         self.discharging_rate: float = 0.4
 
-    def get_battery_level(self, is_home: Optional[bool] = None) -> float:
+    def _get_battery_level(self, is_home: Optional[bool] = None) -> float:
         if settings.SHOULD_HAVE_RANDOM_BATTERY_LEVEL or is_home is None:
             # Return random float in the range [50, 100]
             return random.randint(500, 1000) / 10.0
@@ -80,7 +80,7 @@ class Telemetry:
         self, isar_id: str, robot_name: str, is_home: Optional[bool] = None
     ) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
-            battery_level=self.get_battery_level(is_home=is_home),
+            battery_level=self._get_battery_level(is_home=is_home),
             battery_state=self._get_battery_state(is_home=is_home),
             isar_id=isar_id,
             robot_name=robot_name,
