@@ -1,24 +1,24 @@
 import logging
-import time
 from datetime import datetime, timezone
 from logging import Logger
 from queue import Queue
 from threading import Thread
 from typing import Callable, List, Optional
 
+from robot_interface.models.exceptions.robot_exceptions import (
+    RobotCommunicationException,
+)
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
-from robot_interface.models.mission.status import RobotStatus, TaskStatus
+from robot_interface.models.mission.status import MissionStatus, RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
     RecordAudio,
-    ReturnToHome,
     TakeCO2Measurement,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
-    Task,
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
@@ -26,58 +26,45 @@ from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
+from isar_robot.simulation import MissionSimulation
 
 
 class Robot(RobotInterface):
     def __init__(self) -> None:
         self.telemetry = telemetry.Telemetry()
         self.logger: Logger = logging.getLogger("isar_robot")
-        self.current_mission: Optional[Mission] = None
-        self.current_task: Optional[Task] = None
         self.last_task_completion_time: datetime = datetime.now(timezone.utc)
         self.robot_is_home: bool = False
+        self.mission_simulation: Optional[MissionSimulation] = None
 
     def initiate_mission(self, mission: Mission) -> None:
-        time.sleep(settings.INITIATE_MISSION_DURATION_IN_SECONDS)
-        self.current_mission = mission
-        self.current_task_ix = 0
-        self.current_task = mission.tasks[self.current_task_ix]
-        self.task_len = len(mission.tasks)
-        self.last_task_completion_time = datetime.now(timezone.utc)
+        if self.mission_simulation and not self.mission_simulation.mission_done:
+            raise RobotCommunicationException(
+                error_description="Could not start mission as one is already running"
+            )
+        elif self.mission_simulation:
+            self.mission_simulation.join()
+        self.mission_simulation = MissionSimulation(mission)
+        self.mission_simulation.start()
         self.robot_is_home = False
 
     def task_status(self, task_id: str) -> TaskStatus:
-        now: datetime = datetime.now(timezone.utc)
-        if (
-            now - self.last_task_completion_time
-        ).total_seconds() < settings.TASK_DURATION_IN_SECONDS:
-            return TaskStatus.InProgress
-        self.last_task_completion_time = now
+        if not self.mission_simulation:
+            raise RobotCommunicationException(
+                error_description="Could not get task status as no mission is running"
+            )
 
-        next_task: Task = None
-        if self.current_mission:
-            if self.current_task_ix < self.task_len - 1:
-                self.current_task_ix = self.current_task_ix + 1
-                next_task = self.current_mission.tasks[self.current_task_ix]
-
-        # This only happens for last task in mission
-        if isinstance(self.current_task, ReturnToHome):
-            self.current_task = None
-            if settings.SHOULD_FAIL_RETURN_TO_HOME_TASK:
-                return TaskStatus.Failed
+        status = self.mission_simulation.task_status(task_id)
+        if status == TaskStatus.Successful and self.mission_simulation.is_return_home:
             self.robot_is_home = True
-            return TaskStatus.Successful
-
-        if next_task:
-            self.current_task = next_task
-        else:
-            self.current_task = None
-        if settings.SHOULD_FAIL_NORMAL_TASK:
-            return TaskStatus.Failed
-        return TaskStatus.Successful
+        return status
 
     def stop(self) -> None:
-        return
+        if not self.mission_simulation:
+            raise RobotCommunicationException(
+                error_description="Attempted to stop non-existent mission"
+            )
+        self.mission_simulation.stop_mission()
 
     def get_inspection(self, task: InspectionTask) -> Inspection:
         if type(task) in [TakeImage, TakeThermalImage]:
@@ -174,15 +161,29 @@ class Robot(RobotInterface):
         return publisher_threads
 
     def robot_status(self) -> RobotStatus:
+        if self.mission_simulation and self.mission_simulation.is_alive():
+            mission_status: MissionStatus = self.mission_simulation.mission_status()
+            if mission_status == MissionStatus.Paused:
+                return RobotStatus.Paused
+            elif mission_status in [MissionStatus.InProgress, MissionStatus.NotStarted]:
+                return RobotStatus.Busy
         if self.robot_is_home:
             return RobotStatus.Home
         return RobotStatus.Available
 
     def pause(self) -> None:
-        return
+        if not self.mission_simulation:
+            raise RobotCommunicationException(
+                error_description="Attempted to pause non-existent mission"
+            )
+        self.mission_simulation.pause_mission()
 
     def resume(self) -> None:
-        return
+        if not self.mission_simulation:
+            raise RobotCommunicationException(
+                error_description="Attempted to resume non-existent mission"
+            )
+        self.mission_simulation.resume_mission()
 
     def generate_media_config(self) -> Optional[MediaConfig]:
         return None

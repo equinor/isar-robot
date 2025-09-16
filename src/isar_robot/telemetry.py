@@ -1,11 +1,9 @@
 import json
 import random
 from datetime import datetime, timezone
+from typing import Optional
 
 from alitra import Frame, Orientation, Pose, Position
-
-from isar_robot.config.settings import settings
-
 from robot_interface.models.robots.battery_state import BatteryState
 from robot_interface.telemetry.payloads import (
     TelemetryBatteryPayload,
@@ -15,7 +13,7 @@ from robot_interface.telemetry.payloads import (
 )
 from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
-from typing import Optional
+from isar_robot.config.settings import settings
 
 
 def _get_pressure_level() -> float:
