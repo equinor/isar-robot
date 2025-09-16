@@ -1,0 +1,143 @@
+import logging
+import random
+import time
+from threading import Event, Thread
+
+from robot_interface.models.exceptions.robot_exceptions import (
+    RobotCommunicationException,
+    RobotTaskStatusException,
+)
+from robot_interface.models.mission.mission import Mission
+from robot_interface.models.mission.status import MissionStatus, TaskStatus
+from robot_interface.models.mission.task import ReturnToHome
+
+from isar_robot.config.settings import settings
+
+
+class MissionSimulation(Thread):
+    def __init__(
+        self,
+        mission: Mission,
+    ):
+        self.logger = logging.getLogger("isar robot mission simulation")
+        self.mission = mission
+        self.task_index = 0
+        self.n_tasks = len(mission.tasks)
+        self.robot_is_home = False
+        self.task_statuses = list(
+            map(lambda _: TaskStatus.NotStarted, self.mission.tasks)
+        )
+        self.task_id_mapping = {}
+        for i, task in enumerate(self.mission.tasks):
+            self.task_id_mapping[task.id] = i
+
+        self.is_return_home: bool = len(self.mission.tasks) == 1 and isinstance(
+            self.mission.tasks[0], ReturnToHome
+        )
+        self.task_failure_probability: float = (
+            settings.MISSION_SIMULATION_TASK_FAILURE_PROBABILITY
+        )
+        self.api_delay_modifier: float = settings.MISSION_SIMULATION_API_DELAY_MODIFIER
+
+        self.mission_done: bool = False
+        self.all_tasks_done: bool = False
+
+        self.signal_resume_mission: Event = Event()
+        self.signal_resume_mission.set()
+        self.signal_stop_mission: Event = Event()
+        Thread.__init__(self, name="Mission simulation thread")
+
+    def stop(self) -> None:
+        return
+
+    def _simulate_api_call_delay(self):
+        time.sleep(random.random() * self.api_delay_modifier)
+
+    def pause_mission(self):
+        if self.mission_done:
+            raise RobotCommunicationException(
+                error_description="Could not pause non-existent mission"
+            )
+        self.signal_resume_mission.clear()
+
+    def resume_mission(self):
+        if self.mission_done:
+            raise RobotCommunicationException(
+                error_description="Could not resume non-existent mission"
+            )
+        self.signal_resume_mission.set()
+
+    def stop_mission(self):
+        if self.mission_done:
+            raise RobotCommunicationException(
+                error_description="Could not stop non-existent mission"
+            )
+        time.sleep(settings.MISSION_SIMULATION_TIME_TO_STOP)
+        self.signal_stop_mission.set()
+
+    def task_status(self, task_id: str):
+        task_index = self.task_id_mapping[task_id]
+        if task_index < 0 or task_index > self.n_tasks - 1:
+            raise RobotTaskStatusException(
+                error_description="Task ID did not match any ongoing tasks"
+            )
+        return self.task_statuses[task_index]
+
+    def mission_status(self):
+        if not self.signal_resume_mission.wait(0):
+            return MissionStatus.Paused
+        if all(map(lambda status: status == TaskStatus.Successful, self.task_statuses)):
+            return MissionStatus.Successful
+        if all(map(lambda status: status == TaskStatus.NotStarted, self.task_statuses)):
+            return MissionStatus.NotStarted
+        if any(
+            map(
+                lambda status: status in [TaskStatus.InProgress, TaskStatus.NotStarted],
+                self.task_statuses,
+            )
+        ):
+            return MissionStatus.InProgress
+        if all(map(lambda status: status == TaskStatus.Failed, self.task_statuses)):
+            return MissionStatus.Failed
+        if any(map(lambda status: status == TaskStatus.Cancelled, self.task_statuses)):
+            return MissionStatus.Cancelled
+        if any(map(lambda status: status == TaskStatus.Failed, self.task_statuses)):
+            return MissionStatus.PartiallySuccessful
+        raise RobotTaskStatusException("Unhandled task status detected")
+
+    def _complete_task(self, task_status: TaskStatus):
+        if self.task_index < self.n_tasks:
+            self.task_statuses[self.task_index] = task_status
+            self.task_index = self.task_index + 1
+        if self.task_index >= self.n_tasks:
+            self.all_tasks_done = True
+        else:
+            self.task_statuses[self.task_index] = TaskStatus.InProgress
+
+    def run(self):
+        time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
+
+        if self.signal_stop_mission.is_set():
+            return
+
+        thread_check_interval = settings.MISSION_SIMULATION_TASK_DURATION
+        while not self.signal_stop_mission.wait(thread_check_interval):
+
+            self.signal_resume_mission.wait()
+
+            if (
+                self.is_return_home
+                and not settings.MISSION_SIMULATION_SHOULD_FAIL_RETURN_TO_HOME_TASK
+            ) or not settings.MISSION_SIMULATION_SHOULD_FAIL_NORMAL_TASK:
+                self._complete_task(TaskStatus.Successful)
+            else:
+                if random.random() > self.task_failure_probability:
+                    self._complete_task(TaskStatus.Failed)
+                else:
+                    self._complete_task(TaskStatus.Successful)
+            if self.all_tasks_done:
+                break
+
+        time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
+        self.mission_done = True
+        self.logger.info("Exiting mission simulation thread")
