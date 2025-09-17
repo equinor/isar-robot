@@ -31,7 +31,7 @@ from robot_interface.models.mission.task import (
     TakeVideo,
 )
 
-from isar_robot import telemetry
+from isar_robot.telemetry import Telemetry
 
 example_images: Path = Path(
     os.path.dirname(os.path.realpath(__file__)), "example_data/example_images"
@@ -50,13 +50,15 @@ example_audio: Path = Path(
 logger: Logger = logging.getLogger("isar_robot")
 
 
-def create_image(task: Union[TakeImage, TakeThermalImage]) -> Image:
+def create_image(
+    task: Union[TakeImage, TakeThermalImage], telemetry: Telemetry
+) -> Image:
     now: datetime = datetime.now(timezone.utc)
 
     image_metadata: ImageMetadata = ImageMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
-        target_position=_get_target_position(task),
+        target_position=_get_target_position(task, telemetry),
         file_type="jpg",
     )
     image_metadata.tag_id = task.tag_id
@@ -68,12 +70,12 @@ def create_image(task: Union[TakeImage, TakeThermalImage]) -> Image:
     return Image(metadata=image_metadata, id=task.inspection_id, data=data)
 
 
-def create_video(task: TakeVideo) -> Video:
+def create_video(task: TakeVideo, telemetry: Telemetry) -> Video:
     now: datetime = datetime.now(timezone.utc)
     video_metadata: VideoMetadata = VideoMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
-        target_position=_get_target_position(task),
+        target_position=_get_target_position(task, telemetry),
         file_type="mp4",
         duration=11,
     )
@@ -86,12 +88,12 @@ def create_video(task: TakeVideo) -> Video:
     return Video(metadata=video_metadata, id=task.inspection_id, data=data)
 
 
-def create_thermal_video(task: TakeThermalVideo):
+def create_thermal_video(task: TakeThermalVideo, telemetry: Telemetry):
     now: datetime = datetime.now(timezone.utc)
     thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
-        target_position=_get_target_position(task),
+        target_position=_get_target_position(task, telemetry),
         file_type="mp4",
         duration=task.duration,
     )
@@ -106,12 +108,12 @@ def create_thermal_video(task: TakeThermalVideo):
     )
 
 
-def create_audio(task: RecordAudio):
+def create_audio(task: RecordAudio, telemetry: Telemetry):
     now: datetime = datetime.now(timezone.utc)
     audio_metadata: AudioMetadata = AudioMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
-        target_position=_get_target_position(task),
+        target_position=_get_target_position(task, telemetry),
         file_type="wav",
         duration=task.duration,
     )
@@ -124,12 +126,12 @@ def create_audio(task: RecordAudio):
     return Audio(metadata=audio_metadata, id=task.inspection_id, data=data)
 
 
-def create_co2_measurement(task: TakeCO2Measurement):
+def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
     now: datetime = datetime.now(timezone.utc)
     gas_measurement_metadata: GasMeasurementMetadata = GasMeasurementMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
-        target_position=_get_target_position(task),
+        target_position=_get_target_position(task, telemetry),
         file_type="not_a_file",
     )
     gas_measurement_metadata.tag_id = task.tag_id
@@ -154,7 +156,7 @@ def _read_data_from_file(filename: Path) -> bytes:
     return data
 
 
-def _get_target_position(task: InspectionTask):
+def _get_target_position(task: InspectionTask, telemetry: Telemetry):
     try:
         target_position = task.target
     except AttributeError:
