@@ -28,22 +28,6 @@ def _get_obstacle_status() -> bool:
     return False
 
 
-def get_pose() -> Pose:
-    random_position: Position = Position(
-        x=random.uniform(0.1, 10),
-        y=random.uniform(0.1, 10),
-        z=random.uniform(0.1, 10),
-        frame=Frame("asset"),
-    )
-    orientation: Orientation = Orientation(x=0, y=0, z=0, w=1, frame=Frame("asset"))
-    random_pose: Pose = Pose(
-        position=random_position,
-        orientation=orientation,
-        frame=Frame("asset"),
-    )
-    return random_pose
-
-
 class Telemetry:
     def __init__(self) -> None:
         self.current_battery_level: float = 75.0
@@ -51,6 +35,36 @@ class Telemetry:
         self.max_battery_level: int = 100
         self.charging_rate: float = 2.0
         self.discharging_rate: float = 0.4
+
+        self.current_pose = Pose(
+            Position(
+                x=1,
+                y=1,
+                z=1,
+                frame=Frame("asset"),
+            ),
+            Orientation(x=0, y=0, z=0, w=1, frame=Frame("asset")),
+            frame=Frame("asset"),
+        )
+        self.movement_percentage: float = 0.5
+
+    def get_pose(self) -> Pose:
+        return self.current_pose
+
+    def _get_pose(self, current_target: Optional[Position]) -> Pose:
+        if not current_target:
+            return self.current_pose
+
+        self.current_pose.position.x += self.movement_percentage * (
+            current_target.x - self.current_pose.position.x
+        )
+        self.current_pose.position.y += self.movement_percentage * (
+            current_target.y - self.current_pose.position.y
+        )
+        self.current_pose.position.z += self.movement_percentage * (
+            current_target.z - self.current_pose.position.z
+        )
+        return self.current_pose
 
     def _get_battery_level(self, is_home: Optional[bool] = None) -> float:
         if settings.SHOULD_HAVE_RANDOM_BATTERY_LEVEL or is_home is None:
@@ -86,9 +100,11 @@ class Telemetry:
         )
         return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
 
-    def get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
+    def get_pose_telemetry(
+        self, isar_id: str, robot_name: str, current_target: Optional[Position]
+    ) -> str:
         pose_payload: TelemetryPosePayload = TelemetryPosePayload(
-            pose=get_pose(),
+            pose=self._get_pose(current_target=current_target),
             isar_id=isar_id,
             robot_name=robot_name,
             timestamp=datetime.now(timezone.utc),

@@ -4,6 +4,7 @@ from logging import Logger
 from queue import Queue
 from threading import Thread
 from typing import Callable, List, Optional
+from alitra import Position
 
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotCommunicationException,
@@ -68,15 +69,15 @@ class Robot(RobotInterface):
 
     def get_inspection(self, task: InspectionTask) -> Inspection:
         if type(task) in [TakeImage, TakeThermalImage]:
-            return inspections.create_image(task)
+            return inspections.create_image(task, self.telemetry)
         elif type(task) is TakeVideo:
-            return inspections.create_video(task)
+            return inspections.create_video(task, self.telemetry)
         elif type(task) is TakeThermalVideo:
-            return inspections.create_thermal_video(task)
+            return inspections.create_thermal_video(task, self.telemetry)
         elif type(task) is TakeCO2Measurement:
-            return inspections.create_co2_measurement(task)
+            return inspections.create_co2_measurement(task, self.telemetry)
         elif type(task) is RecordAudio:
-            return inspections.create_audio(task)
+            return inspections.create_audio(task, self.telemetry)
         else:
             return None
 
@@ -87,6 +88,15 @@ class Robot(RobotInterface):
 
     def initialize(self) -> None:
         return
+
+    def _get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
+        current_target: Optional[Position] = None
+        if self.current_task and isinstance(self.current_task, InspectionTask):
+            current_target = self.current_task.robot_pose.position
+
+        return self.telemetry.get_pose_telemetry(
+            isar_id=isar_id, robot_name=robot_name, current_target=current_target
+        )
 
     def _get_battery_telemetry(self, isar_id: str, robot_name: str) -> str:
         return self.telemetry.get_battery_telemetry(
@@ -100,7 +110,7 @@ class Robot(RobotInterface):
 
         pose_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
-            telemetry_method=self.telemetry.get_pose_telemetry,
+            telemetry_method=self._get_pose_telemetry,
             topic=f"isar/{isar_id}/pose",
             interval=settings.ROBOT_POSE_PUBLISH_INTERVAL,
             retain=False,

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     MISSION_SIMULATION_TASK_DURATION: float = Field(default=5.0)
     INITIATE_MISSION_DURATION_IN_SECONDS: float = Field(default=0.1)
     SHOULD_HAVE_RANDOM_BATTERY_LEVEL: bool = Field(default=False)
-    ROBOT_POSE_PUBLISH_INTERVAL: float = Field(default=5)
+    ROBOT_POSE_PUBLISH_INTERVAL: float = Field(default=1)
     ROBOT_BATTERY_PUBLISH_INTERVAL: float = Field(default=2)
     ROBOT_OBSTACLE_STATUS_PUBLISH_INTERVAL: float = Field(default=10)
     ROBOT_PRESSURE_PUBLISH_INTERVAL: float = Field(default=20)
