@@ -20,11 +20,11 @@ class MissionSimulation(Thread):
         mission: Mission,
     ):
         self.logger = logging.getLogger("isar robot mission simulation")
-        self.mission = mission
-        self.task_index = 0
-        self.n_tasks = len(mission.tasks)
-        self.robot_is_home = False
-        self.task_statuses = list(
+        self.mission: Mission = mission
+        self.task_index: int = 0
+        self.n_tasks: int = len(mission.tasks)
+        self.robot_is_home: bool = False
+        self.task_statuses: list[TaskStatus] = list(
             map(lambda _: TaskStatus.NotStarted, self.mission.tasks)
         )
         self.task_id_mapping = {}
