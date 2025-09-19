@@ -83,6 +83,11 @@ class MissionSimulation(Thread):
             )
         return self.task_statuses[task_index]
 
+    def current_task(self):
+        if self.task_index < self.n_tasks:
+            return self.mission.tasks[self.task_index]
+        return None
+
     def mission_status(self):
         if not self.signal_resume_mission.wait(0):
             return MissionStatus.Paused
