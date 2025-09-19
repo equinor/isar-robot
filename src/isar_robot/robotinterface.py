@@ -91,8 +91,10 @@ class Robot(RobotInterface):
 
     def _get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
         current_target: Optional[Position] = None
-        if self.current_task and isinstance(self.current_task, InspectionTask):
-            current_target = self.current_task.robot_pose.position
+        if self.mission_simulation:
+            current_task = self.mission_simulation.current_task()
+            if current_task and isinstance(current_task, InspectionTask):
+                current_target = current_task.robot_pose.position
 
         return self.telemetry.get_pose_telemetry(
             isar_id=isar_id, robot_name=robot_name, current_target=current_target
