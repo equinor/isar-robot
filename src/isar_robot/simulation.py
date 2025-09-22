@@ -74,6 +74,7 @@ class MissionSimulation(Thread):
             )
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_STOP)
         self.signal_stop_mission.set()
+        self.signal_resume_mission.set()
         self.join()
 
     def task_status(self, task_id: str):
@@ -124,12 +125,16 @@ class MissionSimulation(Thread):
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
 
         if self.signal_stop_mission.is_set():
+            self.mission_done = True
             return
 
         thread_check_interval = settings.MISSION_SIMULATION_TASK_DURATION
         while not self.signal_stop_mission.wait(thread_check_interval):
 
             self.signal_resume_mission.wait()
+
+            if self.signal_stop_mission.is_set():
+                break
 
             if (
                 self.is_return_home
