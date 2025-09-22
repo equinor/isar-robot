@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     ROBOT_OBSTACLE_STATUS_PUBLISH_INTERVAL: float = Field(default=10)
     ROBOT_PRESSURE_PUBLISH_INTERVAL: float = Field(default=20)
     MISSION_SIMULATION_TIME_TO_START: float = Field(default=5.0)
-    MISSION_SIMULATION_TIME_TO_STOP: float = Field(default=5.0)
+    MISSION_SIMULATION_TIME_TO_STOP: float = Field(default=2.0)
 
     # This is the time from the last task finishing to the mission finishing
     MISSION_SIMULATION_MISSION_COMPLETION_DELAY: float = Field(default=2.0)
