@@ -173,7 +173,7 @@ class Robot(RobotInterface):
         return publisher_threads
 
     def robot_status(self) -> RobotStatus:
-        if self.mission_simulation and self.mission_simulation.is_alive():
+        if self.mission_simulation and not self.mission_simulation.mission_done:
             mission_status: MissionStatus = self.mission_simulation.mission_status()
             if mission_status == MissionStatus.Paused:
                 return RobotStatus.Paused

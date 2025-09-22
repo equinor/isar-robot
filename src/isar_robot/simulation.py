@@ -74,6 +74,7 @@ class MissionSimulation(Thread):
             )
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_STOP)
         self.signal_stop_mission.set()
+        self.join()
 
     def task_status(self, task_id: str):
         task_index = self.task_id_mapping[task_id]
