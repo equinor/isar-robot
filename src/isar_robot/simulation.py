@@ -41,6 +41,7 @@ class MissionSimulation(Thread):
 
         self.mission_done: bool = False
         self.all_tasks_done: bool = False
+        self.mission_started: bool = False
 
         self.signal_resume_mission: Event = Event()
         self.signal_resume_mission.set()
@@ -54,21 +55,21 @@ class MissionSimulation(Thread):
         time.sleep(random.random() * self.api_delay_modifier)
 
     def pause_mission(self):
-        if self.mission_done:
+        if self.mission_done or not self.mission_started:
             raise RobotCommunicationException(
                 error_description="Could not pause non-existent mission"
             )
         self.signal_resume_mission.clear()
 
     def resume_mission(self):
-        if self.mission_done:
+        if self.mission_done or not self.mission_started:
             raise RobotCommunicationException(
                 error_description="Could not resume non-existent mission"
             )
         self.signal_resume_mission.set()
 
     def stop_mission(self):
-        if self.mission_done:
+        if self.mission_done or not self.mission_started:
             raise RobotCommunicationException(
                 error_description="Could not stop non-existent mission"
             )
@@ -123,6 +124,8 @@ class MissionSimulation(Thread):
 
     def run(self):
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
+
+        self.mission_started = True
 
         if self.signal_stop_mission.is_set():
             self.mission_done = True
