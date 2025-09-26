@@ -37,7 +37,11 @@ jobs:
     with:
       Registry: ghcr.io
       ImageName: ${{ github.repository }}
-      Tag: ${{ needs.get-short-sha.outputs.tag }}
+      # Add dev. prefix for the tags used in dev environment.
+      # The commit hash can be interpreted as an integer if only numbers
+      # when this tag later is written to a yaml file
+      # PS: Needs to match deploy.with.Tag
+      Tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
     secrets:
       RegistryUsername: ${{ github.actor }}
       RegistryPassword: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +54,11 @@ jobs:
       Environment: development
       Registry: ghcr.io
       ImageName: ${{ github.repository }}
-      Tag: ${{ needs.get-short-sha.outputs.tag }}
+      # Add dev. prefix for the tags used in dev environment. 
+      # The commit hash can be interpreted as an integer if only numbers
+      # when this tag later is written to a yaml file
+      # PS: Needs to match build-and-push-components.with.Tag
+      Tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
       AuthorEmail: ${{ github.event.head_commit.author.email }}
       AuthorName: ${{ github.event.head_commit.author.name }}
     secrets:
