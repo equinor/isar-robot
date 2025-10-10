@@ -8,6 +8,7 @@ from alitra import Position
 
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotCommunicationException,
+    RobotInfeasibleMissionException,
 )
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
@@ -38,7 +39,7 @@ class Robot(RobotInterface):
         self.robot_is_home: bool = False
         self.mission_simulation: Optional[MissionSimulation] = None
 
-    def initiate_mission(self, mission: Mission) -> None:
+    def prepare_mission(self, mission: Mission) -> None:
         if self.mission_simulation and not self.mission_simulation.mission_done:
             raise RobotCommunicationException(
                 error_description="Could not start mission as one is already running"
@@ -46,6 +47,12 @@ class Robot(RobotInterface):
         elif self.mission_simulation:
             self.mission_simulation.join()
         self.mission_simulation = MissionSimulation(mission)
+
+    def start_mission(self, mission_id: str) -> None:
+        if self.mission_simulation is None:
+            raise RobotInfeasibleMissionException(
+                error_description="Mission simulation is None. Cannot start mission."
+            )
         self.mission_simulation.start()
         self.robot_is_home = False
 
