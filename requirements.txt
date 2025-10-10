@@ -27,7 +27,7 @@ azure-core==1.35.1
     #   msrest
 azure-core-tracing-opentelemetry==1.0.0b12
     # via azure-monitor-opentelemetry
-azure-identity==1.25.0
+azure-identity==1.25.1
     # via
     #   azure-monitor-opentelemetry-exporter
     #   isar
@@ -35,7 +35,7 @@ azure-keyvault-secrets==4.10.0
     # via isar
 azure-monitor-opentelemetry==1.8.1
     # via isar
-azure-monitor-opentelemetry-exporter==1.0.0b42
+azure-monitor-opentelemetry-exporter==1.0.0b43
     # via
     #   azure-monitor-opentelemetry
     #   isar
@@ -70,7 +70,7 @@ dacite==1.9.2
     #   isar
 dependency-injector==4.48.2
     # via isar
-fastapi==0.118.0
+fastapi==0.118.2
     # via
     #   fastapi-azure-auth
     #   isar
@@ -239,12 +239,12 @@ psutil==7.1.0
     # via azure-monitor-opentelemetry-exporter
 pycparser==2.23
     # via cffi
-pydantic==2.11.10
+pydantic==2.12.0
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.33.2
+pydantic-core==2.41.1
     # via pydantic
 pydantic-settings==2.11.0
     # via isar
