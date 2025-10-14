@@ -5,6 +5,10 @@ concurrency:
   group: staging-concurrency
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   release:
     types: [published]
@@ -17,6 +21,19 @@ jobs:
     steps:
       - name: Empty Step
         run: echo "Hello World"
+
+  build-and-push-release-to-ghcr:
+    name: Build images in ghcr
+    needs: trigger-github-deployment
+    uses: ./.github/workflows/publish_component.yml
+    with:
+      Registry: ghcr.io
+      ImageName: ${{ github.repository }}
+      Tag: ${{ github.event.release.tag_name }}
+      SecondaryTag: latest
+    secrets:
+      RegistryUsername: ${{ github.actor }}
+      RegistryPassword: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-push-release-to-dev:
     name: Update container in dev with version tag

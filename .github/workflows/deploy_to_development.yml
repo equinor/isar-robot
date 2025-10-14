@@ -5,6 +5,10 @@ concurrency:
   group: development-concurrency
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     branches:
