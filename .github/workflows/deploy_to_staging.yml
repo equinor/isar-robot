@@ -26,6 +26,7 @@ jobs:
       Registry: auroradevacr.azurecr.io
       ImageName: robotics/isar-robot
       Tag: ${{ github.event.release.tag_name }}
+      SecondaryTag: 'latest'
     secrets:
       RegistryUsername: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
       RegistryPassword: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
@@ -38,6 +39,7 @@ jobs:
       Registry: auroraprodacr.azurecr.io
       ImageName: robotics/isar-robot
       Tag: ${{ github.event.release.tag_name }}
+      SecondaryTag: 'latest'
     secrets:
       RegistryUsername: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
       RegistryPassword: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
