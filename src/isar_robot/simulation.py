@@ -6,6 +6,7 @@ from threading import Event, Thread
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotCommunicationException,
     RobotTaskStatusException,
+    RobotMissionStatusException,
 )
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, TaskStatus
@@ -94,10 +95,12 @@ class MissionSimulation(Thread):
     def mission_status(self):
         if not self.signal_resume_mission.wait(0):
             return MissionStatus.Paused
-        if all(map(lambda status: status == TaskStatus.Successful, self.task_statuses)):
-            return MissionStatus.Successful
         if all(map(lambda status: status == TaskStatus.NotStarted, self.task_statuses)):
             return MissionStatus.NotStarted
+        if not self.mission_done:
+            return MissionStatus.InProgress
+        if all(map(lambda status: status == TaskStatus.Successful, self.task_statuses)):
+            return MissionStatus.Successful
         if any(
             map(
                 lambda status: status in [TaskStatus.InProgress, TaskStatus.NotStarted],
@@ -111,7 +114,7 @@ class MissionSimulation(Thread):
             return MissionStatus.Cancelled
         if any(map(lambda status: status == TaskStatus.Failed, self.task_statuses)):
             return MissionStatus.PartiallySuccessful
-        raise RobotTaskStatusException("Unhandled task status detected")
+        raise RobotMissionStatusException("Unhandled mission status detected")
 
     def _complete_task(self, task_status: TaskStatus):
         if self.task_index < self.n_tasks:

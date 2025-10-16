@@ -60,6 +60,9 @@ class Robot(RobotInterface):
             self.robot_is_home = True
         return status
 
+    def mission_status(self, mission_id):
+        return self.mission_simulation.mission_status()
+
     def stop(self) -> None:
         if not self.mission_simulation:
             raise RobotCommunicationException(
