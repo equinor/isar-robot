@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     MISSION_SIMULATION_MISSION_COMPLETION_DELAY: float = Field(default=2.0)
     MISSION_SIMULATION_SHOULD_FAIL_RETURN_TO_HOME_TASK: bool = Field(default=False)
     MISSION_SIMULATION_SHOULD_FAIL_NORMAL_TASK: bool = Field(default=False)
-    MISSION_SIMULATION_TASK_FAILURE_PROBABILITY: float = Field(default=0.05)
+    MISSION_SIMULATION_TASK_FAILURE_PROBABILITY: float = Field(default=0.0)
 
     # This will cause delay between 0 and 5 seconds
     MISSION_SIMULATION_API_DELAY_MODIFIER: float = Field(default=5.0)
