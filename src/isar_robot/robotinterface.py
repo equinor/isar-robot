@@ -8,6 +8,7 @@ from alitra import Position
 
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotCommunicationException,
+    RobotNoMissionRunningException,
 )
 from robot_interface.models.inspection.inspection import Inspection
 from robot_interface.models.mission.mission import Mission
@@ -65,10 +66,11 @@ class Robot(RobotInterface):
 
     def stop(self) -> None:
         if not self.mission_simulation:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Attempted to stop non-existent mission"
             )
         self.mission_simulation.stop_mission()
+        self.mission_simulation = None
 
     def get_inspection(self, task: InspectionTask) -> Inspection:
         if type(task) in [TakeImage, TakeThermalImage]:
@@ -188,14 +190,14 @@ class Robot(RobotInterface):
 
     def pause(self) -> None:
         if not self.mission_simulation:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Attempted to pause non-existent mission"
             )
         self.mission_simulation.pause_mission()
 
     def resume(self) -> None:
         if not self.mission_simulation:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Attempted to resume non-existent mission"
             )
         self.mission_simulation.resume_mission()
