@@ -4,9 +4,9 @@ import time
 from threading import Event, Thread
 
 from robot_interface.models.exceptions.robot_exceptions import (
-    RobotCommunicationException,
     RobotTaskStatusException,
     RobotMissionStatusException,
+    RobotNoMissionRunningException,
 )
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, TaskStatus
@@ -58,21 +58,21 @@ class MissionSimulation(Thread):
 
     def pause_mission(self):
         if self.mission_done or not self.mission_started:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Could not pause non-existent mission"
             )
         self.signal_resume_mission.clear()
 
     def resume_mission(self):
         if self.mission_done or not self.mission_started:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Could not resume non-existent mission"
             )
         self.signal_resume_mission.set()
 
     def stop_mission(self):
         if self.mission_done or not self.mission_started:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Could not stop non-existent mission"
             )
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_STOP)
