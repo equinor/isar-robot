@@ -136,6 +136,8 @@ class MissionSimulation(Thread):
         thread_check_interval = settings.MISSION_SIMULATION_TASK_DURATION
         while not self.signal_stop_mission.wait(thread_check_interval):
 
+            time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
+
             self.signal_resume_mission.wait()
 
             if self.signal_stop_mission.is_set():
