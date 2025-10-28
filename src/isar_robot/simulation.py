@@ -134,6 +134,7 @@ class MissionSimulation(Thread):
             return
 
         thread_check_interval = settings.MISSION_SIMULATION_TASK_DURATION
+        self.task_statuses[0] = TaskStatus.InProgress
         while not self.signal_stop_mission.wait(thread_check_interval):
 
             time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
