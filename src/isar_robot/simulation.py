@@ -20,6 +20,7 @@ class MissionSimulation(Thread):
         self,
         mission: Mission,
     ):
+        time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
         self.logger = logging.getLogger("isar robot mission simulation")
         self.mission: Mission = mission
         self.task_index: int = 0
@@ -126,8 +127,6 @@ class MissionSimulation(Thread):
             self.task_statuses[self.task_index] = TaskStatus.InProgress
 
     def run(self):
-        time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
-
         self.mission_started = True
 
         if self.signal_stop_mission.is_set():
