@@ -40,7 +40,11 @@ class Robot(RobotInterface):
         self.mission_simulation: Optional[MissionSimulation] = None
 
     def initiate_mission(self, mission: Mission) -> None:
-        if self.mission_simulation and not self.mission_simulation.mission_done:
+        if (
+            self.mission_simulation
+            and self.mission_simulation.is_alive()
+            and not self.mission_simulation.mission_done
+        ):
             raise RobotCommunicationException(
                 error_description="Could not start mission as one is already running"
             )
@@ -69,8 +73,12 @@ class Robot(RobotInterface):
             raise RobotNoMissionRunningException(
                 error_description="Attempted to stop non-existent mission"
             )
-        self.mission_simulation.stop_mission()
-        self.mission_simulation = None
+        try:
+            self.mission_simulation.stop_mission()
+        except RobotNoMissionRunningException as e:
+            raise e
+        finally:
+            self.mission_simulation = None
 
     def get_inspection(self, task: InspectionTask) -> Inspection:
         if type(task) in [TakeImage, TakeThermalImage]:
