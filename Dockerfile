@@ -7,7 +7,7 @@ WORKDIR /app
 RUN python -m venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
 
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y --no-install-recommends git
 RUN apt-get install -y --no-install-recommends build-essential gcc
 
 COPY requirements.txt .
