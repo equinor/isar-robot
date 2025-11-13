@@ -39,6 +39,9 @@ class MissionSimulation(Thread):
         self.task_failure_probability: float = (
             settings.MISSION_SIMULATION_TASK_FAILURE_PROBABILITY
         )
+        self.return_home_task_failure_probability: float = (
+            settings.MISSION_SIMULATION_RETURN_HOME_TASK_FAILURE_PROBABILITY
+        )
         self.api_delay_modifier: float = settings.MISSION_SIMULATION_API_DELAY_MODIFIER
 
         self.mission_done: bool = False
@@ -136,7 +139,8 @@ class MissionSimulation(Thread):
         thread_check_interval = settings.MISSION_SIMULATION_TASK_DURATION
         self.task_statuses[0] = TaskStatus.InProgress
         while not self.signal_stop_mission.wait(thread_check_interval):
-
+            if self.all_tasks_done:
+                break
             time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
 
             self.signal_resume_mission.wait()
@@ -144,18 +148,17 @@ class MissionSimulation(Thread):
             if self.signal_stop_mission.is_set():
                 break
 
-            if (
-                self.is_return_home
-                and not settings.MISSION_SIMULATION_SHOULD_FAIL_RETURN_TO_HOME_TASK
-            ) or not settings.MISSION_SIMULATION_SHOULD_FAIL_NORMAL_TASK:
-                self._complete_task(TaskStatus.Successful)
-            else:
-                if random.random() > self.task_failure_probability:
+            if self.is_return_home:
+                # evaluate is return home failure probability
+                if random.random() < self.return_home_task_failure_probability:
                     self._complete_task(TaskStatus.Failed)
-                else:
-                    self._complete_task(TaskStatus.Successful)
-            if self.all_tasks_done:
-                break
+                continue
+
+            # evaluate task failure probability
+            if random.random() < self.task_failure_probability:
+                self._complete_task(TaskStatus.Failed)
+
+            self._complete_task(TaskStatus.Successful)
 
         time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
         self.mission_done = True
