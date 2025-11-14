@@ -8,7 +8,7 @@ alitra==1.1.5
     # via
     #   isar
     #   isar-robot (pyproject.toml)
-annotated-doc==0.0.3
+annotated-doc==0.0.4
     # via fastapi
 annotated-types==0.7.0
     # via pydantic
@@ -35,9 +35,9 @@ azure-identity==1.25.1
     #   isar
 azure-keyvault-secrets==4.10.0
     # via isar
-azure-monitor-opentelemetry==1.8.1
+azure-monitor-opentelemetry==1.8.2
     # via isar
-azure-monitor-opentelemetry-exporter==1.0.0b44
+azure-monitor-opentelemetry-exporter==1.0.0b45
     # via
     #   azure-monitor-opentelemetry
     #   isar
@@ -45,7 +45,7 @@ azure-storage-blob==12.27.1
     # via isar
 backoff==2.2.1
     # via isar
-certifi==2025.10.5
+certifi==2025.11.12
     # via
     #   httpcore
     #   httpx
@@ -72,15 +72,13 @@ dacite==1.9.2
     #   isar
 dependency-injector==4.48.2
     # via isar
-fastapi==0.120.3
+fastapi==0.121.2
     # via
     #   fastapi-azure-auth
     #   isar
 fastapi-azure-auth==5.2.0
     # via isar
-fixedint==0.1.6
-    # via azure-monitor-opentelemetry-exporter
-googleapis-common-protos==1.71.0
+googleapis-common-protos==1.72.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
@@ -101,7 +99,7 @@ idna==3.11
     #   requests
 importlib-metadata==8.7.0
     # via opentelemetry-api
-isar==1.34.4
+isar==1.34.5
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
@@ -233,28 +231,30 @@ packaging==25.0
     #   opentelemetry-instrumentation-flask
 paho-mqtt==2.1.0
     # via isar
-protobuf==6.33.0
+protobuf==6.33.1
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
-psutil==7.1.2
+psutil==7.1.3
     # via azure-monitor-opentelemetry-exporter
 pycparser==2.23
     # via cffi
-pydantic==2.12.3
+pydantic==2.12.4
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.41.4
+pydantic-core==2.41.5
     # via pydantic
-pydantic-settings==2.11.0
+pydantic-settings==2.12.0
     # via isar
 pyjwt[crypto]==2.10.1
     # via
     #   fastapi-azure-auth
     #   isar
     #   msal
+pymysql==1.1.2
+    # via isar
 python-dotenv==1.2.1
     # via
     #   isar
@@ -280,8 +280,12 @@ six==1.17.0
     # via transitions
 sniffio==1.3.1
     # via anyio
-starlette==0.49.1
-    # via fastapi
+sqlalchemy==2.0.44
+    # via isar
+starlette==0.49.3
+    # via
+    #   fastapi
+    #   isar
 transitions==0.9.3
     # via isar
 typing-extensions==4.15.0
@@ -299,6 +303,7 @@ typing-extensions==4.15.0
     #   opentelemetry-semantic-conventions
     #   pydantic
     #   pydantic-core
+    #   sqlalchemy
     #   typing-inspection
 typing-inspection==0.4.2
     # via
