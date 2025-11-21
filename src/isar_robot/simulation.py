@@ -152,11 +152,12 @@ class MissionSimulation(Thread):
                 # evaluate is return home failure probability
                 if random.random() < self.return_home_task_failure_probability:
                     self._complete_task(TaskStatus.Failed)
-                continue
+                    continue
 
             # evaluate task failure probability
-            if random.random() < self.task_failure_probability:
+            elif random.random() < self.task_failure_probability:
                 self._complete_task(TaskStatus.Failed)
+                continue
 
             self._complete_task(TaskStatus.Successful)
 
