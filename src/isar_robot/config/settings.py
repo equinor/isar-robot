@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     ROBOT_PRESSURE_PUBLISH_INTERVAL: float = Field(default=20)
     MISSION_SIMULATION_TIME_TO_START: float = Field(default=5.0)
     MISSION_SIMULATION_TIME_TO_STOP: float = Field(default=2.0)
+    SHOULD_SIMULATE_INSPECTION_CALLBACK_CRASH: bool = Field(default=False)
 
     # This is the time from the last task finishing to the mission finishing
     MISSION_SIMULATION_MISSION_COMPLETION_DELAY: float = Field(default=2.0)

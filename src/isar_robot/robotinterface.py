@@ -2,7 +2,9 @@ import logging
 from datetime import datetime, timezone
 from logging import Logger
 from queue import Queue
+import random
 from threading import Thread
+import time
 from typing import Callable, List, Optional
 from alitra import Position
 
@@ -95,9 +97,26 @@ class Robot(RobotInterface):
             return None
 
     def register_inspection_callback(
-        self, callback_function: Callable[[Inspection], None]
-    ) -> None:
-        raise NotImplementedError
+        self, callback_function: Callable[[Inspection, Mission], None]
+    ) -> Optional[Thread]:
+
+        if settings.SHOULD_SIMULATE_INSPECTION_CALLBACK_CRASH:
+            return None
+
+        def inspection_handler_with_crash():
+            crash_after = random.randint(10, 60)  # Random between 10-60 seconds
+            self.logger.info(
+                f"Inspection callback thread started - will crash after {crash_after} seconds"
+            )
+            time.sleep(crash_after)
+            self.logger.warning("Inspection callback thread crashing now...")
+
+        thread = Thread(
+            target=inspection_handler_with_crash,
+            name="Inspection Callback Handler",
+            daemon=True,
+        )
+        return thread
 
     def initialize(self) -> None:
         return
