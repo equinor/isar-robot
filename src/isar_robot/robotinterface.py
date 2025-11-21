@@ -9,11 +9,12 @@ from typing import Callable, List, Optional
 from alitra import Position
 
 from robot_interface.models.exceptions.robot_exceptions import (
+    RobotAlreadyHomeException,
     RobotCommunicationException,
     RobotNoMissionRunningException,
 )
 from robot_interface.models.inspection.inspection import Inspection
-from robot_interface.models.mission.mission import Mission
+from robot_interface.models.mission.mission import Mission, TaskTypes
 from robot_interface.models.mission.status import MissionStatus, RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
@@ -49,6 +50,10 @@ class Robot(RobotInterface):
         ):
             raise RobotCommunicationException(
                 error_description="Could not start mission as one is already running"
+            )
+        elif self.robot_is_home and mission.tasks[0].type == TaskTypes.ReturnToHome:
+            raise RobotAlreadyHomeException(
+                error_description="Ignoring initiate of return to home as robot is already home"
             )
         elif self.mission_simulation:
             self.mission_simulation.join()
