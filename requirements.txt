@@ -72,7 +72,7 @@ dacite==1.9.2
     #   isar
 dependency-injector==4.48.2
     # via isar
-fastapi==0.121.3
+fastapi==0.122.0
     # via
     #   fastapi-azure-auth
     #   isar
