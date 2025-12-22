@@ -65,6 +65,12 @@ class MissionSimulation(Thread):
                 error_description="Could not pause non-existent mission"
             )
         self.signal_resume_mission.clear()
+        while not self.mission_done and not self.mission_paused:
+            time.sleep(0.1)
+        if self.mission_done:
+            raise RobotNoMissionRunningException(
+                error_description="Could not pause non-existent mission"
+            )
 
     def resume_mission(self):
         if self.mission_done:
@@ -97,7 +103,7 @@ class MissionSimulation(Thread):
         return None
 
     def mission_status(self):
-        if not self.signal_resume_mission.wait(0):
+        if self.mission_paused:
             return MissionStatus.Paused
         if all(map(lambda status: status == TaskStatus.NotStarted, self.task_statuses)):
             return MissionStatus.NotStarted
@@ -131,6 +137,7 @@ class MissionSimulation(Thread):
 
     def run(self):
         self.mission_started = True
+        self.mission_paused = False
 
         if self.signal_stop_mission.is_set():
             self.mission_done = True
@@ -141,9 +148,11 @@ class MissionSimulation(Thread):
         while not self.signal_stop_mission.wait(thread_check_interval):
             if self.all_tasks_done:
                 break
-            time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
 
-            self.signal_resume_mission.wait()
+            if not self.signal_resume_mission.is_set():
+                self.mission_paused = True
+                self.signal_resume_mission.wait()
+                self.mission_paused = False
 
             if self.signal_stop_mission.is_set():
                 break
