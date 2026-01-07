@@ -12,13 +12,13 @@ annotated-doc==0.0.4
     # via fastapi
 annotated-types==0.7.0
     # via pydantic
-anyio==4.12.0
+anyio==4.12.1
     # via
     #   httpx
     #   starlette
 asgiref==3.11.0
     # via opentelemetry-instrumentation-asgi
-azure-core==1.36.0
+azure-core==1.37.0
     # via
     #   azure-core-tracing-opentelemetry
     #   azure-identity
@@ -41,11 +41,11 @@ azure-monitor-opentelemetry-exporter==1.0.0b45
     # via
     #   azure-monitor-opentelemetry
     #   isar
-azure-storage-blob==12.27.1
+azure-storage-blob==12.28.0
     # via isar
 backoff==2.2.1
     # via isar
-certifi==2025.11.12
+certifi==2026.1.4
     # via
     #   httpcore
     #   httpx
@@ -72,7 +72,7 @@ dacite==1.9.2
     #   isar
 dependency-injector==4.48.3
     # via isar
-fastapi==0.124.0
+fastapi==0.128.0
     # via
     #   fastapi-azure-auth
     #   isar
@@ -99,9 +99,9 @@ idna==3.11
     #   anyio
     #   httpx
     #   requests
-importlib-metadata==8.7.0
+importlib-metadata==8.7.1
     # via opentelemetry-api
-isar==1.34.15
+isar==1.34.16
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
@@ -116,7 +116,7 @@ msal-extensions==1.3.1
     # via azure-identity
 msrest==0.7.1
     # via azure-monitor-opentelemetry-exporter
-numpy==2.3.5
+numpy==2.4.0
     # via
     #   alitra
     #   isar
@@ -237,7 +237,7 @@ protobuf==6.33.2
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
-psutil==7.1.3
+psutil==7.2.1
     # via azure-monitor-opentelemetry-exporter
 psycopg2-binary==2.9.11
     # via isar
@@ -282,7 +282,7 @@ scipy==1.16.3
     # via alitra
 six==1.17.0
     # via transitions
-sqlalchemy==2.0.44
+sqlalchemy==2.0.45
     # via isar
 starlette==0.50.0
     # via
@@ -311,9 +311,9 @@ typing-inspection==0.4.2
     # via
     #   pydantic
     #   pydantic-settings
-urllib3==2.6.1
+urllib3==2.6.2
     # via requests
-uvicorn==0.38.0
+uvicorn==0.40.0
     # via isar
 wrapt==1.17.3
     # via
