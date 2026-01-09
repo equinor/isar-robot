@@ -4,7 +4,6 @@ import random
 from datetime import datetime, timezone
 from logging import Logger
 from pathlib import Path
-from typing import Union
 
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotRetrieveInspectionException,
@@ -16,6 +15,8 @@ from robot_interface.models.inspection.inspection import (
     GasMeasurementMetadata,
     Image,
     ImageMetadata,
+    ThermalImage,
+    ThermalImageMetadata,
     ThermalVideo,
     ThermalVideoMetadata,
     Video,
@@ -33,26 +34,28 @@ from robot_interface.models.mission.task import (
 
 from isar_robot.telemetry import Telemetry
 
-example_images: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)), "example_data/example_images"
+example_image: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)), "example_data/example_image.jpg"
 )
-example_videos: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)), "example_data/example_videos"
-)
-example_thermal_videos: Path = Path(
+example_thermal_image = Path(
     os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_thermal_videos",
+    "example_data/example_thermal_image.fff",
+)
+example_video: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)), "example_data/example_video.mp4"
+)
+example_thermal_video: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)),
+    "example_data/example_thermal_video.mp4",
 )
 example_audio: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio"
+    os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio.wav"
 )
 
 logger: Logger = logging.getLogger("isar_robot")
 
 
-def create_image(
-    task: Union[TakeImage, TakeThermalImage], telemetry: Telemetry
-) -> Image:
+def create_image(task: TakeImage, telemetry: Telemetry) -> Image:
     now: datetime = datetime.now(timezone.utc)
 
     image_metadata: ImageMetadata = ImageMetadata(
@@ -64,10 +67,28 @@ def create_image(
     image_metadata.tag_id = task.tag_id
     image_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = random.choice(list(example_images.iterdir()))
+    filepath: Path = example_image
     data = _read_data_from_file(filepath)
 
     return Image(metadata=image_metadata, id=task.inspection_id, data=data)
+
+
+def create_thermal_image(task: TakeThermalImage, telemetry: Telemetry) -> Image:
+    now: datetime = datetime.now(timezone.utc)
+
+    image_metadata: ThermalImageMetadata = ThermalImageMetadata(
+        start_time=now,
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task, telemetry),
+        file_type="fff",
+    )
+    image_metadata.tag_id = task.tag_id
+    image_metadata.inspection_description = task.inspection_description
+
+    filepath: Path = example_thermal_image
+    data = _read_data_from_file(filepath)
+
+    return ThermalImage(metadata=image_metadata, id=task.inspection_id, data=data)
 
 
 def create_video(task: TakeVideo, telemetry: Telemetry) -> Video:
@@ -82,7 +103,7 @@ def create_video(task: TakeVideo, telemetry: Telemetry) -> Video:
     video_metadata.tag_id = task.tag_id
     video_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = random.choice(list(example_videos.iterdir()))
+    filepath: Path = example_video
     data = _read_data_from_file(filepath)
 
     return Video(metadata=video_metadata, id=task.inspection_id, data=data)
@@ -100,7 +121,7 @@ def create_thermal_video(task: TakeThermalVideo, telemetry: Telemetry):
     thermal_video_metadata.tag_id = task.tag_id
     thermal_video_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
+    filepath: Path = example_thermal_video
     data = _read_data_from_file(filepath)
 
     return ThermalVideo(
@@ -120,7 +141,7 @@ def create_audio(task: RecordAudio, telemetry: Telemetry):
     audio_metadata.tag_id = task.tag_id
     audio_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = random.choice(list(example_thermal_videos.iterdir()))
+    filepath: Path = example_audio
     data = _read_data_from_file(filepath)
 
     return Audio(metadata=audio_metadata, id=task.inspection_id, data=data)

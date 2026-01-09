@@ -88,8 +88,10 @@ class Robot(RobotInterface):
             self.mission_simulation = None
 
     def get_inspection(self, task: InspectionTask) -> Inspection:
-        if type(task) in [TakeImage, TakeThermalImage]:
+        if type(task) is TakeImage:
             return inspections.create_image(task, self.telemetry)
+        elif type(task) is TakeThermalImage:
+            return inspections.create_thermal_image(task, self.telemetry)
         elif type(task) is TakeVideo:
             return inspections.create_video(task, self.telemetry)
         elif type(task) is TakeThermalVideo:

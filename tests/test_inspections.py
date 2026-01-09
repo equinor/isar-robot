@@ -1,5 +1,10 @@
 from alitra import Frame, Position
-from robot_interface.models.mission.task import RecordAudio, TakeImage, TakeThermalVideo
+from robot_interface.models.mission.task import (
+    RecordAudio,
+    TakeImage,
+    TakeThermalImage,
+    TakeThermalVideo,
+)
 
 from isar_robot import inspections, telemetry
 
@@ -13,6 +18,14 @@ def test_create_image() -> None:
     inspection_image = inspections.create_image(task_actions, telemetryModule)
 
     assert inspection_image.metadata.file_type == "jpg"
+
+
+def test_create_thermal_image() -> None:
+    task_actions = TakeThermalImage(target=target)
+
+    inspection_image = inspections.create_thermal_image(task_actions, telemetryModule)
+
+    assert inspection_image.metadata.file_type == "fff"
 
 
 def test_create_video() -> None:
