@@ -101,7 +101,7 @@ idna==3.11
     #   requests
 importlib-metadata==8.7.1
     # via opentelemetry-api
-isar==1.34.17
+isar==1.34.18
     # via isar-robot (pyproject.toml)
 isodate==0.7.2
     # via
