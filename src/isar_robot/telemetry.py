@@ -1,4 +1,3 @@
-import json
 import random
 from datetime import datetime, timezone
 from typing import Optional
@@ -11,7 +10,6 @@ from robot_interface.telemetry.payloads import (
     TelemetryPosePayload,
     TelemetryPressurePayload,
 )
-from robot_interface.utilities.json_service import EnhancedJSONEncoder
 
 from isar_robot.config.settings import settings
 
@@ -98,7 +96,7 @@ class Telemetry:
             robot_name=robot_name,
             timestamp=datetime.now(timezone.utc),
         )
-        return json.dumps(battery_payload, cls=EnhancedJSONEncoder)
+        return battery_payload.model_dump_json()
 
     def get_pose_telemetry(
         self, isar_id: str, robot_name: str, current_target: Optional[Position]
@@ -109,7 +107,7 @@ class Telemetry:
             robot_name=robot_name,
             timestamp=datetime.now(timezone.utc),
         )
-        return json.dumps(pose_payload, cls=EnhancedJSONEncoder)
+        return pose_payload.model_dump_json()
 
     def get_obstacle_status_telemetry(self, isar_id: str, robot_name: str) -> str:
         obstacle_status_payload: TelemetryObstacleStatusPayload = (
@@ -120,7 +118,7 @@ class Telemetry:
                 timestamp=datetime.now(timezone.utc),
             )
         )
-        return json.dumps(obstacle_status_payload, cls=EnhancedJSONEncoder)
+        return obstacle_status_payload.model_dump_json()
 
     def get_pressure_telemetry(self, isar_id: str, robot_name: str) -> str:
         pressure_payload: TelemetryPressurePayload = TelemetryPressurePayload(
@@ -129,4 +127,4 @@ class Telemetry:
             robot_name=robot_name,
             timestamp=datetime.now(timezone.utc),
         )
-        return json.dumps(pressure_payload, cls=EnhancedJSONEncoder)
+        return pressure_payload.model_dump_json()
