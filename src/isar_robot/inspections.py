@@ -34,8 +34,16 @@ from robot_interface.models.mission.task import (
 
 from isar_robot.telemetry import Telemetry
 
-example_image: Path = Path(
+example_image_1: Path = Path(
     os.path.dirname(os.path.realpath(__file__)), "example_data/example_image.jpg"
+)
+example_image_2: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)),
+    "example_data/example_image_cloe_kaa.jpeg",
+)
+example_image_3: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)),
+    "example_data/example_image_cloe_nls.jpeg",
 )
 example_thermal_image = Path(
     os.path.dirname(os.path.realpath(__file__)),
@@ -67,7 +75,7 @@ def create_image(task: TakeImage, telemetry: Telemetry) -> Image:
     image_metadata.tag_id = task.tag_id
     image_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = example_image
+    filepath: Path = random.choice([example_image_1, example_image_2, example_image_3])
     data = _read_data_from_file(filepath)
 
     return Image(metadata=image_metadata, id=task.inspection_id, data=data)
