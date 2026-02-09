@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: isar-robot
+  description: A default robot implementation for isar which is used to test easy robot interaction without requiring physical hardware. 
+  annotations:
+    github.com/project-slug: equinor/isar-robot
+    github.com/team-slug: equinor/eq-robot-developer
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/eq-robot-developer
+  system: system:default/flotilla
+  dependsOn:
+    - component:default/isar
