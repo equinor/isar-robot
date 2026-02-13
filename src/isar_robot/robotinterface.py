@@ -209,6 +209,21 @@ class Robot(RobotInterface):
         )
         publisher_threads.append(pressure_thread)
 
+        temperature_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
+            mqtt_queue=queue,
+            telemetry_method=self.telemetry.get_temperature_telemetry,
+            topic=f"isar/{isar_id}/generic_float",
+            interval=settings.ROBOT_BATTERY_PUBLISH_INTERVAL,
+            retain=False,
+        )
+        temperature_thread: Thread = Thread(
+            target=temperature_publisher.run,
+            args=[isar_id, robot_name],
+            name="ISAR Robot Temperature Publisher",
+            daemon=True,
+        )
+        publisher_threads.append(temperature_thread)
+
         return publisher_threads
 
     def robot_status(self) -> RobotStatus:

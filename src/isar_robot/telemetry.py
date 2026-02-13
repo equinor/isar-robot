@@ -9,6 +9,7 @@ from robot_interface.telemetry.payloads import (
     TelemetryObstacleStatusPayload,
     TelemetryPosePayload,
     TelemetryPressurePayload,
+    GenericFloatTelemetryPayload,
 )
 
 from isar_robot.config.settings import settings
@@ -21,6 +22,9 @@ def _get_pressure_level() -> float:
     millibar_to_bar: float = 1 / 1000
     return random.randint(min_pressure, max_pressure) * millibar_to_bar
 
+def _get_temperature_level() -> float:
+    # Return random float in the range [15, 35]
+    return random.randint(150, 350) / 10.0
 
 def _get_obstacle_status() -> bool:
     return False
@@ -128,3 +132,13 @@ class Telemetry:
             timestamp=datetime.now(timezone.utc),
         )
         return pressure_payload.model_dump_json()
+
+    def get_temperature_telemetry(self, isar_id: str, robot_name: str) -> str:
+        temperature_payload: GenericFloatTelemetryPayload = GenericFloatTelemetryPayload(
+            value=_get_temperature_level(),
+            name="temperature",
+            isar_id=isar_id,
+            robot_name=robot_name,
+            timestamp=datetime.now(timezone.utc),
+        )
+        return temperature_payload.model_dump_json()
