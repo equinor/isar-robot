@@ -44,7 +44,7 @@ class Telemetry:
             Orientation(x=0, y=0, z=0, w=1, frame=Frame("asset")),
             frame=Frame("asset"),
         )
-        self.movement_percentage: float = 0.5
+        self.movement_percentage: float = 0.9
 
     def get_pose(self) -> Pose:
         return self.current_pose
