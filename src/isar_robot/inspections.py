@@ -169,7 +169,7 @@ def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
     return CO2Measurement(
         metadata=gas_measurement_metadata,
         id=task.inspection_id,
-        value=random.uniform(0, 5),
+        value=random.normalvariate(0.043, 0.005),
         unit="% v/v",
     )
 
