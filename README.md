@@ -14,14 +14,34 @@ After installing isar-robot, it can be used through [ISAR](https://github.com/eq
 
 # Development
 
-For local development, create a fork of the repository and clone the fork to your machine:
+Create a fork of the repository and clone the fork to your machine:
 
 ```bash
 git clone https://github.com/<your-username>/isar-robot
 cd isar-robot
 ```
 
-It is recommended to create a virtual environment, see a guide for this here: https://docs.python.org/3/library/venv.html.
+Choose if you want to run via uv or manually creating venv
+
+## Option A: Local development with uv
+
+An easy way to run isar-robot locally is with [uv](https://docs.astral.sh/uv/). The `pyproject.toml` includes a `[tool.uv.sources]` override that points the `isar` dependency to the local `../isar` folder.
+
+Note that this assumes the following folder structure between isar and isar-robot:
+
+```
+parent-folder/
+├── isar/
+└── isar-robot/
+```
+
+```bash
+uv run isar-start
+```
+
+## Option B: Manually creating venv
+
+Create a virtual environment, see a guide for this here: https://docs.python.org/3/library/venv.html.
 
 Then install the requirements and the package:
 
