@@ -2,7 +2,6 @@ import logging
 import os
 import random
 from datetime import datetime, timezone
-from logging import Logger
 from pathlib import Path
 
 from robot_interface.models.exceptions.robot_exceptions import (
@@ -60,7 +59,7 @@ example_audio: Path = Path(
     os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio.wav"
 )
 
-logger: Logger = logging.getLogger("isar_robot")
+logger = logging.getLogger(__name__)
 
 
 def create_image(task: TakeImage, telemetry: Telemetry) -> Image:
