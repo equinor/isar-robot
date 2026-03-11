@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-from logging import Logger
 from queue import Queue
 import random
 from threading import Thread
@@ -33,11 +32,12 @@ from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
 from isar_robot.simulation import MissionSimulation
 
+logger = logging.getLogger(__name__)
+
 
 class Robot(RobotInterface):
     def __init__(self) -> None:
         self.telemetry = telemetry.Telemetry()
-        self.logger: Logger = logging.getLogger("isar_robot")
         self.last_task_completion_time: datetime = datetime.now(timezone.utc)
         self.robot_is_home: bool = False
         self.mission_simulation: Optional[MissionSimulation] = None
@@ -60,6 +60,7 @@ class Robot(RobotInterface):
         self.mission_simulation = MissionSimulation(mission)
         self.mission_simulation.start()
         self.robot_is_home = False
+        logger.info(f"Mission initiated: {mission.id}")
 
     def task_status(self, task_id: str) -> TaskStatus:
         if not self.mission_simulation:
@@ -73,9 +74,11 @@ class Robot(RobotInterface):
         return status
 
     def mission_status(self, mission_id):
-        return self.mission_simulation.mission_status()
+        status = self.mission_simulation.mission_status()
+        return status
 
     def stop(self) -> None:
+        logger.info("Stopping current mission")
         if not self.mission_simulation:
             raise RobotNoMissionRunningException(
                 error_description="Attempted to stop non-existent mission"
@@ -112,11 +115,11 @@ class Robot(RobotInterface):
 
         def inspection_handler_with_crash():
             crash_after = random.randint(10, 60)  # Random between 10-60 seconds
-            self.logger.info(
+            logger.info(
                 f"Inspection callback thread started - will crash after {crash_after} seconds"
             )
             time.sleep(crash_after)
-            self.logger.warning("Inspection callback thread crashing now...")
+            logger.warning("Inspection callback thread crashing now...")
 
         thread = Thread(
             target=inspection_handler_with_crash,
@@ -223,6 +226,7 @@ class Robot(RobotInterface):
         return RobotStatus.Available
 
     def pause(self) -> None:
+        logger.info("Pausing current mission")
         if not self.mission_simulation:
             raise RobotNoMissionRunningException(
                 error_description="Attempted to pause non-existent mission"
@@ -230,6 +234,7 @@ class Robot(RobotInterface):
         self.mission_simulation.pause_mission()
 
     def resume(self) -> None:
+        logger.info("Resuming current mission")
         if not self.mission_simulation:
             raise RobotNoMissionRunningException(
                 error_description="Attempted to resume non-existent mission"

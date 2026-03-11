@@ -14,6 +14,8 @@ from robot_interface.models.mission.task import ReturnToHome
 
 from isar_robot.config.settings import settings
 
+logger = logging.getLogger(__name__)
+
 
 class MissionSimulation(Thread):
     def __init__(
@@ -21,7 +23,6 @@ class MissionSimulation(Thread):
         mission: Mission,
     ):
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
-        self.logger = logging.getLogger("isar robot mission simulation")
         self.mission: Mission = mission
         self.task_index: int = 0
         self.n_tasks: int = len(mission.tasks)
@@ -172,4 +173,4 @@ class MissionSimulation(Thread):
 
         time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
         self.mission_done = True
-        self.logger.info("Exiting mission simulation thread")
+        logger.info("Exiting mission simulation thread")
