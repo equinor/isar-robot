@@ -64,7 +64,7 @@ class Robot(RobotInterface):
 
     def task_status(self, task_id: str) -> TaskStatus:
         if not self.mission_simulation:
-            raise RobotCommunicationException(
+            raise RobotNoMissionRunningException(
                 error_description="Could not get task status as no mission is running"
             )
 
