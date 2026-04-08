@@ -36,7 +36,9 @@ logger = logging.getLogger(__name__)
 
 
 class Robot(RobotInterface):
-    def __init__(self) -> None:
+    def __init__(self, robot_name: str, isar_id: str) -> None:
+        super().__init__(robot_name=robot_name, isar_id=isar_id)
+
         self.telemetry = telemetry.Telemetry()
         self.last_task_completion_time: datetime = datetime.now(timezone.utc)
         self.robot_is_home: bool = False
