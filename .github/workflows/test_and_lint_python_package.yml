@@ -1,4 +1,4 @@
-name: Compile python requirements and create PR
+name: Test and lint python package
 on:
   push:
     branches:
