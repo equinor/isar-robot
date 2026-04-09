@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   compile-requirements-and-create-pr:
+    uses: equinor/armada/.github/workflows/compile_python_requirements_and_create_pr.yml@main
     permissions:
       contents: write
       pull-requests: write
-    uses: equinor/armada/.github/workflows/compile_python_requirements_and_create_pr.yml@main

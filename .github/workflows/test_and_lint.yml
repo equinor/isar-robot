@@ -1,0 +1,23 @@
+name: Compile python requirements and create PR
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-lint-python-package:
+    uses: equinor/armada/.github/workflows/test_and_lint_python_package.yml@main
+    permissions:
+      contents: read
+    with:
+      python-versions: '["3.11", "3.12", "3.13", "3.14"]'
+      run-black: true
+      run-mypy: true
+      run-ruff: true
