@@ -51,7 +51,7 @@ pip install -r requirements.txt -e .[dev]
 
 ## Configurable variables
 
-Specific mission and task behaviours can be configured as enviorment variables. These are optional and do not have to be set. These allow for always failing specific mission types, failing specific task types, setting custom task durations, and setting custom mission durations. The following list shows all configurable environment variables. In this case "normal" means non-localization or return to home tasks.
+Specific mission and task behaviours can be configured as environment variables. These are optional and do not have to be set. These allow for always failing specific mission types, failing specific task types, setting custom task durations, and setting custom mission durations. The following list shows all configurable environment variables. In this case "normal" means non-localization or return to home tasks.
 
 The variable names and types are as follows: 
 ```env
