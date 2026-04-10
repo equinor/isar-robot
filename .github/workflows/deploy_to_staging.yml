@@ -22,48 +22,63 @@ jobs:
       - name: Empty Step
         run: echo "Hello World"
 
-  build-and-push-release-to-ghcr:
-    name: Build images in ghcr
+  build-and-push-isar-robot-latest-release-image-to-ghcr:
+    name: Build and push isar-robot latest release image to github container registry
     needs: trigger-github-deployment
-    uses: ./.github/workflows/publish_component.yml
+    uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
+    permissions:
+      contents: read
+      packages: write
     with:
-      Registry: ghcr.io
-      ImageName: ${{ github.repository }}
-      Tag: ${{ github.event.release.tag_name }}
-      SecondaryTag: latest
+      registry: ghcr.io
+      image_name: ${{ github.repository }}
+      tag: "${{ github.event.release.tag_name }}"
+      secondary_tag: latest
+      path_to_dockerfile: Dockerfile
+      path_to_context: .
     secrets:
-      RegistryUsername: ${{ github.actor }}
-      RegistryPassword: ${{ secrets.GITHUB_TOKEN }}
+      registry_password: ${{ secrets.GITHUB_TOKEN }}
+      registry_username: ${{ github.actor }}
 
-  build-and-push-release-to-dev:
-    name: Update container in dev with version tag
+  build-and-push-isar-robot-latest-release-image-to-aurora-dev-registry:
+    name: Build and push isar-robot latest release image to aurora dev registry
     needs: trigger-github-deployment
-    uses: ./.github/workflows/publish_component.yml
+    uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
+    permissions:
+      contents: read
+      packages: write
     with:
-      Registry: auroradevacr.azurecr.io
-      ImageName: robotics/isar-robot
-      Tag: ${{ github.event.release.tag_name }}
-      SecondaryTag: 'latest'
+      registry: auroradevacr.azurecr.io
+      image_name: robotics/isar-robot
+      tag: "${{ github.event.release.tag_name }}"
+      secondary_tag: latest
+      path_to_dockerfile: Dockerfile
+      path_to_context: .
     secrets:
-      RegistryUsername: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
-      RegistryPassword: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+      registry_password: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+      registry_username: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
 
-  build-and-push-components:
-    name: Build and push container to auroraprodcr for Staging/Production
-    needs: [trigger-github-deployment]
-    uses: ./.github/workflows/publish_component.yml
+  build-and-push-isar-robot-latest-release-image-to-aurora-prod-registry:
+    name: Build and push isar-robot latest release image to aurora prod registry
+    needs: trigger-github-deployment
+    uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
+    permissions:
+      contents: read
+      packages: write
     with:
-      Registry: auroraprodacr.azurecr.io
-      ImageName: robotics/isar-robot
-      Tag: ${{ github.event.release.tag_name }}
-      SecondaryTag: 'latest'
+      registry: auroraprodacr.azurecr.io
+      image_name: robotics/isar-robot
+      tag: "${{ github.event.release.tag_name }}"
+      secondary_tag: latest
+      path_to_dockerfile: Dockerfile
+      path_to_context: .
     secrets:
-      RegistryUsername: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
-      RegistryPassword: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+      registry_password: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
+      registry_username: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
 
   deploy:
     name: Update deployment in Staging
-    needs: [trigger-github-deployment, build-and-push-components]
+    needs: [trigger-github-deployment, build-and-push-isar-robot-latest-release-image-to-aurora-prod-registry]
     uses: ./.github/workflows/update_aurora_deployment.yml
     with:
       Environment: staging
