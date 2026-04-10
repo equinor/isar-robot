@@ -42,8 +42,8 @@ jobs:
       contents: read
       packages: write
     with:
-      registry: ${{ env.GITHUB_REGISTRY }}
-      image_name: ${{ env.GITHUB_IMAGE_NAME }}
+      registry: ghcr.io
+      image_name: ${{ github.repository }}
       tag: "dev.${{ needs.get-short-sha.outputs.tag }}"     # PS: Needs to match deploy.with.Tag
       secondary_tag: "dev"
       path_to_dockerfile: Dockerfile
