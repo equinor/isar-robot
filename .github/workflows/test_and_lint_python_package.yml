@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - main
+      - update-dependencies
   workflow_dispatch:
 
 permissions:
