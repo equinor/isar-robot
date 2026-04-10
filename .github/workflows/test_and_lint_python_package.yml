@@ -3,10 +3,10 @@ on:
   push:
     branches:
       - main
+      - update-dependencies
   pull_request:
     branches:
       - main
-      - update-dependencies
   workflow_dispatch:
 
 permissions:
