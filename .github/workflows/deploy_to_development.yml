@@ -15,16 +15,7 @@ on:
       - "main"
 
 jobs:
-  trigger-github-deployment:
-    name: Trigger GitHub Deployment
-    environment: Development
-    runs-on: ubuntu-latest
-    steps:
-      - name: Empty Step
-        run: echo "Hello World"
-
   get-short-sha:
-    needs: trigger-github-deployment
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
     runs-on: ubuntu-latest
@@ -36,7 +27,7 @@ jobs:
 
   build-and-push-isar-robot-dev-image-to-ghcr:
     name: Build and push isar-robot dev image to github container registry
-    needs: [get-short-sha, trigger-github-deployment]
+    needs: get-short-sha
     uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
     permissions:
       contents: read
@@ -54,7 +45,7 @@ jobs:
 
   deploy:
     name: Update deployment in Development
-    needs: [build-and-push-isar-robot-dev-image-to-ghcr, get-short-sha, trigger-github-deployment]
+    needs: [build-and-push-isar-robot-dev-image-to-ghcr, get-short-sha]
     uses: ./.github/workflows/update_aurora_deployment.yml
     with:
       Environment: development
