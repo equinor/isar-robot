@@ -14,17 +14,8 @@ on:
     types: [published]
 
 jobs:
-  trigger-github-deployment:
-    name: Trigger GitHub Deployment
-    environment: Staging
-    runs-on: ubuntu-latest
-    steps:
-      - name: Empty Step
-        run: echo "Hello World"
-
   build-and-push-isar-robot-latest-release-image-to-ghcr:
     name: Build and push isar-robot latest release image to github container registry
-    needs: trigger-github-deployment
     uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
     permissions:
       contents: read
@@ -42,7 +33,6 @@ jobs:
 
   build-and-push-isar-robot-latest-release-image-to-aurora-dev-registry:
     name: Build and push isar-robot latest release image to aurora dev registry
-    needs: trigger-github-deployment
     uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
     permissions:
       contents: read
@@ -60,7 +50,6 @@ jobs:
 
   build-and-push-isar-robot-latest-release-image-to-aurora-prod-registry:
     name: Build and push isar-robot latest release image to aurora prod registry
-    needs: trigger-github-deployment
     uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
     permissions:
       contents: read
@@ -78,7 +67,7 @@ jobs:
 
   deploy:
     name: Update deployment in Staging
-    needs: [trigger-github-deployment, build-and-push-isar-robot-latest-release-image-to-aurora-prod-registry]
+    needs: build-and-push-isar-robot-latest-release-image-to-aurora-prod-registry
     uses: ./.github/workflows/update_aurora_deployment.yml
     with:
       Environment: staging
