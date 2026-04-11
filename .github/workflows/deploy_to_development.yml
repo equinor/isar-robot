@@ -1,6 +1,5 @@
 name: Deploy to Development
 
-# Only one workflow in a concurrency group may run at a time
 concurrency:
   group: development-concurrency
   cancel-in-progress: true
@@ -25,8 +24,8 @@ jobs:
           SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-8)
           echo "tag=$SHA_SHORT" >> "$GITHUB_OUTPUT"
 
-  build-and-push-isar-robot-dev-image-to-ghcr:
-    name: Build and push isar-robot dev image to github container registry
+  build-and-push-dev-image-to-ghcr:
+    name: Build and push dev image to github container registry
     needs: get-short-sha
     uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
     permissions:
@@ -35,8 +34,8 @@ jobs:
     with:
       registry: ghcr.io
       image_name: ${{ github.repository }}
-      tag: "dev.${{ needs.get-short-sha.outputs.tag }}"     # PS: Needs to match deploy.with.Tag
-      secondary_tag: "dev"
+      tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
+      secondary_tag: dev
       path_to_dockerfile: Dockerfile
       path_to_context: .
     secrets:
@@ -45,13 +44,13 @@ jobs:
 
   deploy:
     name: Update deployment in Development
-    needs: [build-and-push-isar-robot-dev-image-to-ghcr, get-short-sha]
+    needs: [build-and-push-dev-image-to-ghcr, get-short-sha]
     uses: ./.github/workflows/update_aurora_deployment.yml
     with:
       Environment: development
       Registry: ghcr.io
       ImageName: ${{ github.repository }}
-      Tag: "dev.${{ needs.get-short-sha.outputs.tag }}"     # PS: Needs to match build-and-push-components.with.Tag
+      Tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
       AuthorEmail: ${{ github.event.head_commit.author.email }}
       AuthorName: ${{ github.event.head_commit.author.name }}
     secrets:
