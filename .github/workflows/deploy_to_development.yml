@@ -45,13 +45,14 @@ jobs:
   deploy:
     name: Update deployment in Development
     needs: [build-and-push-dev-image-to-ghcr, get-short-sha]
-    uses: ./.github/workflows/update_aurora_deployment.yml
+    uses: equinor/armada/.github/workflows/update_kubernetes_deployment.yml@main
     with:
-      Environment: development
-      Registry: ghcr.io
-      ImageName: ${{ github.repository }}
-      Tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
-      AuthorEmail: ${{ github.event.head_commit.author.email }}
-      AuthorName: ${{ github.event.head_commit.author.name }}
+      environment: development
+      registry: ghcr.io
+      image_name: ${{ github.repository }}
+      tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
+      author_email: ${{ github.event.head_commit.author.email }}
+      author_name: ${{ github.event.head_commit.author.name }}
+      infrastructure_repository: equinor/robotics-infrastructure
     secrets:
-      DeployKey: ${{ secrets.ROBOTICS_INFRASTRUCTURE_DEPLOY_KEY }}
+      deploy_key: ${{ secrets.ROBOTICS_INFRASTRUCTURE_DEPLOY_KEY }}
