@@ -54,7 +54,7 @@ dacite==1.9.2
     #   isar
 dependency-injector==4.49.0
     # via isar
-fastapi==0.135.3
+fastapi==0.136.0
     # via
     #   fastapi-azure-auth
     #   isar
@@ -146,7 +146,7 @@ opentelemetry-util-http==0.59b0
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
-packaging==26.0
+packaging==26.1
     # via opentelemetry-instrumentation
 paho-mqtt==2.1.0
     # via isar
@@ -158,12 +158,12 @@ psycopg2-binary==2.9.11
     # via isar
 pycparser==3.0
     # via cffi
-pydantic==2.12.5
+pydantic==2.13.1
     # via
     #   fastapi
     #   isar
     #   pydantic-settings
-pydantic-core==2.41.5
+pydantic-core==2.46.1
     # via pydantic
 pydantic-settings==2.13.1
     # via isar
@@ -228,5 +228,5 @@ uvicorn==0.44.0
     # via isar
 wrapt==1.17.3
     # via opentelemetry-instrumentation
-zipp==3.23.0
+zipp==3.23.1
     # via importlib-metadata
