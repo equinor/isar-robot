@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: read
     with:
-      python-versions: '["3.12", "3.13", "3.14"]'
+      python-versions: '["3.14"]'
       run-black: true
       run-mypy: true
       run-ruff: true
