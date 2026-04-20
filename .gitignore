@@ -138,3 +138,5 @@ dmypy.json
 
 .vscode
 **/node_modules
+
+AGENTS.md
