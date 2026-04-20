@@ -7,7 +7,7 @@ name = "isar-robot"
 authors = [{ name = "Equinor ASA", email = "fg_robots_dev@equinor.com" }]
 description = "Integration and Supervisory control of Autonomous Robots - Open source robot implementation"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 classifiers = [
     "Intended Audience :: Developers",
@@ -34,7 +34,7 @@ isar = { path = "../isar", editable = true }
 repository = "https://github.com/equinor/isar-robot.git"
 
 [project.optional-dependencies]
-dev = ["black", "mypy", "pip-tools", "pre-commit", "pytest", "ruff"]
+dev = ["black", "mypy", "pre-commit", "pytest", "ruff"]
 
 [tool.setuptools_scm]
 version_file = "src/isar_robot/version.py"
