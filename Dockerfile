@@ -13,7 +13,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY . .
-RUN --mount=source=.git,target=.git,type=bind uv sync --frozen --no-dev
+RUN --mount=source=.git,target=.git,type=bind uv sync --frozen --no-editable --no-dev
 
 FROM python:3.13-slim
 WORKDIR /app
