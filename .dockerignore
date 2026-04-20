@@ -2,7 +2,7 @@
 !.git/
 !src/isar_robot
 !pyproject.toml
-!requirements.txt
+!uv.lock
 !LICENSE
 !README.md
 !SECURITY.md
