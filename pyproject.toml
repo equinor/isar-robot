@@ -30,7 +30,7 @@ isar = { path = "../isar", editable = true }
 repository = "https://github.com/equinor/isar-robot.git"
 
 [project.optional-dependencies]
-dev = ["black", "mypy", "pre-commit", "pytest", "ruff"]
+dev = ["black", "mypy", "pytest", "ruff"]
 
 [tool.setuptools_scm]
 version_file = "src/isar_robot/version.py"
