@@ -71,12 +71,15 @@ class Robot(RobotInterface):
             )
 
         status = self.mission_simulation.task_status(task_id)
-        if status == TaskStatus.Successful and self.mission_simulation.is_return_home:
-            self.robot_is_home = True
         return status
 
     def mission_status(self, mission_id):
         status = self.mission_simulation.mission_status()
+        if (
+            status == MissionStatus.Successful
+            and self.mission_simulation.is_return_home
+        ):
+            self.robot_is_home = True
         return status
 
     def stop(self) -> None:
