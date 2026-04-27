@@ -23,6 +23,9 @@ classifiers = [
 dependencies = ["alitra", "isar>=2.0.0"]
 dynamic = ["version"]
 
+[[tool.uv.index]]
+exclude-newer = "7 days"
+
 [tool.uv.sources]
 isar = { path = "../isar", editable = true }
 
