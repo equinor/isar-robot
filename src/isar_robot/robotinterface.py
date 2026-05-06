@@ -41,7 +41,7 @@ class Robot(RobotInterface):
 
         self.telemetry = telemetry.Telemetry()
         self.last_task_completion_time: datetime = datetime.now(timezone.utc)
-        self.robot_is_home: bool = False
+        self.robot_is_home: bool = settings.SHOULD_START_AT_HOME
         self.mission_simulation: Optional[MissionSimulation] = None
 
     def initiate_mission(self, mission: Mission) -> None:

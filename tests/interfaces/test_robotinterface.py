@@ -1,5 +1,7 @@
+from robot_interface.models.mission.status import RobotStatus
 from robot_interface.test_robot_interface import interface_test
 
+from isar_robot.config.settings import settings
 from isar_robot.robotinterface import Robot
 
 
@@ -47,3 +49,14 @@ def test_pressure_telemetry():
         isar_id="test_id", robot_name="test_robot"
     )
     assert pressure_telemetry is not None
+
+
+def test_initial_robot_status_defaults_to_available():
+    robot = Robot(robot_name="Robot", isar_id="00000000-0000-0000-0000-000000000000")
+    assert robot.robot_status() == RobotStatus.Available
+
+
+def test_initial_robot_status_is_home_when_should_start_at_home(mocker):
+    mocker.patch.object(settings, "SHOULD_START_AT_HOME", True)
+    robot = Robot(robot_name="Robot", isar_id="00000000-0000-0000-0000-000000000000")
+    assert robot.robot_status() == RobotStatus.Home
