@@ -57,14 +57,25 @@ Every configuration variable is defined in [settings.py](https://github.com/equi
 
 The dependencies used for this package are listed in `pyproject.toml` and pinned in `uv.lock`. This ensures our builds are predictable and deterministic. This project uses [uv](https://docs.astral.sh/uv/) for dependency management:
 
+Install local versions (editable):
 ```
-uv lock
+uv sync
+```
+
+Install pinned versions:
+```
+uv sync --no-sources
+```
+
+Pin local version:
+```
+uv lock --no-sources
 ```
 
 To update the dependencies to the latest versions, run:
 
 ```
-uv lock --upgrade
+uv lock --upgrade --no-sources
 ```
 
 # Contributing
