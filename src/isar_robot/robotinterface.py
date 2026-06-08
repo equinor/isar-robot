@@ -18,6 +18,7 @@ from robot_interface.models.mission.status import MissionStatus, RobotStatus, Ta
 from robot_interface.models.mission.task import (
     InspectionTask,
     RecordAudio,
+    TakeAcousticMeasurement,
     TakeCO2Measurement,
     TakeImage,
     TakeThermalImage,
@@ -106,6 +107,8 @@ class Robot(RobotInterface):
             return inspections.create_thermal_video(task, self.telemetry)
         elif type(task) is TakeCO2Measurement:
             return inspections.create_co2_measurement(task, self.telemetry)
+        elif type(task) is TakeAcousticMeasurement:
+            return inspections.create_acoustic_measurement(task, self.telemetry)
         elif type(task) is RecordAudio:
             return inspections.create_audio(task, self.telemetry)
         else:
