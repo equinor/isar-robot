@@ -1,6 +1,8 @@
 from alitra import Frame, Position, Pose, Orientation
 from robot_interface.models.mission.task import (
+    AcousticDetectionType,
     RecordAudio,
+    TakeAcousticMeasurement,
     TakeImage,
     TakeThermalImage,
     TakeThermalVideo,
@@ -57,3 +59,19 @@ def test_create_audio() -> None:
 
     assert inspection_recording.metadata.file_type == "wav"
     assert inspection_recording.metadata.duration == 10
+
+
+def test_create_acoustic_measurement() -> None:
+    task_actions = TakeAcousticMeasurement(
+        target=target,
+        robot_pose=robot_pose,
+        frequency_from=35000,
+        frequency_to=40000,
+        snr_value_threshold=10,
+        detection_type=AcousticDetectionType.leak,
+    )
+
+    inspection = inspections.create_acoustic_measurement(task_actions, telemetryModule)
+
+    assert inspection.metadata.file_type == "mp4"
+    assert inspection.metadata.frequency_from == 35000
