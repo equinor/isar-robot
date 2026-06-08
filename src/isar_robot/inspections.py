@@ -8,6 +8,8 @@ from robot_interface.models.exceptions.robot_exceptions import (
     RobotRetrieveInspectionException,
 )
 from robot_interface.models.inspection.inspection import (
+    AcousticMeasurement,
+    AcousticMeasurementMetadata,
     Audio,
     AudioMetadata,
     CO2Measurement,
@@ -24,6 +26,7 @@ from robot_interface.models.inspection.inspection import (
 from robot_interface.models.mission.task import (
     InspectionTask,
     RecordAudio,
+    TakeAcousticMeasurement,
     TakeCO2Measurement,
     TakeImage,
     TakeThermalImage,
@@ -171,6 +174,34 @@ def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
         value=random.normalvariate(0.043, 0.005),
         unit="% v/v",
     )
+
+
+def create_acoustic_measurement(
+    task: TakeAcousticMeasurement, telemetry: Telemetry
+) -> AcousticMeasurement:
+    now: datetime = datetime.now(timezone.utc)
+    metadata: AcousticMeasurementMetadata = AcousticMeasurementMetadata(
+        start_time=now,
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task, telemetry),
+        file_type="mp4",
+        duration=11.0,
+        snr_value=0.0,
+        leak_rate=0.0,
+        leak_rate_unit="l/min",
+        sound_pressure_level_at_sensor_db=40.0,
+        sound_pressure_level_at_source_db=45.0,
+        distance_to_source=2.0,
+        result="RI_NO_ANOMALY",
+        frequency_from=task.frequency_from,
+        frequency_to=task.frequency_to,
+    )
+    metadata.tag_id = task.tag_id
+    metadata.inspection_description = task.inspection_description
+
+    data = _read_data_from_file(example_video)
+
+    return AcousticMeasurement(metadata=metadata, id=task.inspection_id, data=data)
 
 
 def _read_data_from_file(filename: Path) -> bytes:
