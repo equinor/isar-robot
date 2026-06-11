@@ -1,4 +1,4 @@
-from alitra import Frame, Position, Pose, Orientation
+from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.mission.task import (
     AcousticDetectionType,
     RecordAudio,
@@ -75,3 +75,21 @@ def test_create_acoustic_measurement() -> None:
 
     assert inspection.metadata.file_type == "mp4"
     assert inspection.metadata.frequency_from == 35000
+
+
+def test_select_image_filepath_cloe_kaa(monkeypatch) -> None:
+    monkeypatch.setattr(inspections.settings, "PLANT_SHORT_NAME", "kaa")
+    task = TakeImage(target=target, robot_pose=robot_pose, analysis_types=["CLOE"])
+
+    assert (
+        inspections._select_image_filepath(task) == inspections.example_cloe_image_kaa
+    )
+
+
+def test_select_image_filepath_fencilla(monkeypatch) -> None:
+    monkeypatch.setattr(inspections.settings, "PLANT_SHORT_NAME", "nls")
+    task = TakeImage(target=target, robot_pose=robot_pose, analysis_types=["Fencilla"])
+
+    assert (
+        inspections._select_image_filepath(task) == inspections.example_fencilla_image
+    )

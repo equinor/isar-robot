@@ -34,18 +34,24 @@ from robot_interface.models.mission.task import (
     TakeVideo,
 )
 
+from isar_robot.config.settings import settings
 from isar_robot.telemetry import Telemetry
 
-example_image_1: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)), "example_data/example_image.jpg"
+example_cloe_image_nls: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)),
+    "example_data/example_image_cloe_nls.jpeg",
 )
-example_image_2: Path = Path(
+example_cloe_image_nls_empty: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)),
+    "example_data/example_image_cloe_nls_empty.jpeg",
+)
+example_cloe_image_kaa: Path = Path(
     os.path.dirname(os.path.realpath(__file__)),
     "example_data/example_image_cloe_kaa.jpeg",
 )
-example_image_3: Path = Path(
+example_fencilla_image: Path = Path(
     os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_cloe_nls.jpeg",
+    "example_data/example_image_fencilla.jpeg",
 )
 example_thermal_image = Path(
     os.path.dirname(os.path.realpath(__file__)),
@@ -77,7 +83,7 @@ def create_image(task: TakeImage, telemetry: Telemetry) -> Image:
     image_metadata.tag_id = task.tag_id
     image_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = random.choice([example_image_1, example_image_2, example_image_3])
+    filepath: Path = _select_image_filepath(task)
     data = _read_data_from_file(filepath)
 
     return Image(metadata=image_metadata, id=task.inspection_id, data=data)
@@ -202,6 +208,31 @@ def create_acoustic_measurement(
     data = _read_data_from_file(example_video)
 
     return AcousticMeasurement(metadata=metadata, id=task.inspection_id, data=data)
+
+
+def _select_image_filepath(task: TakeImage) -> Path:
+    analysis_types = [
+        analysis_type.lower() for analysis_type in (task.analysis_types or [])
+    ]
+    plant_short_name = settings.PLANT_SHORT_NAME.lower()
+
+    if "cloe" in analysis_types:
+        if plant_short_name == "kaa":
+            return example_cloe_image_kaa
+        if plant_short_name == "nls":
+            return random.choice([example_cloe_image_nls, example_cloe_image_nls_empty])
+
+    if "fencilla" in analysis_types:
+        return example_fencilla_image
+
+    return random.choice(
+        [
+            example_cloe_image_nls,
+            example_cloe_image_nls_empty,
+            example_cloe_image_kaa,
+            example_fencilla_image,
+        ]
+    )
 
 
 def _read_data_from_file(filename: Path) -> bytes:
