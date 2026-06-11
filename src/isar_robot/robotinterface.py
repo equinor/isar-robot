@@ -1,12 +1,12 @@
 import logging
+import random
+import time
 from datetime import datetime, timezone
 from queue import Queue
-import random
 from threading import Thread
-import time
 from typing import Callable, List, Optional
-from alitra import Position
 
+from alitra import Position
 from robot_interface.models.exceptions.robot_exceptions import (
     RobotAlreadyHomeException,
     RobotCommunicationException,

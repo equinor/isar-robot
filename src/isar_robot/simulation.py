@@ -4,9 +4,9 @@ import time
 from threading import Event, Thread
 
 from robot_interface.models.exceptions.robot_exceptions import (
-    RobotTaskStatusException,
     RobotMissionStatusException,
     RobotNoMissionRunningException,
+    RobotTaskStatusException,
 )
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, TaskStatus

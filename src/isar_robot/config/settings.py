@@ -34,6 +34,11 @@ class Settings(BaseSettings):
     # This will cause delay between 0 and 5 seconds
     MISSION_SIMULATION_API_DELAY_MODIFIER: float = Field(default=5.0)
 
+    # Shortname of the facility the robot is operating in. Read from the ISAR
+    # environment variable so the simulated robot can choose example images that
+    # match the plant (e.g. "kaa" or "nls").
+    PLANT_SHORT_NAME: str = Field(default="", validation_alias="ISAR_PLANT_SHORT_NAME")
+
     model_config = SettingsConfigDict(
         env_prefix="ROBOT_",
         env_file_encoding="utf-8",
