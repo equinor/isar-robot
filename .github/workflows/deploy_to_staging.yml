@@ -44,8 +44,8 @@ jobs:
       path_to_dockerfile: Dockerfile
       path_to_context: .
     secrets:
-      registry_password: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
-      registry_username: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
+      registry_password: ${{ secrets.AURORA_CONTAINER_REGISTRY_DEV_PASSWORD }}
+      registry_username: ${{ secrets.AURORA_CONTAINER_REGISTRY_DEV_USERNAME }}
 
   build-and-push-latest-release-image-to-aurora-prod-registry:
     name: Build and push latest release image to aurora prod registry
@@ -61,8 +61,8 @@ jobs:
       path_to_dockerfile: Dockerfile
       path_to_context: .
     secrets:
-      registry_password: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_SECRET }}
-      registry_username: ${{ secrets.ROBOTICS_ACRPUSH_DOCKER_APPLICATION_ID }}
+      registry_password: ${{ secrets.AURORA_CONTAINER_REGISTRY_PROD_PASSWORD }}
+      registry_username: ${{ secrets.AURORA_CONTAINER_REGISTRY_PROD_USERNAME }}
 
   deploy:
     name: Update deployment in Staging
