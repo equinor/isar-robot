@@ -1,6 +1,5 @@
 import random
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.robots.battery_state import BatteryState
@@ -49,7 +48,7 @@ class Telemetry:
     def get_pose(self) -> Pose:
         return self.current_pose
 
-    def _get_pose(self, current_target: Optional[Position]) -> Pose:
+    def _get_pose(self, current_target: Position | None) -> Pose:
         if not current_target:
             return self.current_pose
 
@@ -64,7 +63,7 @@ class Telemetry:
         )
         return self.current_pose
 
-    def _get_battery_level(self, is_home: Optional[bool] = None) -> float:
+    def _get_battery_level(self, is_home: bool | None = None) -> float:
         if settings.SHOULD_HAVE_RANDOM_BATTERY_LEVEL or is_home is None:
             # Return random float in the range [50, 100]
             return random.randint(500, 1000) / 10.0
@@ -80,32 +79,32 @@ class Telemetry:
             )
         return self.current_battery_level
 
-    def _get_battery_state(self, is_home: Optional[bool] = None) -> BatteryState:
+    def _get_battery_state(self, is_home: bool | None = None) -> BatteryState:
         if settings.SHOULD_HAVE_RANDOM_BATTERY_LEVEL or is_home is None:
             return BatteryState.Normal
 
         return BatteryState.Charging if is_home else BatteryState.Normal
 
     def get_battery_telemetry(
-        self, isar_id: str, robot_name: str, is_home: Optional[bool] = None
+        self, isar_id: str, robot_name: str, is_home: bool | None = None
     ) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
             battery_level=self._get_battery_level(is_home=is_home),
             battery_state=self._get_battery_state(is_home=is_home),
             isar_id=isar_id,
             robot_name=robot_name,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         return battery_payload.model_dump_json()
 
     def get_pose_telemetry(
-        self, isar_id: str, robot_name: str, current_target: Optional[Position]
+        self, isar_id: str, robot_name: str, current_target: Position | None
     ) -> str:
         pose_payload: TelemetryPosePayload = TelemetryPosePayload(
             pose=self._get_pose(current_target=current_target),
             isar_id=isar_id,
             robot_name=robot_name,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         return pose_payload.model_dump_json()
 
@@ -115,7 +114,7 @@ class Telemetry:
                 obstacle_status=_get_obstacle_status(),
                 isar_id=isar_id,
                 robot_name=robot_name,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
         )
         return obstacle_status_payload.model_dump_json()
@@ -125,6 +124,6 @@ class Telemetry:
             pressure_level=_get_pressure_level(),
             isar_id=isar_id,
             robot_name=robot_name,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
         return pressure_payload.model_dump_json()

@@ -1,10 +1,10 @@
 import logging
 import random
 import time
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from queue import Queue
 from threading import Thread
-from typing import Callable, List, Optional
 
 from alitra import Position
 from robot_interface.models.exceptions.robot_exceptions import (
@@ -41,9 +41,9 @@ class Robot(RobotInterface):
         super().__init__(robot_name=robot_name, isar_id=isar_id)
 
         self.telemetry = telemetry.Telemetry()
-        self.last_task_completion_time: datetime = datetime.now(timezone.utc)
+        self.last_task_completion_time: datetime = datetime.now(UTC)
         self.robot_is_home: bool = settings.SHOULD_START_AT_HOME
-        self.mission_simulation: Optional[MissionSimulation] = None
+        self.mission_simulation: MissionSimulation | None = None
 
     def initiate_mission(self, mission: Mission) -> None:
         if (
@@ -116,7 +116,7 @@ class Robot(RobotInterface):
 
     def register_inspection_callback(
         self, callback_function: Callable[[Inspection, Mission], None]
-    ) -> Optional[Thread]:
+    ) -> Thread | None:
 
         if settings.SHOULD_SIMULATE_INSPECTION_CALLBACK_CRASH:
             return None
@@ -140,7 +140,7 @@ class Robot(RobotInterface):
         return
 
     def _get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
-        current_target: Optional[Position] = None
+        current_target: Position | None = None
         if self.mission_simulation:
             current_task = self.mission_simulation.current_task()
             if current_task and isinstance(current_task, InspectionTask):
@@ -157,8 +157,8 @@ class Robot(RobotInterface):
 
     def get_telemetry_publishers(
         self, queue: Queue, isar_id: str, robot_name: str
-    ) -> List[Thread]:
-        publisher_threads: List[Thread] = []
+    ) -> list[Thread]:
+        publisher_threads: list[Thread] = []
 
         pose_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
             mqtt_queue=queue,
@@ -249,7 +249,7 @@ class Robot(RobotInterface):
             )
         self.mission_simulation.resume_mission()
 
-    def generate_media_config(self) -> Optional[MediaConfig]:
+    def generate_media_config(self) -> MediaConfig | None:
         return None
 
     def get_battery_level(self):
