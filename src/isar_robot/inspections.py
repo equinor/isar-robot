@@ -1,7 +1,7 @@
 import logging
 import os
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from robot_interface.models.exceptions.robot_exceptions import (
@@ -72,7 +72,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_image(task: TakeImage, telemetry: Telemetry) -> Image:
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
 
     image_metadata: ImageMetadata = ImageMetadata(
         start_time=now,
@@ -86,11 +86,11 @@ def create_image(task: TakeImage, telemetry: Telemetry) -> Image:
     filepath: Path = _select_image_filepath(task)
     data = _read_data_from_file(filepath)
 
-    return Image(metadata=image_metadata, id=task.inspection_id, data=data)
+    return Image(metadata=image_metadata, id=task.id, data=data)
 
 
 def create_thermal_image(task: TakeThermalImage, telemetry: Telemetry) -> Image:
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
 
     image_metadata: ThermalImageMetadata = ThermalImageMetadata(
         start_time=now,
@@ -104,11 +104,11 @@ def create_thermal_image(task: TakeThermalImage, telemetry: Telemetry) -> Image:
     filepath: Path = example_thermal_image
     data = _read_data_from_file(filepath)
 
-    return ThermalImage(metadata=image_metadata, id=task.inspection_id, data=data)
+    return ThermalImage(metadata=image_metadata, id=task.id, data=data)
 
 
 def create_video(task: TakeVideo, telemetry: Telemetry) -> Video:
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
     video_metadata: VideoMetadata = VideoMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
@@ -122,11 +122,11 @@ def create_video(task: TakeVideo, telemetry: Telemetry) -> Video:
     filepath: Path = example_video
     data = _read_data_from_file(filepath)
 
-    return Video(metadata=video_metadata, id=task.inspection_id, data=data)
+    return Video(metadata=video_metadata, id=task.id, data=data)
 
 
 def create_thermal_video(task: TakeThermalVideo, telemetry: Telemetry):
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
     thermal_video_metadata: ThermalVideoMetadata = ThermalVideoMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
@@ -140,13 +140,11 @@ def create_thermal_video(task: TakeThermalVideo, telemetry: Telemetry):
     filepath: Path = example_thermal_video
     data = _read_data_from_file(filepath)
 
-    return ThermalVideo(
-        metadata=thermal_video_metadata, id=task.inspection_id, data=data
-    )
+    return ThermalVideo(metadata=thermal_video_metadata, id=task.id, data=data)
 
 
 def create_audio(task: RecordAudio, telemetry: Telemetry):
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
     audio_metadata: AudioMetadata = AudioMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
@@ -160,11 +158,11 @@ def create_audio(task: RecordAudio, telemetry: Telemetry):
     filepath: Path = example_audio
     data = _read_data_from_file(filepath)
 
-    return Audio(metadata=audio_metadata, id=task.inspection_id, data=data)
+    return Audio(metadata=audio_metadata, id=task.id, data=data)
 
 
 def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
     gas_measurement_metadata: GasMeasurementMetadata = GasMeasurementMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
@@ -176,7 +174,7 @@ def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
 
     return CO2Measurement(
         metadata=gas_measurement_metadata,
-        id=task.inspection_id,
+        id=task.id,
         value=random.normalvariate(0.043, 0.005),
         unit="% v/v",
     )
@@ -185,7 +183,7 @@ def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
 def create_acoustic_measurement(
     task: TakeAcousticMeasurement, telemetry: Telemetry
 ) -> AcousticMeasurement:
-    now: datetime = datetime.now(timezone.utc)
+    now: datetime = datetime.now(UTC)
     metadata: AcousticMeasurementMetadata = AcousticMeasurementMetadata(
         start_time=now,
         robot_pose=telemetry.get_pose(),
@@ -207,7 +205,7 @@ def create_acoustic_measurement(
 
     data = _read_data_from_file(example_video)
 
-    return AcousticMeasurement(metadata=metadata, id=task.inspection_id, data=data)
+    return AcousticMeasurement(metadata=metadata, id=task.id, data=data)
 
 
 def _select_image_filepath(task: TakeImage) -> Path:

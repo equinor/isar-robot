@@ -6,10 +6,6 @@ resolution-markers = [
     "python_full_version < '3.15'",
 ]
 
-[options]
-exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
-exclude-newer-span = "P3D"
-
 [[package]]
 name = "alitra"
 version = "2.0.0"
@@ -551,7 +547,7 @@ wheels = [
 
 [[package]]
 name = "isar"
-version = "2.1.4"
+version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alitra" },
@@ -583,9 +579,9 @@ dependencies = [
     { name = "transitions" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/84/4c/5cb475ae7f624286d2f5174eb72799a3adce1f0fdf68de04737c0e28805c/isar-2.1.4.tar.gz", hash = "sha256:39c56f17c1bc424914337c09a77ab94a1dde6148fd2df733085054b6c6749835", size = 212052, upload-time = "2026-06-08T07:35:55.522Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/fb/cb874f7b22ec030266a0e2a1c96af86f71cbee166ea3ae4af4284e6c90be/isar-2.2.0.tar.gz", hash = "sha256:b8bf740ec35d13d68b4525f645f90217e12297ed159b8f42fa4510729e985533", size = 212569, upload-time = "2026-07-28T13:42:59.365Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/86/32/de5b43322191e94ea59bf6a3a3a4f8a31157a5e8b84ed1486bc4520355b7/isar-2.1.4-py3-none-any.whl", hash = "sha256:56909abb5e97075ab106e89eba69b70fcad017b18fcb9ad0ca82117de738e649", size = 121930, upload-time = "2026-06-08T07:35:54.03Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/f9/1854026306868339cdd37d19e48ee68d660c7215a94e93e656263b464861/isar-2.2.0-py3-none-any.whl", hash = "sha256:02ef45c9c0a6ef82450ecc647d8ba882261ed06793839af9e4d7dcb049318614", size = 115948, upload-time = "2026-07-28T13:42:58.197Z" },
 ]
 
 [[package]]
@@ -609,7 +605,7 @@ dev = [
 requires-dist = [
     { name = "alitra" },
     { name = "black", marker = "extra == 'dev'" },
-    { name = "isar", specifier = ">=2.1.4" },
+    { name = "isar", specifier = ">=2.2.0" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest-mock", marker = "extra == 'dev'" },

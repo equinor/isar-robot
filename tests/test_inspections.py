@@ -20,7 +20,7 @@ telemetryModule = telemetry.Telemetry()
 
 
 def test_create_image() -> None:
-    task_actions = TakeImage(target=target, robot_pose=robot_pose)
+    task_actions = TakeImage(id="id", target=target, robot_pose=robot_pose)
 
     inspection_image = inspections.create_image(task_actions, telemetryModule)
 
@@ -28,7 +28,7 @@ def test_create_image() -> None:
 
 
 def test_create_thermal_image() -> None:
-    task_actions = TakeThermalImage(target=target, robot_pose=robot_pose)
+    task_actions = TakeThermalImage(id="id", target=target, robot_pose=robot_pose)
 
     inspection_image = inspections.create_thermal_image(task_actions, telemetryModule)
 
@@ -36,7 +36,7 @@ def test_create_thermal_image() -> None:
 
 
 def test_create_video() -> None:
-    task_actions = TakeImage(target=target, robot_pose=robot_pose)
+    task_actions = TakeImage(id="id", target=target, robot_pose=robot_pose)
 
     inspection_video = inspections.create_video(task_actions, telemetryModule)
 
@@ -44,7 +44,9 @@ def test_create_video() -> None:
 
 
 def test_create_thermal_video() -> None:
-    task_actions = TakeThermalVideo(target=target, duration=10, robot_pose=robot_pose)
+    task_actions = TakeThermalVideo(
+        id="id", target=target, duration=10, robot_pose=robot_pose
+    )
 
     inspection_video = inspections.create_thermal_video(task_actions, telemetryModule)
 
@@ -53,7 +55,9 @@ def test_create_thermal_video() -> None:
 
 
 def test_create_audio() -> None:
-    task_actions = RecordAudio(target=target, duration=10, robot_pose=robot_pose)
+    task_actions = RecordAudio(
+        id="id", target=target, duration=10, robot_pose=robot_pose
+    )
 
     inspection_recording = inspections.create_audio(task_actions, telemetryModule)
 
@@ -63,6 +67,7 @@ def test_create_audio() -> None:
 
 def test_create_acoustic_measurement() -> None:
     task_actions = TakeAcousticMeasurement(
+        id="id",
         target=target,
         robot_pose=robot_pose,
         frequency_from=35000,
@@ -79,7 +84,9 @@ def test_create_acoustic_measurement() -> None:
 
 def test_select_image_filepath_cloe_kaa(monkeypatch) -> None:
     monkeypatch.setattr(inspections.settings, "PLANT_SHORT_NAME", "kaa")
-    task = TakeImage(target=target, robot_pose=robot_pose, analysis_types=["CLOE"])
+    task = TakeImage(
+        id="id", target=target, robot_pose=robot_pose, analysis_types=["CLOE"]
+    )
 
     assert (
         inspections._select_image_filepath(task) == inspections.example_cloe_image_kaa
@@ -88,7 +95,9 @@ def test_select_image_filepath_cloe_kaa(monkeypatch) -> None:
 
 def test_select_image_filepath_fencilla(monkeypatch) -> None:
     monkeypatch.setattr(inspections.settings, "PLANT_SHORT_NAME", "nls")
-    task = TakeImage(target=target, robot_pose=robot_pose, analysis_types=["Fencilla"])
+    task = TakeImage(
+        id="id", target=target, robot_pose=robot_pose, analysis_types=["Fencilla"]
+    )
 
     assert (
         inspections._select_image_filepath(task) == inspections.example_fencilla_image
