@@ -91,8 +91,6 @@ class Robot(RobotInterface):
             )
         try:
             self.mission_simulation.stop_mission()
-        except RobotNoMissionRunningException as e:
-            raise e
         finally:
             self.mission_simulation = None
 
