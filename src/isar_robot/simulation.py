@@ -27,9 +27,9 @@ class MissionSimulation(Thread):
         self.task_index: int = 0
         self.n_tasks: int = len(mission.tasks)
         self.robot_is_home: bool = False
-        self.task_statuses: list[TaskStatus] = list(
-            map(lambda _: TaskStatus.NotStarted, self.mission.tasks)
-        )
+        self.task_statuses: list[TaskStatus] = [
+            TaskStatus.NotStarted for _ in self.mission.tasks
+        ]
         self.task_id_mapping = {}
         for i, task in enumerate(self.mission.tasks):
             self.task_id_mapping[task.id] = i
@@ -106,24 +106,22 @@ class MissionSimulation(Thread):
     def mission_status(self):
         if self.mission_paused:
             return MissionStatus.Paused
-        if all(map(lambda status: status == TaskStatus.NotStarted, self.task_statuses)):
+        if all(status == TaskStatus.NotStarted for status in self.task_statuses):
             return MissionStatus.NotStarted
         if not self.mission_done:
             return MissionStatus.InProgress
-        if all(map(lambda status: status == TaskStatus.Successful, self.task_statuses)):
+        if all(status == TaskStatus.Successful for status in self.task_statuses):
             return MissionStatus.Successful
         if any(
-            map(
-                lambda status: status in [TaskStatus.InProgress, TaskStatus.NotStarted],
-                self.task_statuses,
-            )
+            status in [TaskStatus.InProgress, TaskStatus.NotStarted]
+            for status in self.task_statuses
         ):
             return MissionStatus.InProgress
-        if all(map(lambda status: status == TaskStatus.Failed, self.task_statuses)):
+        if all(status == TaskStatus.Failed for status in self.task_statuses):
             return MissionStatus.Failed
-        if any(map(lambda status: status == TaskStatus.Cancelled, self.task_statuses)):
+        if any(status == TaskStatus.Cancelled for status in self.task_statuses):
             return MissionStatus.Cancelled
-        if any(map(lambda status: status == TaskStatus.Failed, self.task_statuses)):
+        if any(status == TaskStatus.Failed for status in self.task_statuses):
             return MissionStatus.PartiallySuccessful
         raise RobotMissionStatusException("Unhandled mission status detected")
 
