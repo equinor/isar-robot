@@ -64,6 +64,23 @@ jobs:
       registry_password: ${{ secrets.AURORA_CONTAINER_REGISTRY_PROD_PASSWORD }}
       registry_username: ${{ secrets.AURORA_CONTAINER_REGISTRY_PROD_USERNAME }}
 
+  build-and-push-latest-release-image-to-robotics-staging-registry:
+    name: Build and push latest release image to robotics staging registry
+    uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
+    permissions:
+      contents: read
+      packages: write
+    with:
+      registry: roboticsstagingacr.azurecr.io
+      image_name: robotics/isar-robot
+      tag: "${{ github.event.release.tag_name }}"
+      secondary_tag: latest
+      path_to_dockerfile: Dockerfile
+      path_to_context: .
+    secrets:
+      registry_password: ${{ secrets.ROBOTICS_ROBOTICSSTAGINGACR_PASSWORD }}
+      registry_username: ${{ secrets.ROBOTICS_ROBOTICSSTAGINGACR_USERNAME }}
+
   deploy:
     name: Update deployment in Staging
     needs: build-and-push-latest-release-image-to-aurora-prod-registry
