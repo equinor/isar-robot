@@ -24,31 +24,31 @@ jobs:
           SHA_SHORT=$(echo ${{ github.sha }} | cut -c1-8)
           echo "tag=$SHA_SHORT" >> "$GITHUB_OUTPUT"
 
-  build-and-push-dev-image-to-robotics-staging-registry:
-    name: Build and push dev image to robotics staging container registry
+  build-and-push-dev-image-to-robotics-dev-registry:
+    name: Build and push dev image to robotics dev container registry
     needs: get-short-sha
     uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
     permissions:
       contents: read
       packages: write
     with:
-      registry: roboticsstagingacr.azurecr.io
+      registry: roboticsdevacr.azurecr.io
       image_name: robotics/isar-robot
       tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
       secondary_tag: dev
       path_to_dockerfile: Dockerfile
       path_to_context: .
     secrets:
-      registry_password: ${{ secrets.ROBOTICS_ROBOTICSSTAGINGACR_PASSWORD }}
-      registry_username: ${{ secrets.ROBOTICS_ROBOTICSSTAGINGACR_USERNAME }}
+      registry_password: ${{ secrets.ROBOTICS_ROBOTICSDEVACR_PASSWORD }}
+      registry_username: ${{ secrets.ROBOTICS_ROBOTICSDEVACR_USERNAME }}
 
   deploy:
     name: Update deployment in Development
-    needs: [build-and-push-dev-image-to-robotics-staging-registry, get-short-sha]
+    needs: [build-and-push-dev-image-to-robotics-dev-registry, get-short-sha]
     uses: equinor/armada/.github/workflows/update_kubernetes_deployment.yml@main
     with:
       environment: development
-      registry: roboticsstagingacr.azurecr.io
+      registry: roboticsdevacr.azurecr.io
       image_name: robotics/isar-robot
       tag: "dev.${{ needs.get-short-sha.outputs.tag }}"
       author_email: ${{ github.event.head_commit.author.email }}
