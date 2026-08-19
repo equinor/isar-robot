@@ -1,5 +1,4 @@
 import random
-from datetime import UTC, datetime
 
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.robots.battery_state import BatteryState
@@ -85,45 +84,27 @@ class Telemetry:
 
         return BatteryState.Charging if is_home else BatteryState.Normal
 
-    def get_battery_telemetry(
-        self, isar_id: str, robot_name: str, is_home: bool | None = None
-    ) -> str:
+    def get_battery_telemetry(self, is_home: bool | None = None) -> str:
         battery_payload: TelemetryBatteryPayload = TelemetryBatteryPayload(
             battery_level=self._get_battery_level(is_home=is_home),
             battery_state=self._get_battery_state(is_home=is_home),
-            isar_id=isar_id,
-            robot_name=robot_name,
-            timestamp=datetime.now(UTC),
         )
         return battery_payload.model_dump_json()
 
-    def get_pose_telemetry(
-        self, isar_id: str, robot_name: str, current_target: Position | None
-    ) -> str:
+    def get_pose_telemetry(self, current_target: Position | None) -> str:
         pose_payload: TelemetryPosePayload = TelemetryPosePayload(
-            pose=self._get_pose(current_target=current_target),
-            isar_id=isar_id,
-            robot_name=robot_name,
-            timestamp=datetime.now(UTC),
+            pose=self._get_pose(current_target=current_target)
         )
         return pose_payload.model_dump_json()
 
-    def get_obstacle_status_telemetry(self, isar_id: str, robot_name: str) -> str:
+    def get_obstacle_status_telemetry(self) -> str:
         obstacle_status_payload: TelemetryObstacleStatusPayload = (
-            TelemetryObstacleStatusPayload(
-                obstacle_status=_get_obstacle_status(),
-                isar_id=isar_id,
-                robot_name=robot_name,
-                timestamp=datetime.now(UTC),
-            )
+            TelemetryObstacleStatusPayload(obstacle_status=_get_obstacle_status())
         )
         return obstacle_status_payload.model_dump_json()
 
-    def get_pressure_telemetry(self, isar_id: str, robot_name: str) -> str:
+    def get_pressure_telemetry(self) -> str:
         pressure_payload: TelemetryPressurePayload = TelemetryPressurePayload(
-            pressure_level=_get_pressure_level(),
-            isar_id=isar_id,
-            robot_name=robot_name,
-            timestamp=datetime.now(UTC),
+            pressure_level=_get_pressure_level()
         )
         return pressure_payload.model_dump_json()
