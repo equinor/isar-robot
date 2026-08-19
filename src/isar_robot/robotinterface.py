@@ -3,7 +3,6 @@ import random
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
-from queue import Queue
 from threading import Thread
 
 from alitra import Position
@@ -27,7 +26,7 @@ from robot_interface.models.mission.task import (
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
-from robot_interface.telemetry.mqtt_client import MqttTelemetryPublisher
+from robot_interface.telemetry.mqtt_client import TelemetryParameters
 
 from isar_robot import inspections, telemetry
 from isar_robot.config.settings import settings
@@ -137,88 +136,48 @@ class Robot(RobotInterface):
     def initialize(self) -> None:
         return
 
-    def _get_pose_telemetry(self, isar_id: str, robot_name: str) -> str:
+    def _get_pose_telemetry(self) -> str:
         current_target: Position | None = None
         if self.mission_simulation:
             current_task = self.mission_simulation.current_task()
             if current_task and isinstance(current_task, InspectionTask):
                 current_target = current_task.robot_pose.position
 
-        return self.telemetry.get_pose_telemetry(
-            isar_id=isar_id, robot_name=robot_name, current_target=current_target
-        )
+        return self.telemetry.get_pose_telemetry(current_target=current_target)
 
-    def _get_battery_telemetry(self, isar_id: str, robot_name: str) -> str:
-        return self.telemetry.get_battery_telemetry(
-            isar_id=isar_id, robot_name=robot_name, is_home=self.robot_is_home
-        )
+    def _get_battery_telemetry(self) -> str:
+        return self.telemetry.get_battery_telemetry(is_home=self.robot_is_home)
 
-    def get_telemetry_publishers(
-        self, queue: Queue, isar_id: str, robot_name: str
-    ) -> list[Thread]:
-        publisher_threads: list[Thread] = []
+    def get_telemetry_publishers(self) -> list[TelemetryParameters]:
+        return [
+            TelemetryParameters(
+                name="ISAR Robot Pose Publisher",
+                method=lambda: self._get_pose_telemetry(),
+                topic="pose",
+                interval=settings.ROBOT_POSE_PUBLISH_INTERVAL,
+            ),
+            TelemetryParameters(
+                name="ISAR Robot Battery Publisher",
+                method=lambda: self._get_battery_telemetry(),
+                topic="battery",
+                interval=settings.ROBOT_BATTERY_PUBLISH_INTERVAL,
+            ),
+            TelemetryParameters(
+                name="ISAR Robot Obstacle Status Publisher",
+                method=lambda: self.telemetry.get_obstacle_status_telemetry(),
+                topic="obstacle_status",
+                interval=settings.ROBOT_OBSTACLE_STATUS_PUBLISH_INTERVAL,
+            ),
+            TelemetryParameters(
+                name="ISAR Robot Pressure Publisher",
+                method=lambda: self.telemetry.get_pressure_telemetry(),
+                topic="pressure",
+                interval=settings.ROBOT_PRESSURE_PUBLISH_INTERVAL,
+            ),
+        ]
 
-        pose_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
-            mqtt_queue=queue,
-            telemetry_method=self._get_pose_telemetry,
-            topic=f"isar/{isar_id}/pose",
-            interval=settings.ROBOT_POSE_PUBLISH_INTERVAL,
-            retain=False,
-        )
-        pose_thread: Thread = Thread(
-            target=pose_publisher.run,
-            args=[isar_id, robot_name],
-            name="ISAR Robot Pose Publisher",
-            daemon=True,
-        )
-        publisher_threads.append(pose_thread)
-
-        battery_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
-            mqtt_queue=queue,
-            telemetry_method=self._get_battery_telemetry,
-            topic=f"isar/{isar_id}/battery",
-            interval=settings.ROBOT_BATTERY_PUBLISH_INTERVAL,
-            retain=False,
-        )
-        battery_thread: Thread = Thread(
-            target=battery_publisher.run,
-            args=[isar_id, robot_name],
-            name="ISAR Robot Battery Publisher",
-            daemon=True,
-        )
-        publisher_threads.append(battery_thread)
-
-        obstacle_status_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
-            mqtt_queue=queue,
-            telemetry_method=self.telemetry.get_obstacle_status_telemetry,
-            topic=f"isar/{isar_id}/obstacle_status",
-            interval=settings.ROBOT_OBSTACLE_STATUS_PUBLISH_INTERVAL,
-            retain=False,
-        )
-        obstacle_status_thread: Thread = Thread(
-            target=obstacle_status_publisher.run,
-            args=[isar_id, robot_name],
-            name="ISAR Robot Obstacle Status Publisher",
-            daemon=True,
-        )
-        publisher_threads.append(obstacle_status_thread)
-
-        pressure_publisher: MqttTelemetryPublisher = MqttTelemetryPublisher(
-            mqtt_queue=queue,
-            telemetry_method=self.telemetry.get_pressure_telemetry,
-            topic=f"isar/{isar_id}/pressure",
-            interval=settings.ROBOT_PRESSURE_PUBLISH_INTERVAL,
-            retain=False,
-        )
-        pressure_thread: Thread = Thread(
-            target=pressure_publisher.run,
-            args=[isar_id, robot_name],
-            name="ISAR Robot Pressure Publisher",
-            daemon=True,
-        )
-        publisher_threads.append(pressure_thread)
-
-        return publisher_threads
+    def get_utility_threads(self) -> list[Thread]:
+        return []
 
     def robot_status(self) -> RobotStatus:
         if self.mission_simulation and not self.mission_simulation.mission_done:
