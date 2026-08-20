@@ -1,8 +1,9 @@
 # Based on recommendations from
 # https://snyk.io/blog/best-practices-containerizing-python-docker/
-FROM python:3.14-slim AS build
+FROM ghcr.io/astral-sh/uv:0.12.5@sha256:e85be844203885286c60ffad8a858d48afb6c5a5c237ca0e67f12e74b8f174b1 AS uv
+FROM python:3.14-slim@sha256:ce40764625a4ff50df3548277632e7f96c4e77fe75fa848aae9885476e7df5a4 AS build
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=uv /uv /uvx /bin/
 
 WORKDIR /app
 
@@ -15,7 +16,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY . .
 RUN --mount=source=.git,target=.git,type=bind uv sync --frozen --no-editable --no-dev
 
-FROM python:3.14-slim
+FROM python:3.14-slim@sha256:ce40764625a4ff50df3548277632e7f96c4e77fe75fa848aae9885476e7df5a4
 WORKDIR /app
 COPY --from=build /app/.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
