@@ -41,5 +41,6 @@ jobs:
       tag: ${{ github.event.release.tag_name }}
       author_name: ${{ github.event.release.author.login }}
       infrastructure_repository: equinor/robotics-infrastructure
+      kustomization_base_path: k8s_kustomize/robotics/overlays
     secrets:
       deploy_key: ${{ secrets.ROBOTICS_INFRASTRUCTURE_DEPLOY_KEY }}
