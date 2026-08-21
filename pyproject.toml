@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Software Development :: Libraries",
 ]
-dependencies = ["alitra", "isar>=2.2.0"]
+dependencies = ["alitra", "isar>=2.2.1"]
 dynamic = ["version"]
 
 [tool.uv.sources]
