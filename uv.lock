@@ -639,7 +639,7 @@ wheels = [
 
 [[package]]
 name = "isar"
-version = "2.3.0"
+version = "2.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alitra" },
@@ -671,9 +671,9 @@ dependencies = [
     { name = "transitions" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/76/ab/17bcaa8f1774b034ba3e70bb76ae37d5875df315ec73ebb0e10d7afe4e62/isar-2.3.0.tar.gz", hash = "sha256:e9d0cb2f50f75296c87b1f08c05ad8871f735c5de31e0e4d71e1df4f673dac23", size = 213838, upload-time = "2026-08-24T13:27:27.839Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/f7/13ca67af44915d89e9286ce3ac9f4aeb287fae5480822eca0a14d0f5d0c1/isar-2.3.1.tar.gz", hash = "sha256:b5cc032dd75e1ceb03399f2f0560d1b4cba7d790474ac29fae5a52dd7bd4fff4", size = 213909, upload-time = "2026-08-25T09:50:36.438Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/be/49126fdb294db4c69571520976fc6542ae5499f1275f28464fc347ec643e/isar-2.3.0-py3-none-any.whl", hash = "sha256:41ed407cad5e40957e0b2ca67ba4a39d6d607b26d51f672d5f4d05d29a8f15cb", size = 112682, upload-time = "2026-08-24T13:27:26.565Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/08/9ff440698f02df46cc09552035379c8c4fe248b3b5ea87fa08180bb1dd00/isar-2.3.1-py3-none-any.whl", hash = "sha256:9cbf17849984210a1c772376fa11a09b07b0e3142a90edd4360c659ab6ee0786", size = 112687, upload-time = "2026-08-25T09:50:34.983Z" },
 ]
 
 [[package]]
@@ -697,7 +697,7 @@ dev = [
 requires-dist = [
     { name = "alitra" },
     { name = "black", marker = "extra == 'dev'" },
-    { name = "isar", specifier = ">=2.3.0" },
+    { name = "isar", specifier = ">=2.3.1" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest-mock", marker = "extra == 'dev'" },
@@ -1110,11 +1110,11 @@ wheels = [
 
 [[package]]
 name = "platformdirs"
-version = "4.11.3"
+version = "4.11.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b8/d7/e7bfbc86e9f99ff7807e24de7703f032e9c9ba80bb355cf26e0e9bc5a75e/platformdirs-4.11.3.tar.gz", hash = "sha256:66a73d38a849810252df809a3d8bcbda8e26f6c189920e7535ad608a48dbb5ab", size = 33050, upload-time = "2026-08-13T22:43:27.52Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/50/bb/ebc6636e1ae41314f796ebb7215fd28febb45f9aac72f2b04cb74b5071dc/platformdirs-4.11.4.tar.gz", hash = "sha256:f3373be828247211d0febabea97e238c3dfde8a60b3c90c32756fb52cb21556d", size = 34079, upload-time = "2026-08-24T14:53:49.676Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/19/a9/c34aebedd3a4c9afe5101b1b8713710b3fec18087c8a36c35d2f909861bd/platformdirs-4.11.3-py3-none-any.whl", hash = "sha256:5ed065d443751de711da036041a7a214122efc4a4de393b3f4137ba5576540e7", size = 23491, upload-time = "2026-08-13T22:43:26.121Z" },
+    { url = "https://files.pythonhosted.org/packages/28/be/0ff05fcd2938fb58ad9219bd54135968342d214737e012d62d43f06a2dd6/platformdirs-4.11.4-py3-none-any.whl", hash = "sha256:e34ff91a24bcddc6d939b878bdf3f5c437c9c46fe9e212b1bf455fdf1ee57586", size = 23741, upload-time = "2026-08-24T14:53:48.406Z" },
 ]
 
 [[package]]
