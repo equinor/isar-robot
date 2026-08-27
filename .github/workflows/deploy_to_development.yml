@@ -31,6 +31,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     with:
       registry: roboticsdevacr.azurecr.io
       image_name: robotics/isar-robot
