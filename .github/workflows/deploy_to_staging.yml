@@ -24,6 +24,7 @@ jobs:
       image_name: robotics/isar-robot
       tag: "${{ github.event.release.tag_name }}"
       secondary_tag: latest
+      push_to_ghcr: true
       path_to_dockerfile: Dockerfile
       path_to_context: .
     secrets:
