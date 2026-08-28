@@ -15,7 +15,7 @@ on:
 jobs:
   build-and-push-latest-release-image-to-robotics-staging-registry:
     name: Build and push latest release image to robotics staging registry
-    uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@main
+    uses: equinor/armada/.github/workflows/build_and_publish_docker_image_to_container_registry.yml@7aec39a7a9aae01089396d914edfaa4aa5fac800
     permissions:
       contents: read
       packages: write
@@ -28,12 +28,6 @@ jobs:
       push_to_ghcr: true
       path_to_dockerfile: Dockerfile
       path_to_context: .
-      # Authenticate to the registry with a federated credential instead
-      # of the registry password. The environment below is what the OIDC
-      # subject binds to on the Azure side.
-      environment: Staging
-      use_oidc: true
-      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
     secrets:
       registry_password: ${{ secrets.ROBOTICS_ROBOTICSSTAGINGACR_PASSWORD }}
       registry_username: ${{ secrets.ROBOTICS_ROBOTICSSTAGINGACR_USERNAME }}
