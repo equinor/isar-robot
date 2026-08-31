@@ -182,9 +182,15 @@ class Robot(RobotInterface):
     def robot_status(self) -> RobotStatus:
         if self.mission_simulation and not self.mission_simulation.mission_done:
             mission_status: MissionStatus = self.mission_simulation.mission_status()
-            if mission_status == MissionStatus.Paused:
-                return RobotStatus.Paused
-            elif mission_status in [MissionStatus.InProgress, MissionStatus.NotStarted]:
+            # A paused mission is still the robot's current mission, so the
+            # robot is not available to take another one. RobotStatus has no
+            # Paused member: pausing is a property of the mission, and ISAR
+            # tracks it in its own state machine.
+            if mission_status in [
+                MissionStatus.Paused,
+                MissionStatus.InProgress,
+                MissionStatus.NotStarted,
+            ]:
                 return RobotStatus.Busy
         if self.robot_is_home:
             return RobotStatus.Home

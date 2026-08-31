@@ -1,4 +1,4 @@
-from robot_interface.models.mission.status import RobotStatus
+from robot_interface.models.mission.status import MissionStatus, RobotStatus
 from robot_interface.test_robot_interface import interface_test
 
 from isar_robot.config.settings import settings
@@ -50,3 +50,31 @@ def test_initial_robot_status_is_home_when_should_start_at_home(mocker):
     mocker.patch.object(settings, "SHOULD_START_AT_HOME", True)
     robot = Robot(robot_name="Robot", isar_id="00000000-0000-0000-0000-000000000000")
     assert robot.robot_status() == RobotStatus.Home
+
+
+def test_robot_status_is_busy_while_a_mission_is_paused(mocker):
+    """A paused mission must not be reported with a status that does not exist.
+
+    RobotStatus has no Paused member, so returning one raises AttributeError.
+    That is not a RobotException, so it escapes the handler in ISAR's robot
+    status thread, the thread dies, and ISAR's watchdog shuts the process down.
+    """
+    robot = Robot(robot_name="Robot", isar_id="00000000-0000-0000-0000-000000000000")
+
+    simulation = mocker.Mock()
+    simulation.mission_done = False
+    simulation.mission_status.return_value = MissionStatus.Paused
+    robot.mission_simulation = simulation
+
+    assert robot.robot_status() == RobotStatus.Busy
+
+
+def test_robot_status_is_busy_while_a_mission_is_running(mocker):
+    robot = Robot(robot_name="Robot", isar_id="00000000-0000-0000-0000-000000000000")
+
+    simulation = mocker.Mock()
+    simulation.mission_done = False
+    simulation.mission_status.return_value = MissionStatus.InProgress
+    robot.mission_simulation = simulation
+
+    assert robot.robot_status() == RobotStatus.Busy
