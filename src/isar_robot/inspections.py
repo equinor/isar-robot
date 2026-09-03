@@ -53,6 +53,10 @@ example_fencilla_image: Path = Path(
     os.path.dirname(os.path.realpath(__file__)),
     "example_data/example_image_fencilla.jpeg",
 )
+example_fencilla_hole_image: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)),
+    "example_data/example_image_fencilla_hole.jpeg",
+)
 example_thermal_image = Path(
     os.path.dirname(os.path.realpath(__file__)),
     "example_data/example_thermal_image.fff",
@@ -221,6 +225,8 @@ def _select_image_filepath(task: TakeImage) -> Path:
             return random.choice([example_cloe_image_nls, example_cloe_image_nls_empty])
 
     if "fencilla" in analysis_types:
+        if task.tag_id == "fence-tag-2":
+            return example_fencilla_hole_image
         return example_fencilla_image
 
     return random.choice(
