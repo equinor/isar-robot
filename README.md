@@ -25,9 +25,18 @@ Choose if you want to run via uv or manually creating venv
 
 ## Local development with uv
 
-An easy way to run isar-robot locally is with [uv](https://docs.astral.sh/uv/). The `pyproject.toml` includes a `[tool.uv.sources]` override that points the `isar` dependency to the local `../isar` folder.
+An easy way to run isar-robot locally is with [uv](https://docs.astral.sh/uv/). By default, dependencies are installed from the registry versions in `uv.lock`; no sibling checkout is required.
 
-Note that this assumes the following folder structure between isar and isar-robot:
+Run these commands from the `isar-robot` directory:
+
+```bash
+uv sync --locked --extra dev
+uv run --locked isar-start
+```
+
+### Developing against a local ISAR checkout
+
+To edit ISAR alongside isar-robot, clone [ISAR](https://github.com/equinor/isar) into a sibling directory:
 
 ```
 parent-folder/
@@ -36,8 +45,17 @@ parent-folder/
 ```
 
 ```bash
-uv run isar-start
+uv sync --locked --extra dev
+uv pip install --python .venv/bin/python --no-deps --editable ../isar
+uv pip check --python .venv/bin/python
+uv run --no-sync isar-start
 ```
+
+Run these commands from `isar-robot` as well. On Windows, use `.venv\Scripts\python.exe` instead of `.venv/bin/python`.
+
+The editable install changes only the virtual environment, not `pyproject.toml` or `uv.lock`. Edits to the sibling checkout are used immediately. `--no-deps` preserves the locked dependencies, so use an ISAR checkout compatible with them. If `uv pip check` reports incompatible or missing dependencies, use a compatible checkout or update the dependencies deliberately before continuing.
+
+Use `uv run --no-sync` for commands (including `uv run --no-sync pytest`) while working with the editable checkout. A normal `uv run`, `make run`, or `uv sync` can replace it with the locked registry package. Reapply the editable install after syncing; to return to registry-only dependencies, run `uv sync --locked --extra dev`.
 
 ## Configurable variables
 
@@ -57,25 +75,22 @@ Every configuration variable is defined in [settings.py](https://github.com/equi
 
 The dependencies used for this package are listed in `pyproject.toml` and pinned in `uv.lock`. This ensures our builds are predictable and deterministic. This project uses [uv](https://docs.astral.sh/uv/) for dependency management:
 
-Install local versions (editable):
+Install pinned dependencies and this project in editable mode:
 ```
-uv sync
-```
-
-Install pinned versions:
-```
-uv sync --no-sources
+uv sync --locked --extra dev
 ```
 
-Pin local version:
+For an editable sibling ISAR dependency, follow [Developing against a local ISAR checkout](#developing-against-a-local-isar-checkout) above. Local paths are intentionally not committed as dependency sources, so CI and Dependabot can work without sibling repositories.
+
+Refresh the lockfile after changing dependency declarations:
 ```
-uv lock --no-sources
+uv lock
 ```
 
 To update the dependencies to the latest versions, run:
 
 ```
-uv lock --upgrade --no-sources
+uv lock --upgrade
 ```
 
 # Contributing

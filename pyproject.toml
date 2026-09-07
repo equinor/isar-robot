@@ -23,9 +23,6 @@ classifiers = [
 dependencies = ["alitra", "isar>=2.4.0"]
 dynamic = ["version"]
 
-[tool.uv.sources]
-isar = { path = "../isar", editable = true }
-
 [project.urls]
 repository = "https://github.com/equinor/isar-robot.git"
 
