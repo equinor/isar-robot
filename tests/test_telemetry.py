@@ -1,3 +1,4 @@
+from isar_robot.config.settings import settings
 from isar_robot.telemetry import Telemetry, _get_pressure_level
 
 
@@ -8,6 +9,23 @@ def test_get_battery_level() -> None:
             battery_level: float = telemetry._get_battery_level(is_home=is_home)
             assert battery_level >= 0
             assert battery_level <= 100
+
+
+def test_battery_starts_at_configured_initial_level(mocker) -> None:
+    mocker.patch.object(settings, "INITIAL_BATTERY_LEVEL", 26.0)
+
+    telemetry = Telemetry()
+
+    assert telemetry.current_battery_level == 26.0
+
+
+def test_battery_discharges_from_configured_initial_level(mocker) -> None:
+    mocker.patch.object(settings, "INITIAL_BATTERY_LEVEL", 26.0)
+    telemetry = Telemetry()
+
+    battery_level: float = telemetry._get_battery_level(is_home=False)
+
+    assert battery_level == 26.0 - telemetry.discharging_rate
 
 
 def test_get_pressure_level() -> None:
