@@ -26,7 +26,7 @@ def _get_obstacle_status() -> bool:
 
 class Telemetry:
     def __init__(self) -> None:
-        self.current_battery_level: float = 75.0
+        self.current_battery_level: float = settings.INITIAL_BATTERY_LEVEL
         self.min_battery_level: int = 0
         self.max_battery_level: int = 100
         self.charging_rate: float = 2.0
