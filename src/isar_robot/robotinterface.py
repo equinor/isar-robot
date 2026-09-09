@@ -133,9 +133,6 @@ class Robot(RobotInterface):
         )
         return thread
 
-    def initialize(self) -> None:
-        return
-
     def _get_pose_telemetry(self) -> str:
         current_target: Position | None = None
         if self.mission_simulation:
