@@ -182,9 +182,11 @@ class Robot(RobotInterface):
     def robot_status(self) -> RobotStatus:
         if self.mission_simulation and not self.mission_simulation.mission_done:
             mission_status: MissionStatus = self.mission_simulation.mission_status()
-            if mission_status == MissionStatus.Paused:
-                return RobotStatus.Paused
-            elif mission_status in [MissionStatus.InProgress, MissionStatus.NotStarted]:
+            if mission_status in [
+                MissionStatus.InProgress,
+                MissionStatus.NotStarted,
+                MissionStatus.Paused,
+            ]:
                 return RobotStatus.Busy
         if self.robot_is_home:
             return RobotStatus.Home
