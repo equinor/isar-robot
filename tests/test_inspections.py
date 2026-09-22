@@ -1,3 +1,5 @@
+import logging
+
 from alitra import Frame, Orientation, Pose, Position
 from robot_interface.models.mission.task import (
     AcousticDetectionType,
@@ -82,23 +84,126 @@ def test_create_acoustic_measurement() -> None:
     assert inspection.metadata.frequency_from == 35000
 
 
-def test_select_image_filepath_cloe_kaa(monkeypatch) -> None:
-    monkeypatch.setattr(inspections.settings, "PLANT_SHORT_NAME", "kaa")
+def test_select_image_filepath_is_tag_driven() -> None:
+    expected = {
+        "cloe-empty": inspections.example_cloe_image_nls_empty,
+        "cloe-normal": inspections.example_cloe_image_nls,
+        "fence-intact": inspections.example_fencilla_image,
+        "fence-hole": inspections.example_fencilla_hole_image,
+        "fence-rain-drops": inspections.example_fencilla_rain_drops_image,
+    }
+
+    for tag_id, filepath in expected.items():
+        task = TakeImage(id="id", target=target, robot_pose=robot_pose, tag_id=tag_id)
+        assert inspections._select_image_filepath(task) == filepath
+
+
+def test_select_image_filepath_is_deterministic() -> None:
     task = TakeImage(
         id="id", target=target, robot_pose=robot_pose, analysis_types=["CLOE"]
     )
 
+    selections = {inspections._select_image_filepath(task) for _ in range(10)}
+
+    assert len(selections) == 1
+
+
+def test_select_image_filepath_falls_back_when_fixture_missing(
+    monkeypatch, tmp_path
+) -> None:
+    missing = tmp_path / "example_image_cloe_low.jpeg"
+    monkeypatch.setattr(
+        inspections,
+        "TAG_ID_TO_IMAGE",
+        {"cloe-low": (missing, inspections.example_cloe_image_nls_empty)},
+    )
+    task = TakeImage(id="id", target=target, robot_pose=robot_pose, tag_id="cloe-low")
+
     assert (
-        inspections._select_image_filepath(task) == inspections.example_cloe_image_kaa
+        inspections._select_image_filepath(task)
+        == inspections.example_cloe_image_nls_empty
     )
 
 
-def test_select_image_filepath_fencilla(monkeypatch) -> None:
-    monkeypatch.setattr(inspections.settings, "PLANT_SHORT_NAME", "nls")
-    task = TakeImage(
-        id="id", target=target, robot_pose=robot_pose, analysis_types=["Fencilla"]
+def test_missing_fixture_warning_names_expected_file(
+    monkeypatch, tmp_path, caplog
+) -> None:
+    missing = tmp_path / "example_image_cloe_low.jpeg"
+    monkeypatch.setattr(
+        inspections,
+        "TAG_ID_TO_IMAGE",
+        {"cloe-low": (missing, inspections.example_cloe_image_nls_empty)},
+    )
+    task = TakeImage(id="id", target=target, robot_pose=robot_pose, tag_id="cloe-low")
+
+    with caplog.at_level(logging.WARNING, logger=inspections.logger.name):
+        inspections._select_image_filepath(task)
+
+    assert "example_image_cloe_low.jpeg" in caplog.text
+
+
+def test_select_image_filepath_unknown_tag_uses_analysis_type() -> None:
+    cloe_task = TakeImage(
+        id="id",
+        target=target,
+        robot_pose=robot_pose,
+        tag_id="unknown-tag",
+        analysis_types=["CLOE"],
+    )
+    fencilla_task = TakeImage(
+        id="id",
+        target=target,
+        robot_pose=robot_pose,
+        tag_id="unknown-tag",
+        analysis_types=["Fencilla"],
     )
 
     assert (
-        inspections._select_image_filepath(task) == inspections.example_fencilla_image
+        inspections._select_image_filepath(cloe_task)
+        == inspections.example_cloe_image_nls
+    )
+    assert (
+        inspections._select_image_filepath(fencilla_task)
+        == inspections.example_fencilla_image
+    )
+
+
+def test_select_thermal_image_filepath_is_tag_driven() -> None:
+    task = TakeThermalImage(
+        id="id", target=target, robot_pose=robot_pose, tag_id="thermal-normal"
+    )
+
+    assert (
+        inspections._select_thermal_image_filepath(task)
+        == inspections.example_thermal_image
+    )
+
+
+def test_select_thermal_image_filepath_falls_back_when_fixture_missing(
+    monkeypatch, tmp_path
+) -> None:
+    missing = tmp_path / "example_thermal_image_hot_spot.fff"
+    monkeypatch.setattr(
+        inspections,
+        "TAG_ID_TO_THERMAL_IMAGE",
+        {"thermal-hot-spot": (missing, inspections.example_thermal_image)},
+    )
+    task = TakeThermalImage(
+        id="id", target=target, robot_pose=robot_pose, tag_id="thermal-hot-spot"
+    )
+
+    assert (
+        inspections._select_thermal_image_filepath(task)
+        == inspections.example_thermal_image
+    )
+
+
+def test_select_thermal_image_filepath_unknown_tag() -> None:
+    task = TakeThermalImage(
+        id="id", target=target, robot_pose=robot_pose, tag_id="unknown-tag"
+    )
+
+    assert (
+        inspections._select_thermal_image_filepath(task)
+        == inspections.example_thermal_image
     )

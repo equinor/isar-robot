@@ -34,47 +34,61 @@ from robot_interface.models.mission.task import (
     TakeVideo,
 )
 
-from isar_robot.config.settings import settings
 from isar_robot.telemetry import Telemetry
 
-example_cloe_image_nls: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_cloe_nls.jpeg",
+EXAMPLE_DATA_DIR: Path = Path(
+    os.path.dirname(os.path.realpath(__file__)), "example_data"
 )
-example_cloe_image_nls_empty: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_cloe_nls_empty.jpeg",
+
+
+def _example_data_path(filename: str) -> Path:
+    return Path(EXAMPLE_DATA_DIR, filename)
+
+
+example_cloe_image_nls: Path = _example_data_path("example_image_cloe_nls.jpeg")
+example_cloe_image_nls_empty: Path = _example_data_path(
+    "example_image_cloe_nls_empty.jpeg"
 )
-example_cloe_image_kaa: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_cloe_kaa.jpeg",
+example_fencilla_image: Path = _example_data_path("example_image_fencilla.jpeg")
+example_fencilla_hole_image: Path = _example_data_path(
+    "example_image_fencilla_hole.jpeg"
 )
-example_fencilla_image: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_fencilla.jpeg",
+example_fencilla_rain_drops_image: Path = _example_data_path(
+    "example_image_fencilla_rain_drops.jpeg"
 )
-example_fencilla_hole_image: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_fencilla_hole.jpeg",
+example_thermal_image: Path = _example_data_path("example_thermal_image.fff")
+example_video: Path = _example_data_path("example_video.mp4")
+example_thermal_video: Path = _example_data_path("example_thermal_video.mp4")
+example_audio: Path = _example_data_path("example_audio.wav")
+
+# Not checked in yet; falls back until the file is added to example_data/.
+example_cloe_image_low: Path = _example_data_path("example_image_cloe_low.jpeg")
+example_cloe_image_rain_drops: Path = _example_data_path(
+    "example_image_cloe_rain_drops.jpeg"
 )
-example_fencilla_rain_drops_image: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_image_fencilla_rain_drops.jpeg",
+example_thermal_image_hot_spot: Path = _example_data_path(
+    "example_thermal_image_hot_spot.fff"
 )
-example_thermal_image = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_thermal_image.fff",
-)
-example_video: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)), "example_data/example_video.mp4"
-)
-example_thermal_video: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)),
-    "example_data/example_thermal_video.mp4",
-)
-example_audio: Path = Path(
-    os.path.dirname(os.path.realpath(__file__)), "example_data/example_audio.wav"
-)
+
+# SARA keys alarm identity partly on the tag id, so a tag must always yield the
+# same image. Entries are (intended, fallback while the intended file is absent).
+TAG_ID_TO_IMAGE: dict[str, tuple[Path, Path]] = {
+    "cloe-empty": (example_cloe_image_nls_empty, example_cloe_image_nls_empty),
+    "cloe-low": (example_cloe_image_low, example_cloe_image_nls_empty),
+    "cloe-normal": (example_cloe_image_nls, example_cloe_image_nls),
+    "cloe-rain-drops": (example_cloe_image_rain_drops, example_cloe_image_nls),
+    "fence-intact": (example_fencilla_image, example_fencilla_image),
+    "fence-hole": (example_fencilla_hole_image, example_fencilla_hole_image),
+    "fence-rain-drops": (
+        example_fencilla_rain_drops_image,
+        example_fencilla_rain_drops_image,
+    ),
+}
+
+TAG_ID_TO_THERMAL_IMAGE: dict[str, tuple[Path, Path]] = {
+    "thermal-normal": (example_thermal_image, example_thermal_image),
+    "thermal-hot-spot": (example_thermal_image_hot_spot, example_thermal_image),
+}
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +123,7 @@ def create_thermal_image(task: TakeThermalImage, telemetry: Telemetry) -> Image:
     image_metadata.tag_id = task.tag_id
     image_metadata.inspection_description = task.inspection_description
 
-    filepath: Path = example_thermal_image
+    filepath: Path = _select_thermal_image_filepath(task)
     data = _read_data_from_file(filepath)
 
     return ThermalImage(metadata=image_metadata, id=task.id, data=data)
@@ -217,32 +231,55 @@ def create_acoustic_measurement(
 
 
 def _select_image_filepath(task: TakeImage) -> Path:
+    filepath: Path | None = _resolve_tagged_fixture(task.tag_id, TAG_ID_TO_IMAGE)
+    if filepath is not None:
+        return filepath
+
     analysis_types = [
         analysis_type.lower() for analysis_type in (task.analysis_types or [])
     ]
-    plant_short_name = settings.PLANT_SHORT_NAME.lower()
 
     if "cloe" in analysis_types:
-        if plant_short_name == "kaa":
-            return example_cloe_image_kaa
-        if plant_short_name == "nls":
-            return random.choice([example_cloe_image_nls, example_cloe_image_nls_empty])
-
+        return example_cloe_image_nls
     if "fencilla" in analysis_types:
-        if task.tag_id == "fence-tag-2":
-            return example_fencilla_hole_image
-        if task.tag_id == "fence-tag-3":
-            return example_fencilla_rain_drops_image
         return example_fencilla_image
 
-    return random.choice(
-        [
-            example_cloe_image_nls,
-            example_cloe_image_nls_empty,
-            example_cloe_image_kaa,
-            example_fencilla_image,
-        ]
+    return example_cloe_image_nls
+
+
+def _select_thermal_image_filepath(task: TakeThermalImage) -> Path:
+    filepath: Path | None = _resolve_tagged_fixture(
+        task.tag_id, TAG_ID_TO_THERMAL_IMAGE
     )
+    if filepath is not None:
+        return filepath
+
+    return example_thermal_image
+
+
+def _resolve_tagged_fixture(
+    tag_id: str | None, mapping: dict[str, tuple[Path, Path]]
+) -> Path | None:
+    if tag_id is None:
+        return None
+
+    entry = mapping.get(tag_id)
+    if entry is None:
+        return None
+
+    intended, fallback = entry
+    if intended.is_file():
+        return intended
+
+    logger.warning(
+        "Fixture '%s' for tag id '%s' is missing. Place the file in '%s' to use it. "
+        "Falling back to '%s'.",
+        intended.name,
+        tag_id,
+        EXAMPLE_DATA_DIR,
+        fallback.name,
+    )
+    return fallback
 
 
 def _read_data_from_file(filename: Path) -> bytes:
