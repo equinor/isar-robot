@@ -12,7 +12,7 @@ from robot_interface.models.exceptions.robot_exceptions import (
     RobotNoMissionRunningException,
 )
 from robot_interface.models.inspection.inspection import Inspection
-from robot_interface.models.mission.mission import Mission, TaskTypes
+from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, RobotStatus, TaskStatus
 from robot_interface.models.mission.task import (
     InspectionTask,
@@ -53,16 +53,34 @@ class Robot(RobotInterface):
             raise RobotCommunicationException(
                 error_description="Could not start mission as one is already running"
             )
-        elif self.robot_is_home and mission.tasks[0].type == TaskTypes.ReturnToHome:
+        elif self.mission_simulation:
+            self.mission_simulation.join()
+        self.mission_simulation = MissionSimulation(mission, is_return_home=False)
+        self.mission_simulation.start()
+        self.robot_is_home = False
+        logger.info(f"Mission initiated: {mission.id}")
+
+    def initiate_return_home(self, mission_id: str) -> None:
+        if (
+            self.mission_simulation
+            and self.mission_simulation.is_alive()
+            and not self.mission_simulation.mission_done
+        ):
+            raise RobotCommunicationException(
+                error_description="Could not start return home as a mission is already running"
+            )
+        elif self.robot_is_home:
             raise RobotAlreadyHomeException(
                 error_description="Ignoring initiate of return to home as robot is already home"
             )
         elif self.mission_simulation:
             self.mission_simulation.join()
-        self.mission_simulation = MissionSimulation(mission)
+        self.mission_simulation = MissionSimulation(
+            Mission(id=mission_id, name=""), is_return_home=True
+        )
         self.mission_simulation.start()
         self.robot_is_home = False
-        logger.info(f"Mission initiated: {mission.id}")
+        logger.info(f"Return home initiated: {mission_id}")
 
     def task_status(self, task_id: str) -> TaskStatus:
         if not self.mission_simulation:
