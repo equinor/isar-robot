@@ -10,7 +10,6 @@ from robot_interface.models.exceptions.robot_exceptions import (
 )
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, TaskStatus
-from robot_interface.models.mission.task import ReturnToHome
 
 from isar_robot.config.settings import settings
 
@@ -21,6 +20,7 @@ class MissionSimulation(Thread):
     def __init__(
         self,
         mission: Mission,
+        is_return_home: bool,
     ):
         time.sleep(settings.MISSION_SIMULATION_TIME_TO_START)
         self.mission: Mission = mission
@@ -34,9 +34,8 @@ class MissionSimulation(Thread):
         for i, task in enumerate(self.mission.tasks):
             self.task_id_mapping[task.id] = i
 
-        self.is_return_home: bool = len(self.mission.tasks) == 1 and isinstance(
-            self.mission.tasks[0], ReturnToHome
-        )
+        self.is_return_home: bool = is_return_home
+        self.return_home_failed: bool = False
         self.task_failure_probability: float = (
             settings.MISSION_SIMULATION_TASK_FAILURE_PROBABILITY
         )
@@ -104,6 +103,10 @@ class MissionSimulation(Thread):
         return None
 
     def mission_status(self):
+        if self.is_return_home and self.mission_done:
+            if self.return_home_failed:
+                return MissionStatus.Failed
+            return MissionStatus.Successful
         if self.mission_paused:
             return MissionStatus.Paused
         if all(status == TaskStatus.NotStarted for status in self.task_statuses):
@@ -143,7 +146,10 @@ class MissionSimulation(Thread):
             return
 
         thread_check_interval = settings.MISSION_SIMULATION_TASK_DURATION
-        self.task_statuses[0] = TaskStatus.InProgress
+
+        if len(self.task_statuses) > 0:
+            self.task_statuses[0] = TaskStatus.InProgress
+
         while not self.signal_stop_mission.wait(thread_check_interval):
             if self.all_tasks_done:
                 break
@@ -159,8 +165,8 @@ class MissionSimulation(Thread):
             if self.is_return_home:
                 # evaluate is return home failure probability
                 if random.random() < self.return_home_task_failure_probability:
-                    self._complete_task(TaskStatus.Failed)
-                    continue
+                    self.return_home_failed = True
+                break
 
             # evaluate task failure probability
             elif random.random() < self.task_failure_probability:
