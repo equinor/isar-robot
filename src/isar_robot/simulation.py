@@ -10,7 +10,7 @@ from robot_interface.models.exceptions.robot_exceptions import (
 )
 from robot_interface.models.mission.mission import Mission
 from robot_interface.models.mission.status import MissionStatus, TaskStatus
-from robot_interface.models.mission.task import ReturnToHome
+from robot_interface.models.mission.task import ReturnToHome, TakeImage
 
 from isar_robot.config.settings import settings
 
@@ -155,6 +155,16 @@ class MissionSimulation(Thread):
 
             if self.signal_stop_mission.is_set():
                 break
+
+            task = self.current_task()
+            if isinstance(task, TakeImage) and task.tag_id == "task-failure":
+                logger.warning(
+                    "Simulating task failure for task '%s' with tag id '%s'",
+                    task.id,
+                    task.tag_id,
+                )
+                self._complete_task(TaskStatus.Failed)
+                continue
 
             if self.is_return_home:
                 # evaluate is return home failure probability
