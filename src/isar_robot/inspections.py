@@ -13,13 +13,19 @@ from robot_interface.models.inspection.inspection import (
     Audio,
     AudioMetadata,
     CO2Measurement,
+    COMeasurement,
+    GasMeasurement,
     GasMeasurementMetadata,
+    H2SMeasurement,
     Image,
     ImageMetadata,
+    IsobutyleneMeasurement,
+    O2Measurement,
     ThermalImage,
     ThermalImageMetadata,
     ThermalVideo,
     ThermalVideoMetadata,
+    TolueneMeasurement,
     Video,
     VideoMetadata,
 )
@@ -32,6 +38,7 @@ from robot_interface.models.mission.task import (
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
+    TakeXam8000GasMeasurement,
 )
 
 from isar_robot.telemetry import Telemetry
@@ -200,6 +207,59 @@ def create_co2_measurement(task: TakeCO2Measurement, telemetry: Telemetry):
         value=random.normalvariate(0.043, 0.005),
         unit="% v/v",
     )
+
+
+def create_xam8000_gas_measurements(
+    task: TakeXam8000GasMeasurement, telemetry: Telemetry
+) -> list[GasMeasurement]:
+    now: datetime = datetime.now(UTC)
+    gas_measurement_metadata: GasMeasurementMetadata = GasMeasurementMetadata(
+        start_time=now,
+        robot_pose=telemetry.get_pose(),
+        target_position=_get_target_position(task, telemetry),
+        file_type="not_a_file",
+    )
+    gas_measurement_metadata.tag_id = task.tag_id
+    gas_measurement_metadata.inspection_description = task.inspection_description
+
+    return [
+        CO2Measurement(
+            metadata=gas_measurement_metadata,
+            id=task.id,
+            value=random.normalvariate(0.043, 0.005),
+            unit="% v/v",
+        ),
+        IsobutyleneMeasurement(
+            metadata=gas_measurement_metadata,
+            id=task.id,
+            value=random.normalvariate(0.0, 10),
+            unit="ppm",
+        ),
+        TolueneMeasurement(
+            metadata=gas_measurement_metadata,
+            id=task.id,
+            value=random.normalvariate(0.0, 50),
+            unit="% LEL",
+        ),
+        O2Measurement(
+            metadata=gas_measurement_metadata,
+            id=task.id,
+            value=random.normalvariate(18.9, 22),
+            unit="% v/v",
+        ),
+        COMeasurement(
+            metadata=gas_measurement_metadata,
+            id=task.id,
+            value=random.normalvariate(0.0, 3),
+            unit="ppm",
+        ),
+        H2SMeasurement(
+            metadata=gas_measurement_metadata,
+            id=task.id,
+            value=random.normalvariate(0.0, 3),
+            unit="ppm",
+        ),
+    ]
 
 
 def create_acoustic_measurement(

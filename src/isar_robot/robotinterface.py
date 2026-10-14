@@ -23,6 +23,7 @@ from robot_interface.models.mission.task import (
     TakeThermalImage,
     TakeThermalVideo,
     TakeVideo,
+    TakeXam8000GasMeasurement,
 )
 from robot_interface.models.robots.media import MediaConfig
 from robot_interface.robot_interface import RobotInterface
@@ -122,6 +123,8 @@ class Robot(RobotInterface):
             return [inspections.create_thermal_video(task, self.telemetry)]
         elif type(task) is TakeCO2Measurement:
             return [inspections.create_co2_measurement(task, self.telemetry)]
+        elif type(task) is TakeXam8000GasMeasurement:
+            return inspections.create_xam8000_gas_measurements(task, self.telemetry)
         elif type(task) is TakeAcousticMeasurement:
             return [inspections.create_acoustic_measurement(task, self.telemetry)]
         elif type(task) is RecordAudio:
