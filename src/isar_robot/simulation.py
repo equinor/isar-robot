@@ -99,11 +99,13 @@ class MissionSimulation(Thread):
         return self.task_statuses[task_index]
 
     def current_task(self):
-        if self.task_index < self.n_tasks:
+        if not self.mission_done and self.task_index < self.n_tasks:
             return self.mission.tasks[self.task_index]
         return None
 
     def mission_status(self):
+        if self.mission_done and self.signal_stop_mission.is_set():
+            return MissionStatus.Cancelled
         if self.is_return_home and self.mission_done:
             if self.return_home_failed:
                 return MissionStatus.Failed
@@ -138,11 +140,17 @@ class MissionSimulation(Thread):
         else:
             self.task_statuses[self.task_index] = TaskStatus.InProgress
 
+    def _cancel_unfinished_tasks(self):
+        for i, status in enumerate(self.task_statuses):
+            if status in [TaskStatus.NotStarted, TaskStatus.InProgress]:
+                self.task_statuses[i] = TaskStatus.Cancelled
+
     def run(self):
         self.mission_started = True
         self.mission_paused = False
 
         if self.signal_stop_mission.is_set():
+            self._cancel_unfinished_tasks()
             self.mission_done = True
             return
 
@@ -186,6 +194,8 @@ class MissionSimulation(Thread):
 
             self._complete_task(TaskStatus.Successful)
 
+        if self.signal_stop_mission.is_set():
+            self._cancel_unfinished_tasks()
         time.sleep(settings.MISSION_SIMULATION_MISSION_COMPLETION_DELAY)
         self.mission_done = True
         logger.info("Exiting mission simulation thread")
