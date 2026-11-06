@@ -107,10 +107,7 @@ class Robot(RobotInterface):
             raise RobotNoMissionRunningException(
                 error_description="Attempted to stop non-existent mission"
             )
-        try:
-            self.mission_simulation.stop_mission()
-        finally:
-            self.mission_simulation = None
+        self.mission_simulation.stop_mission()
 
     def get_inspections(self, task: InspectionTask) -> list[Inspection]:
         if type(task) is TakeImage:
