@@ -116,7 +116,7 @@ class MissionSimulation(Thread):
             return MissionStatus.NotStarted
         if not self.mission_done:
             return MissionStatus.InProgress
-        if all(status == TaskStatus.Successful for status in self.task_statuses):
+        if any(status == TaskStatus.Successful for status in self.task_statuses):
             return MissionStatus.Successful
         if any(
             status in [TaskStatus.InProgress, TaskStatus.NotStarted]
@@ -127,8 +127,6 @@ class MissionSimulation(Thread):
             return MissionStatus.Failed
         if any(status == TaskStatus.Cancelled for status in self.task_statuses):
             return MissionStatus.Cancelled
-        if any(status == TaskStatus.Failed for status in self.task_statuses):
-            return MissionStatus.PartiallySuccessful
         raise RobotMissionStatusException("Unhandled mission status detected")
 
     def _complete_task(self, task_status: TaskStatus):
